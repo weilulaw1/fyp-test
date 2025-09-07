@@ -1,25 +1,32 @@
 import './App.css'
-import { useEffect } from "react";
+import { useState } from "react";
 import MenuBar from './MenuBar';
+import Sidebar from './SideBar';
 
 function App() {
-  useEffect(() => {
-    const menus = document.querySelectorAll("[class*='dropdown']");
-    document.querySelectorAll("div[style*='fontWeight: bold']").forEach((menuLabel, idx) => {
-      menuLabel.addEventListener("mouseenter", () => {
-        menus[idx].style.display = "block";
-      });
-      menuLabel.parentElement.addEventListener("mouseleave", () => {
-        menus[idx].style.display = "none";
-      });
-    });
-  }, []);
+    // State to control sidebar visibility
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+
+    //Fucntion to Toggle sidebar, will be passed to menubar
+    const toggleSidebar = () => setSidebarOpen((prev) => !prev);
 
   return (
     <div>
-      <MenuBar />
-      <div style={{ padding: "20px" }}>
-        <h1>Home Page</h1>
+       {/* Sidebar */}
+      <Sidebar isOpen={sidebarOpen} />
+
+      {/* MenuBar now receives toggleSidebar function */}
+      <MenuBar onToggleSidebar={toggleSidebar} sidebarOpen={sidebarOpen} />
+
+      {/* Main content, shifts when sidebar is open */}
+      <div
+        style={{
+          marginLeft: sidebarOpen ? "250px" : "0",
+          padding: "20px",
+          transition: "margin-left 0.3s ease",
+        }}
+      >
+        <h1>Home Page 1</h1>
       </div>
     </div>
   );

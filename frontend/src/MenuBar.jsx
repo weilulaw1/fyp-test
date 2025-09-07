@@ -24,14 +24,18 @@ const menuItems = [
   },
 ];
 
-export default function MenuBar() {
+export default function MenuBar({onToggleSidebar, sidebarOpen }) {
   const [openMenu,setOpenMenu]= useState(null);
   const handleClick = (endpoint) => {
     fetch(endpoint)
       .then((res) => res.json())
-      .then((data) => alert(data.message))
+      //.then((data) => alert(data.message))
       .catch((err) => console.error(err));
     setOpenMenu(null);    
+    // Call the toggle function if the endpoint is the toggle sidebar action
+    if (endpoint.includes("toggle_sidebar")) {
+      onToggleSidebar();
+    }
   };
 
   //close menu when click outside
@@ -48,12 +52,14 @@ export default function MenuBar() {
       background: "#ffffffff", 
       padding: "10px",
       alignItems: "center",
-      position: "absolute",      
+      position: "fixed",      
       justifyContent: "flex-start",
       top: 0,
-      left: 0,
-      width: "100%",
+      left: sidebarOpen ? "290px" : "40px",       // dynamically shift
+      width: sidebarOpen ? "calc(100% - 250px)" : "calc(100% - 20px)", 
       borderBottom: "2px solid #333",
+      transition: "left 0.3s ease, width 0.3s ease", // smooth sliding
+      zIndex: 1000,
       }}
       onClick={(e)=> e.stopPropagation()} //prevent menu from closing when clicking inside
       >
