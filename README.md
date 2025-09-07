@@ -1,7 +1,7 @@
 ﻿ fyp-test
 
 
-git add frontend myapp myproject manage.py
+git add frontend myapp myproject
 
 git commit -m "Add Django (myapp, myproject) and React (frontend)"
 
