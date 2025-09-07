@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 const menuItems = [
   {
@@ -25,30 +25,68 @@ const menuItems = [
 ];
 
 export default function MenuBar() {
+  const [openMenu,setOpenMenu]= useState(null);
   const handleClick = (endpoint) => {
     fetch(endpoint)
       .then((res) => res.json())
       .then((data) => alert(data.message))
       .catch((err) => console.error(err));
+    setOpenMenu(null);    
   };
 
+  //close menu when click outside
+   useEffect(() => {
+    const handleOutsideClick = () => setOpenMenu(null);
+    window.addEventListener("click", handleOutsideClick);
+    return () => window.removeEventListener("click", handleOutsideClick);
+  }, []);
+
   return (
-    <div style={{ display: "flex", gap: "20px", background: "#eee", padding: "10px" }}>
-      {menuItems.map((menu) => (
-        <div key={menu.label} style={{ position: "relative" }}>
-          <div style={{ cursor: "pointer", fontWeight: "bold", color: "black" }}>{menu.label}</div>
+    <div style={
+      { 
+      display: "flex", 
+      background: "#ffffffff", 
+      padding: "10px",
+      alignItems: "center",
+      position: "absolute",      
+      justifyContent: "flex-start",
+      top: 0,
+      left: 0,
+      width: "100%",
+      borderBottom: "2px solid #333",
+      }}
+      onClick={(e)=> e.stopPropagation()} //prevent menu from closing when clicking inside
+      >
+      {menuItems.map((menu, index) => (
+        <div
+          key={menu.label}
+          style={{
+            position: "relative",
+            padding: "5px 15px",
+            fontWeight: "bold",
+            cursor: "pointer",
+            color: "black",
+            borderRight: index !== menuItems.length - 1 ? "2px solid #333" : "none", // add border between items
+          }}
+          onMouseEnter={() => setOpenMenu(menu.label)}
+          onMouseLeave={() => setOpenMenu(null)}        
+        >
+          {menu.label}
+          {/* Only show dropdown if this menu is active */}
+          {openMenu === menu.label && (
           <div
             style={{
               position: "absolute",
-              top: "30px",
+              top: "35px",
               left: 0,
-              background: "f9f9f9",
+              background: "#f9f9f9",
               border: "1px solid #333",
               borderRadius: "4px",
-              display: "none",
-              padding: "5px 15px",
+              padding: "5px 0",
               boxShadow: "1px 1px 3px rgba(0,0,0,0.2)",
-              color:"black",
+              minWidth: "120px",
+              color: "black",
+              zIndex: 1000
             }}
             className="dropdown"
           >
@@ -64,6 +102,7 @@ export default function MenuBar() {
               </div>
             ))}
           </div>
+          )}
         </div>
       ))}
     </div>
