@@ -27,3 +27,6 @@ def edit_undo(request):
 def edit_redo(request):
     return Response({"message": "Redo action"})
 
+@api_view(['GET'])
+def toggle_sidebar(request):
+    return Response({"message": "Sidebar toggled"})
