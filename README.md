@@ -3,6 +3,6 @@
 
 git add frontend myapp myproject
 
-git commit -m "Add Django (myapp, myproject) and React (frontend)"
+git commit -m "update to app"
 
 git push origin main
