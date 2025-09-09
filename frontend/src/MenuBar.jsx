@@ -45,11 +45,13 @@ export default function MenuBar({onToggleSidebar, sidebarOpen }) {
 
   // Handle file selection
   const handleFileChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+    const files = e.target.files;
+    if (!files.length) return;
 
     const formData = new FormData();
-    formData.append("myfile", file);
+    for(let i = 0; i<files.length;i++){
+    formData.append("files", files[i]);
+  }
 
     try {
       const res = await fetch("http://127.0.0.1:8000/api/file/upload/", {
@@ -141,6 +143,8 @@ export default function MenuBar({onToggleSidebar, sidebarOpen }) {
         ref={FileUploadAction}
         onChange={handleFileChange}
         style={{ display: "none" }}
+        multiple
+        accept=".zip,.py,.java,.txt,.pdf"
       />
     </div>
   );
