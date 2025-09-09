@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .views import upload_file
 
 urlpatterns = [
     path('api/home', views.home_data),
@@ -13,5 +14,6 @@ urlpatterns = [
     
     path("api/view/toggle_sidebar/", views.toggle_sidebar, name="toggle_sidebar"),
 
+    path('api/file/upload', upload_file, name='file-upload'),
 
 ]

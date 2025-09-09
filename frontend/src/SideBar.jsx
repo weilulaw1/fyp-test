@@ -1,4 +1,5 @@
 import React from "react";
+import FileExploreIcon from "./assets/folder.png"
 
 export default function Sidebar({ isOpen }) {
   return (
@@ -18,8 +19,12 @@ export default function Sidebar({ isOpen }) {
     >
       <h2>Sidebar</h2>
       <ul style={{ listStyle: "none", padding: 0 }}>
-        <li>Option 1</li>
+        <div>
+          <img src={FileExploreIcon} alt="FileExploreIcon" width={32} height={32} style={{ filter: "invert(1)" }}          />
+        </div>
+        <h2>
         <li>Option 2</li>
+        </h2>
         <li>Option 3</li>
       </ul>
     </div>
