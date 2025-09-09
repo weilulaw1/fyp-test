@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState , useRef} from "react";
 
 const menuItems = [
   {
     label: "File",
     actions: [
       { name: "New", endpoint: "http://127.0.0.1:8000/api/file/new/" },
-      { name: "Open", endpoint: "http://127.0.0.1:8000/api/file/open/" },
+      { name: "Open", endpoint: "http://127.0.0.1:8000/api/file/open/", isFileUpload: true },
       { name: "Save", endpoint: "http://127.0.0.1:8000/api/file/save/" },
     ],
   },
@@ -26,15 +26,40 @@ const menuItems = [
 
 export default function MenuBar({onToggleSidebar, sidebarOpen }) {
   const [openMenu,setOpenMenu]= useState(null);
-  const handleClick = (endpoint) => {
-    fetch(endpoint)
+  const FileUploadAction = useRef(null);
+  const handleClick = (action) => {
+    if(action.isFileUpload) {
+      FileUploadAction.current.click()
+    } else{
+    fetch(action.endpoint)
       .then((res) => res.json())
       //.then((data) => alert(data.message))
       .catch((err) => console.error(err));
+    }
     setOpenMenu(null);    
     // Call the toggle function if the endpoint is the toggle sidebar action
-    if (endpoint.includes("toggle_sidebar")) {
+    if (action.endpoint.includes("toggle_sidebar")) {
       onToggleSidebar();
+    }
+  };
+
+  // Handle file selection
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("myfile", file);
+
+    try {
+      const res = await fetch("http://127.0.0.1:8000/api/file/upload/", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      alert(data.message);
+    } catch (err) {
+      console.error("Upload failed:", err);
     }
   };
 
@@ -111,6 +136,12 @@ export default function MenuBar({onToggleSidebar, sidebarOpen }) {
           )}
         </div>
       ))}
+      <input
+        type="file"
+        ref={FileUploadAction}
+        onChange={handleFileChange}
+        style={{ display: "none" }}
+      />
     </div>
   );
 }
