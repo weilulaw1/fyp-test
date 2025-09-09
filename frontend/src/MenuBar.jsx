@@ -124,7 +124,7 @@ export default function MenuBar({onToggleSidebar, sidebarOpen }) {
             {menu.actions.map((action) => (
               <div
                 key={action.name}
-                onClick={() => handleClick(action.endpoint)}
+                onClick={() => handleClick(action)}
                 style={{ padding: "5px 10px", cursor: "pointer" }}
                 onMouseEnter={(e) => (e.target.style.background = "#ddd")}
                 onMouseLeave={(e) => (e.target.style.background = "white")}
