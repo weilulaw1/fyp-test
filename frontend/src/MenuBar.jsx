@@ -24,7 +24,7 @@ const menuItems = [
   },
 ];
 
-export default function MenuBar({onToggleSidebar, sidebarOpen }) {
+export default function MenuBar({onToggleSidebar, sidebarOpen, setUploadedFiles }) {
   const [openMenu,setOpenMenu]= useState(null);
   const FileUploadAction = useRef(null);
   const handleClick = (action) => {
@@ -42,15 +42,25 @@ export default function MenuBar({onToggleSidebar, sidebarOpen }) {
       onToggleSidebar();
     }
   };
+  
 
   // Handle file selection
   const handleFileChange = async (e) => {
     const files = e.target.files;
     if (!files.length) return;
-
     const formData = new FormData();
+    const filesList = [];
     for(let i = 0; i<files.length;i++){
-    formData.append("files", files[i]);
+      const path = files[i].webkitRelativePath || files[i].name;
+      if (
+        path.includes("node_modules")||
+        path.includes("__pycache__")||
+        path.includes(".venv")
+      ){continue;}
+
+      filesList.push(path)
+      formData.append("files", files[i],path);
+
   }
 
     try {
@@ -59,7 +69,7 @@ export default function MenuBar({onToggleSidebar, sidebarOpen }) {
         body: formData,
       });
       const data = await res.json();
-      alert(data.message);
+      setUploadedFiles(data.files);   // <- save list of files
     } catch (err) {
       console.error("Upload failed:", err);
     }
@@ -140,11 +150,11 @@ export default function MenuBar({onToggleSidebar, sidebarOpen }) {
       ))}
       <input
         type="file"
-        ref={FileUploadAction}
-        onChange={handleFileChange}
-        style={{ display: "none" }}
+        webkitdirectory = "true" //allows whole files without zipping it (only on chromium based browsers)
         multiple
-        accept=".zip,.py,.java,.txt,.pdf"
+        ref={FileUploadAction}
+        style={{ display: "none" }}
+        onChange={handleFileChange}
       />
     </div>
   );

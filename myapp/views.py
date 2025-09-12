@@ -43,6 +43,7 @@ def unpack_zip(file):
     folder_path = os.path.join(settings.MEDIA_ROOT, folder_name)
     os.makedirs(folder_path, exist_ok=True)
 
+    extracted_files = []
     with zipfile.ZipFile(file) as zip_ref:
         for name in zip_ref.namelist():
             if name.endswith('/'):
@@ -52,11 +53,12 @@ def unpack_zip(file):
             os.makedirs(os.path.dirname(file_path), exist_ok=True)
             with open(file_path, 'wb') as f_out:
                 f_out.write(file_data)
-    return folder_path
+            extracted_files.append(os.path.join(folder_name, name))
+    return folder_path, extracted_files
 
 logger = logging.getLogger('myapp')
 
-@csrf_exempt
+@api_view (['POST'])
 def upload_file(request):
     if request.method != 'POST':
         return JsonResponse({"message": "Invalid request method"}, status=405)
@@ -68,15 +70,22 @@ def upload_file(request):
     saved_files = []
 
     for f in files:
-        logger.info(f"Received zip file: {f.name}")
+        logger.info(f"Received file: {f.name}")
         if f.name.endswith('.zip'):
-            folder_path = unpack_zip(f)
+            folder_path, extracted_files = unpack_zip(f)
             logger.info(f"Unpacked zip to: {folder_path}")
-            saved_files.append(f"{f.name} (unzipped to {folder_path})")
+            # saved_files.append(f"{f.name} (unzipped to {folder_path})")
+            saved_files.extend(extracted_files)  # add the actual file list
+
         else:
-            default_storage.save(f.name, ContentFile(f.read()))
-            saved_files.append(f.name)
-            logger.info(f"Saved file to MEDIA_ROOT: {f.name}")
+            relative_path = f.name.lstrip("/")
+            file_path = os.path.join(settings.MEDIA_ROOT,relative_path)
+            os.makedirs(os.path.dirname(file_path), exist_ok=True)  # create subfolders if necessary
+            with open(file_path, 'wb') as f_out:
+                for chunk in f.chunks():
+                    f_out.write(chunk)
+            saved_files.append(relative_path)
+            logger.info(f"Saved file to MEDIA_ROOT: {relative_path}")
 
     return JsonResponse({
         "message": f"{len(saved_files)} files uploaded successfully!",
