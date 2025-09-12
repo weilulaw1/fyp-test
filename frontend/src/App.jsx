@@ -6,18 +6,21 @@ import Sidebar from './SideBar';
 function App() {
     // State to control sidebar visibility
     const [sidebarOpen, setSidebarOpen] = useState(false);
-
+    const [uploadedFiles, setUploadedFiles] = useState([]);
     //Fucntion to Toggle sidebar, will be passed to menubar
     const toggleSidebar = () => setSidebarOpen((prev) => !prev);
 
   return (
     <div>
        {/* Sidebar */}
-      <Sidebar isOpen={sidebarOpen} />
+      <Sidebar isOpen={sidebarOpen} 
+      uploadedFiles={uploadedFiles} 
 
+      />
       {/* MenuBar now receives toggleSidebar function */}
-      <MenuBar onToggleSidebar={toggleSidebar} sidebarOpen={sidebarOpen} />
-
+      <MenuBar onToggleSidebar={toggleSidebar} sidebarOpen={sidebarOpen} 
+      setUploadedFiles={setUploadedFiles} 
+      />
       {/* Main content, shifts when sidebar is open */}
       <div
         style={{
