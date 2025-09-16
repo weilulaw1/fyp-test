@@ -96,8 +96,6 @@ def upload_file(request):
 '''
 @api_view(['POST'])
 def upload_file(request):
-    if request.method != 'POST':
-        return JsonResponse({"message": "Invalid request method"}, status=405)
 
     files = request.FILES.getlist('files')
     if not files:
@@ -125,7 +123,7 @@ def upload_file(request):
         file_path = os.path.join(settings.MEDIA_ROOT, relative_path)
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
-        with default_storage.open(file_path, 'wb') as destination:
+        with open(file_path, 'wb') as destination:
             for chunk in f.chunks():
                 destination.write(chunk)
 
@@ -136,3 +134,25 @@ def upload_file(request):
         "message": f"{len(saved_files)} files uploaded successfully!",
         "files": saved_files
     })
+
+@api_view(['GET'])
+def list_files(request):
+    media_dir = settings.MEDIA_ROOT  # 🔹 directly MEDIA_ROOT
+    file_paths = []
+
+    for root, dirs, files in os.walk(media_dir):
+        for file in files:
+            rel_dir = os.path.relpath(root, media_dir)
+            rel_file = os.path.join(rel_dir, file) if rel_dir != "." else file
+            file_paths.append(rel_file)
+
+    return JsonResponse({"files": file_paths})
+
+
+@api_view(['GET'])
+def get_uml_file(request, filename):
+    file_path = os.path.join("media", filename)  # adjust path
+    if os.path.exists(file_path):
+        with open(file_path, "r") as f:
+            return HttpResponse(f.read(), content_type="text/plain")
+    return HttpResponse("File not found", status=404)

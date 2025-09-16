@@ -3,6 +3,7 @@ import { useState } from "react";
 import MenuBar from './MenuBar';
 import Sidebar from './SideBar';
 import PlantUMLViewer from './plantUML';
+import PlantUMLTest from './plantUMLtest'
 
 function App() {
     // State to control sidebar visibility
@@ -16,6 +17,8 @@ function App() {
        {/* Sidebar */}
       <Sidebar isOpen={sidebarOpen} 
       uploadedFiles={uploadedFiles} 
+      toggleSidebar={toggleSidebar} 
+
 
       />
       {/* MenuBar now receives toggleSidebar function */}
@@ -30,9 +33,10 @@ function App() {
           transition: "margin-left 0.3s ease",
         }}
       >
-        <h1>Home Page 1</h1>
-        <PlantUMLViewer/>
-      </div>
+        
+        <div style={{ maxWidth: "800px", marginTop: "20px", position:"absolute",top:"40px" }}>
+         <PlantUMLTest />
+        </div>      </div>
     </div>
   );
 }

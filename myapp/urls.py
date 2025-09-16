@@ -16,4 +16,8 @@ urlpatterns = [
 
     path('api/file/upload/', upload_file, name="file-upload"),
 
+    path('api/files/', views.list_files, name="file-list"),
+
+    path("api/uml/<str:filename>/", views.get_uml_file),
+
 ]
