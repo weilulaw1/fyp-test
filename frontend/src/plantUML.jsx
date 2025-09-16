@@ -2,12 +2,14 @@ import React, {useState}  from "react";
 import plantumlEncoder from "plantuml-encoder";
 
 
+
 export default function PlantUMLViewer() {
     const [uml, setUml] = useState(
     `@startuml
     Alice -> Bob : Hello
     @enduml`
     );
+
     const encoded = plantumlEncoder.encode(uml);
     const url = `http://localhost:8080/svg/${encoded}`;
     return (
