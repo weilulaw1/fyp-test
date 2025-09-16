@@ -2,6 +2,7 @@ import './App.css'
 import { useState } from "react";
 import MenuBar from './MenuBar';
 import Sidebar from './SideBar';
+import PlantUMLViewer from './plantUML';
 
 function App() {
     // State to control sidebar visibility
@@ -30,6 +31,7 @@ function App() {
         }}
       >
         <h1>Home Page 1</h1>
+        <PlantUMLViewer/>
       </div>
     </div>
   );
