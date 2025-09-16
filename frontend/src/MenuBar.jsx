@@ -49,7 +49,7 @@ export default function MenuBar({onToggleSidebar, sidebarOpen, setUploadedFiles 
     const files = e.target.files;
     if (!files.length) return;
     const formData = new FormData();
-    const filesList = [];
+    const filePaths = [];
     for(let i = 0; i<files.length;i++){
       const path = files[i].webkitRelativePath || files[i].name;
       if (
@@ -58,10 +58,10 @@ export default function MenuBar({onToggleSidebar, sidebarOpen, setUploadedFiles 
         path.includes(".venv")
       ){continue;}
 
-      filesList.push(path)
-      formData.append("files", files[i],path);
-
+      filePaths.push(path)
+      formData.append("files",files[i])
   }
+  formData.append("file_paths", JSON.stringify(filePaths));
 
     try {
       const res = await fetch("http://127.0.0.1:8000/api/file/upload/", {

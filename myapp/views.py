@@ -1,3 +1,4 @@
+import json
 import os
 import zipfile
 from django.conf import settings
@@ -58,8 +59,9 @@ def unpack_zip(file):
 
 logger = logging.getLogger('myapp')
 
-@api_view (['POST'])
+'''@api_view (['POST'])
 def upload_file(request):
+
     if request.method != 'POST':
         return JsonResponse({"message": "Invalid request method"}, status=405)
 
@@ -86,6 +88,49 @@ def upload_file(request):
                     f_out.write(chunk)
             saved_files.append(relative_path)
             logger.info(f"Saved file to MEDIA_ROOT: {relative_path}")
+
+    return JsonResponse({
+        "message": f"{len(saved_files)} files uploaded successfully!",
+        "files": saved_files
+    })
+'''
+@api_view(['POST'])
+def upload_file(request):
+    if request.method != 'POST':
+        return JsonResponse({"message": "Invalid request method"}, status=405)
+
+    files = request.FILES.getlist('files')
+    if not files:
+        return JsonResponse({"message": "No files uploaded."}, status=400)
+
+    # Get file paths from the frontend
+    file_paths = request.POST.get("file_paths")
+    if file_paths:
+        try:
+            file_paths = json.loads(file_paths)
+        except Exception as e:
+            file_paths = []
+            logger.error(f"Failed to parse file_paths: {e}")
+    else:
+        file_paths = []
+
+    saved_files = []
+
+    for i, f in enumerate(files):
+        # Use the relative path if provided, else fallback to file name
+        relative_path = file_paths[i] if i < len(file_paths) else f.name
+        logger.info(f"Received file: {f.name}, saving to: {relative_path}")
+
+        # Create full path under MEDIA_ROOT
+        file_path = os.path.join(settings.MEDIA_ROOT, relative_path)
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
+        with default_storage.open(file_path, 'wb') as destination:
+            for chunk in f.chunks():
+                destination.write(chunk)
+
+        saved_files.append(relative_path)
+        logger.info(f"Saved file to: {relative_path}")
 
     return JsonResponse({
         "message": f"{len(saved_files)} files uploaded successfully!",
