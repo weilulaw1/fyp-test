@@ -14,7 +14,7 @@ export default function PlantUMLTestSVG() {
   };
 
   useEffect(() => {
-    // Fetch UML from backend or public folder
+    // Fetch UML text from backend or public folder
     fetch("http://localhost:8000/api/uml/untitled.txt/")
       .then((res) => res.text())
       .then((text) => {

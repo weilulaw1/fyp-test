@@ -36,7 +36,7 @@ function App() {
       >
         
         <div style={{ maxWidth: "800px", marginTop: "20px", position:"absolute",top:"40px" }}>
-         <PlantUMLTestSVG />
+         <PlantUMLTestSVG/>
         </div>      </div>
     </div>
   );
