@@ -92,7 +92,7 @@ export default function MenuBar({onToggleSidebar, sidebarOpen, setUploadedFiles 
       position: "fixed",      
       justifyContent: "flex-start",
       top: 0,
-      left: sidebarOpen ? "250px" : "53px",       // dynamically shift
+      left: sidebarOpen ? "250px" : "52px",       // dynamically shift
       width: sidebarOpen ? "calc(100% - 250px)" : "calc(100% - 20px)", 
       borderBottom: "2px solid #333",
       transition: "left 0.3s ease, width 0.3s ease", // smooth sliding
