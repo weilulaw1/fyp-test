@@ -76,7 +76,7 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
   return (
     <div
       style={{
-        width: isOpen ? '250px' : '50px',
+        width: isOpen ? '250px' : '52px',
         transition: 'width 0.3s ease',
         overflow: 'hidden',
         position: 'fixed',
@@ -85,7 +85,7 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
         bottom: 0,
         background: '#333',
         borderRight: '2px solid #333',
-        zIndex: 900,
+        zIndex: 1100,
         display: 'flex',
         flexDirection: 'column',
       }}

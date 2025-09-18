@@ -4,6 +4,7 @@ import MenuBar from './MenuBar';
 import Sidebar from './SideBar';
 import PlantUMLViewer from './plantUML';
 import PlantUMLTest from './plantUMLtest'
+import PlantUMLTestSVG from './plantUMLsvgTest';
 
 function App() {
     // State to control sidebar visibility
@@ -35,7 +36,7 @@ function App() {
       >
         
         <div style={{ maxWidth: "800px", marginTop: "20px", position:"absolute",top:"40px" }}>
-         <PlantUMLTest />
+         <PlantUMLTestSVG />
         </div>      </div>
     </div>
   );
