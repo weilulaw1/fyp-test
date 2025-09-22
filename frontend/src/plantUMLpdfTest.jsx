@@ -37,12 +37,12 @@ export default function PlantUMLpdfTest() {
         }}
       />
 
-      <div style={{ marginTop: "20px", height: "600px" }}>
+      <div style={{ marginTop: "20px", height: "600px", width: "100%" }}>
         {pdfUrl && (
           <object
             data={pdfUrl}
             type="application/pdf"
-            width="100%"
+            width="200%"
             height="100%"
           >
             <p>

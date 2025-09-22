@@ -6,7 +6,7 @@ import SidebarInIcon from './assets/sidebar in.png';
 function buildFileTree(paths) {
   const tree = {};
   paths.forEach(path => {
-    const parts = path.split("/");
+  const parts = path.split(/[\\/]/);
     let current = tree;
     parts.forEach((part, idx) => {
       if (!current[part]) {
