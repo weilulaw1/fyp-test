@@ -10,6 +10,8 @@ from rest_framework.decorators import api_view
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 import logging
+from urllib.parse import unquote
+
 
 @api_view(['GET'])
 def home_data(request):
@@ -94,6 +96,7 @@ def upload_file(request):
         "files": saved_files
     })
 '''
+
 @api_view(['POST'])
 def upload_file(request):
 
@@ -155,4 +158,30 @@ def get_uml_file(request, filename):
     if os.path.exists(file_path):
         with open(file_path, "r") as f:
             return HttpResponse(f.read(), content_type="text/plain")
+    return HttpResponse("File not found", status=404)
+
+import logging
+logger = logging.getLogger('myapp')
+
+@api_view(['GET'])
+def file_detail(request, filename):
+
+    filename = unquote(filename).rstrip('/')
+    
+    # Convert URL path (forward slashes) into OS path
+    safe_path = os.path.normpath(os.path.join(settings.MEDIA_ROOT, filename))
+    
+    # Security check: ensure the file is inside MEDIA_ROOT
+    if not safe_path.startswith(os.path.abspath(settings.MEDIA_ROOT)):
+        return HttpResponse("Forbidden", status=403)
+
+    logger.info(f"Fetching file: {safe_path}")
+
+    if os.path.exists(safe_path):
+        with open(safe_path, 'r', encoding='utf-8', errors='ignore') as f:
+            content = f.read()
+        logger.info(f"File length: {len(content)}")
+        return HttpResponse(content, content_type="text/plain")
+    
+    logger.warning(f"File not found: {safe_path}")
     return HttpResponse("File not found", status=404)
