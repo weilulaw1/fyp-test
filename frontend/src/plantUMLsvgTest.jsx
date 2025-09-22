@@ -26,7 +26,7 @@ export default function PlantUMLTestSVG() {
 
   return (
     <div>
-      <h2>PlantUML Diagram (SVG in DOM)</h2>
+      <h2>PlantUML Diagram (SVG)</h2>
       <textarea
         rows={10}
         cols={50}
@@ -39,7 +39,7 @@ export default function PlantUMLTestSVG() {
       />
 
       <div
-        style={{ marginTop: "20px" }}
+        style={{ marginTop: "20px", marginLeft:"-200px" }}
         // Inject SVG directly into DOM
         dangerouslySetInnerHTML={{ __html: svgContent }}
       />
