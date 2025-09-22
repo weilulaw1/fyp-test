@@ -18,7 +18,7 @@ function buildFileTree(paths) {
   return tree;
 }
 
-function FileTree({ tree, level = 0 }) {
+function FileTree({ tree, level = 0, parentPath="",onFileClick }) {
   const [expandedFolders, setExpandedFolders] = useState({});
 
   const toggleFolder = (path) => {
@@ -33,22 +33,32 @@ function FileTree({ tree, level = 0 }) {
     <ul style={{ listStyle: "none", paddingLeft: level * 15 + "px" }}>
       {Object.entries(tree).map(([name, children]) => {
         const isFolder = children !== null;
-        const path = `${level}-${name}`; // unique key for expanded state
+        const fullpath = parentPath ? `${parentPath}/${name}` : name;
+        const key = `${level}-${fullpath}`; // unique key for expanded state
 
         return (
-          <li key={path}>
+          <li key={key}>
             {isFolder ? (
               <>
                 <span
                   style={{ fontWeight: "bold", cursor: "pointer" }}
-                  onClick={() => toggleFolder(path)}
+                  onClick={() => toggleFolder(key)}
                 >
-                  {expandedFolders[path] ? "📂" : "📁"} {name}
+                  {expandedFolders[key] ? "📂" : "📁"} {name}
                 </span>
-                {expandedFolders[path] && <FileTree tree={children} level={level + 1} />}
+                {expandedFolders[key] && <FileTree 
+                tree={children} 
+                level={level + 1} 
+                parentPath = {fullpath}
+                onFileClick={onFileClick} 
+                />}
               </>
             ) : (
-              <span>📄 {name}</span>
+              <span
+                style={{fontWeight: "bold", cursor: "pointer"}}
+                onClick={()=>onFileClick && onFileClick(fullpath)}
+              >📄 {name}
+              </span>
             )}
           </li>
         );
@@ -57,7 +67,7 @@ function FileTree({ tree, level = 0 }) {
   );
 }
 
-export default function Sidebar({ isOpen, toggleSidebar }) {
+export default function Sidebar({ isOpen, toggleSidebar, onFileClick }) {
   const [uploadedFiles , setUploadedFiles] = useState([]);
   useEffect(() => {
     fetch("http://localhost:8000/api/files/")      
@@ -132,7 +142,7 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
 
           <h2>Uploaded Files</h2>
           {uploadedFiles.length > 0 ? (
-            <FileTree tree={tree} />
+            <FileTree tree={tree} onFileClick={onFileClick} />
           ) : (
             <p>No files uploaded</p>
           )}
