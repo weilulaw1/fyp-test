@@ -61,42 +61,6 @@ def unpack_zip(file):
 
 logger = logging.getLogger('myapp')
 
-'''@api_view (['POST'])
-def upload_file(request):
-
-    if request.method != 'POST':
-        return JsonResponse({"message": "Invalid request method"}, status=405)
-
-    files = request.FILES.getlist('files')
-    if not files:
-        return JsonResponse({"message": "No files uploaded."}, status=400)
-
-    saved_files = []
-
-    for f in files:
-        logger.info(f"Received file: {f.name}")
-        if f.name.endswith('.zip'):
-            folder_path, extracted_files = unpack_zip(f)
-            logger.info(f"Unpacked zip to: {folder_path}")
-            # saved_files.append(f"{f.name} (unzipped to {folder_path})")
-            saved_files.extend(extracted_files)  # add the actual file list
-
-        else:
-            relative_path = f.name.lstrip("/")
-            file_path = os.path.join(settings.MEDIA_ROOT,relative_path)
-            os.makedirs(os.path.dirname(file_path), exist_ok=True)  # create subfolders if necessary
-            with open(file_path, 'wb') as f_out:
-                for chunk in f.chunks():
-                    f_out.write(chunk)
-            saved_files.append(relative_path)
-            logger.info(f"Saved file to MEDIA_ROOT: {relative_path}")
-
-    return JsonResponse({
-        "message": f"{len(saved_files)} files uploaded successfully!",
-        "files": saved_files
-    })
-'''
-
 @api_view(['POST'])
 def upload_file(request):
 
@@ -121,6 +85,9 @@ def upload_file(request):
         # Use the relative path if provided, else fallback to file name
         relative_path = file_paths[i] if i < len(file_paths) else f.name
         logger.info(f"Received file: {f.name}, saving to: {relative_path}")
+
+        if relative_path.endswith(".DS_Store"):
+            continue
 
         # Create full path under MEDIA_ROOT
         file_path = os.path.join(settings.MEDIA_ROOT, relative_path)
