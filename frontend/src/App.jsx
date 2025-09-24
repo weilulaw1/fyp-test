@@ -19,12 +19,18 @@ function App() {
 
 
     const modeComponents = {
-    SVG: <PlantUMLTestSVG />,      
-    PDF: <PlantUMLpdfTest />,
-    Code: 
-    (<CodeViewer
+    SVG: (<PlantUMLTestSVG
+      file = {activeFile} 
+      />),      
+
+    PDF: (<PlantUMLpdfTest 
+      file = {activeFile}
+    />),
+
+    Code: (<CodeViewer
     file = {activeFile}
-      />) ,  // just add more later
+      />) ,  
+    // just add more later
     // txt: <PlantUMLtxtTest />
   };
     
@@ -38,7 +44,7 @@ function App() {
       onFileClick={(filename)=>{
         const relativePath = filename.replaceAll("\\","/")
         setActiveFile(relativePath);
-        setViewMode("Code")
+        //setViewMode("Code")
       }}
       />
       {/* MenuBar now receives toggleSidebar function */}
