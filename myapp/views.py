@@ -11,6 +11,8 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 import logging
 from urllib.parse import unquote
+from django.views.decorators.http import require_POST
+
 
 
 @api_view(['GET'])
@@ -152,3 +154,26 @@ def file_detail(request, filename):
     
     logger.warning(f"File not found: {safe_path}")
     return HttpResponse("File not found", status=404)
+
+
+@csrf_exempt  # remove if you handle CSRF token in frontend
+@require_POST
+def delete_file(request):
+    path = request.POST.get("path")
+    if not path:
+        return JsonResponse({"error": "No path provided"}, status=400)
+
+    # Make sure the path is safe and inside media folder
+    full_path = os.path.join(settings.MEDIA_ROOT, path)
+    if not os.path.exists(full_path):
+        return JsonResponse({"error": "File does not exist"}, status=404)
+
+    try:
+        if os.path.isfile(full_path):
+            os.remove(full_path)
+        elif os.path.isdir(full_path):
+            import shutil
+            shutil.rmtree(full_path)
+        return JsonResponse({"success": True})
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)

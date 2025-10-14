@@ -30,7 +30,7 @@ const PlantUMLTestSVG=({file}) => {
   return (
     <div>
       <h2>PlantUML Diagram (SVG)</h2>
-      <textarea
+      <view //textarea to view code
         rows={0}
         cols={0}
         value={uml}

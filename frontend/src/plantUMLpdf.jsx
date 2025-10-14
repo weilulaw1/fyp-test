@@ -29,7 +29,7 @@ const PlantUMLpdfTest= ({file})=> {
     <div>
       <h2>PlantUML Diagram (PDF Viewer)</h2>
 
-      <textarea
+      <view //textarea to view code
         rows={0}
         cols={0}
         value={uml}
