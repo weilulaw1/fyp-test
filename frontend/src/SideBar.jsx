@@ -18,7 +18,7 @@ function buildFileTree(paths) {
   return tree;
 }
 
-function FileTree({ tree, level = 0, parentPath="",onFileClick }) {
+function FileTree({ tree, level = 0, parentPath="",onFileClick, onFileDelete }) {
   const [expandedFolders, setExpandedFolders] = useState({});
 
   const toggleFolder = (path) => {
@@ -27,7 +27,35 @@ function FileTree({ tree, level = 0, parentPath="",onFileClick }) {
       [path]: !prev[path]
     }));
   }; 
+  const handleDelete = async (fullpath) => {
+    if (!window.confirm(`Delete "${fullpath}"? This cannot be undone.`)) return;
+    try {
+      const formData = new FormData();
+      formData.append("path", fullpath);
 
+      const res = await fetch("http://localhost:8000/api/delete-file/", {
+        method: "POST",
+        body: formData,
+      });
+
+      let data;
+      try {
+        data = await res.json();
+      } catch {
+        alert("Server returned invalid JSON");
+        return;
+      }
+      if (data.success) {
+        alert(`Deleted "${fullpath}" successfully`);
+        onFileDelete(fullpath); // notify parent to update file list
+      } else {
+        alert(`Failed to delete: ${data.error}`);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error deleting file");
+    }
+  };
 
   return (
     <ul style={{ listStyle: "none", paddingLeft: level * 15 + "px" }}>
@@ -44,6 +72,15 @@ function FileTree({ tree, level = 0, parentPath="",onFileClick }) {
                   style={{ fontWeight: "bold", cursor: "pointer" }}
                   onClick={() => toggleFolder(key)}
                 >
+                  <span
+                  style={{ cursor: "pointer", color: "red" }}
+                  onClick={(e) => {
+                    e.stopPropagation(); // prevent toggling folder
+                    handleDelete(fullpath);
+                  }}
+                >
+                  ❌
+                </span>
                   {expandedFolders[key] ? "📂" : "📁"} {name}
                 </span>
                 {expandedFolders[key] && <FileTree 
@@ -51,15 +88,24 @@ function FileTree({ tree, level = 0, parentPath="",onFileClick }) {
                 level={level + 1} 
                 parentPath = {fullpath}
                 onFileClick={onFileClick} 
+                onFileDelete={onFileDelete}
                 />}
               </>
             ) : (
+              <>
               <span
                 style={{fontWeight: "bold", cursor: "pointer"}}
                 onClick={()=>onFileClick && onFileClick(fullpath)}
               >📄 {name}
               </span>
-            )}
+              <span
+              style={{ cursor: "pointer", color: "red" }}
+              onClick={() => handleDelete(fullpath)}
+              >
+                ❌  
+              </span>
+              </>
+              )}
           </li>
         );
       })}
@@ -79,7 +125,9 @@ export default function Sidebar({ isOpen, toggleSidebar, onFileClick }) {
       })
       .catch((err) => console.error("Failed to fetch files:", err));
   }, []);
-
+  const handleFileDelete = (fullpath) => {
+    setUploadedFiles((prev) => prev.filter((file) => file !== fullpath));
+  };
 
   const tree = buildFileTree(uploadedFiles);
     
@@ -142,7 +190,11 @@ export default function Sidebar({ isOpen, toggleSidebar, onFileClick }) {
 
           <h2>Uploaded Files</h2>
           {uploadedFiles.length > 0 ? (
-            <FileTree tree={tree} onFileClick={onFileClick} />
+            <FileTree 
+            tree={tree} 
+            onFileClick={onFileClick}
+            onFileDelete={handleFileDelete} 
+            />
           ) : (
             <p>No files uploaded</p>
           )}
