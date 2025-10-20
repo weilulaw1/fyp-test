@@ -68,20 +68,32 @@ def flush_diagram(filename_suffix):
 
     filename = f"{base_name}{filename_suffix}"
     uml_lines = ["@startuml"]
+
+    MAX_ITEMS_PER_CLASS = 10  # <-- Limit attributes/methods per class
+
     for cls, attrs in classes.items():
         uml_lines.append(f"class {cls} {{")
-        for attr in attrs:
-            uml_lines.append(f"  {attr}")
+        attrs_list = sorted(list(attrs))  # keep consistent order
+
+        # If too many attributes/methods, show only first N
+        if len(attrs_list) > MAX_ITEMS_PER_CLASS:
+            visible_attrs = attrs_list[:MAX_ITEMS_PER_CLASS]
+            remaining = len(attrs_list) - MAX_ITEMS_PER_CLASS
+            for attr in visible_attrs:
+                uml_lines.append(f"  {attr}")
+            uml_lines.append(f"  // ... ({remaining} more not shown)")
+        else:
+            for attr in attrs_list:
+                uml_lines.append(f"  {attr}")
+
         uml_lines.append("}")
+
     # write relationships sanitized
     for rel in relationships:
-        # relationships are stored as tuples (from,to) or strings; handle both
         if isinstance(rel, tuple):
             a, b = rel
             uml_lines.append(f"{sanitize(a)} --> {sanitize(b)}")
         else:
-            # if stored as string already, append as-is (but sanitize tokens)
-            # try to split by '-->' and sanitize tokens if possible
             if "-->" in rel:
                 left, right = rel.split("-->")
                 uml_lines.append(f"{sanitize(left.strip())} --> {sanitize(right.strip())}")
