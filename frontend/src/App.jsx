@@ -55,7 +55,6 @@ function App() {
       {/* Main content */}
       <div
         style={{
-          marginLeft: sidebarOpen ? "250px" : "0",
           padding: "20px",
           paddingTop: "80px",
           transition: "margin-left 0.3s ease",
