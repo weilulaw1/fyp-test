@@ -24,5 +24,5 @@ urlpatterns = [
 
     path('api/delete-file/', views.delete_file, name='delete_file'),
 
-
+    path("api/run-json-to-uml/", views.run_json_to_uml, name="run_json_to_uml"),
 ]

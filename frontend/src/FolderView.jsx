@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 
 // Helper: build nested folder tree
 function buildFileTree(paths) {
@@ -25,7 +25,7 @@ function FileTree({
   onFileDelete,
   selectedFile,
 }) {
-  const [expandedFolders, setExpandedFolders] = useState({});
+  const [expandedFolders, setExpandedFolders] = React.useState({});
 
   const toggleFolder = (path) => {
     setExpandedFolders((prev) => ({
@@ -73,7 +73,7 @@ function FileTree({
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
-                backgroundColor: isSelected ? "#f8f9fa" : "transparent",
+                backgroundColor: isSelected ? "rgba(255, 255, 255, 0.1)" : "transparent",
                 borderRadius: "4px",
                 padding: "2px 6px",
                 cursor: "pointer",
@@ -137,28 +137,32 @@ function FileTree({
     </ul>
   );
 }
-export default function FolderView({ onFileClick }) {
-  const [uploadedFiles, setUploadedFiles] = useState([]);
-  const [selectedFile, setSelectedFile] = useState(null);
 
+export default function FolderView({
+  onFileClick,
+  uploadedFiles = [],
+  selectedFile,
+  setSelectedFile,
+}) {
   useEffect(() => {
-    fetch("http://localhost:8000/api/files/")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.files) setUploadedFiles(data.files);
-      })
-      .catch((err) => console.error("Failed to fetch files:", err));
-  }, []);
+    // Optional: refetch file list from backend if not provided
+    if (uploadedFiles.length === 0) {
+      fetch("http://localhost:8000/api/files/")
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.files) console.log("Files loaded:", data.files);
+        })
+        .catch((err) => console.error("Failed to fetch files:", err));
+    }
+  }, [uploadedFiles]);
 
   const handleFileDelete = (fullpath) => {
-    setUploadedFiles((prev) => prev.filter((file) => file !== fullpath));
-    if (selectedFile === fullpath) setSelectedFile(null);
+    if (setSelectedFile && selectedFile === fullpath) setSelectedFile(null);
   };
 
-  // Handle selection AND notify parent
   const handleFileClick = (fullpath) => {
-    setSelectedFile(fullpath); // highlight
-    if (onFileClick) onFileClick(fullpath); // notify App.jsx
+    if (setSelectedFile) setSelectedFile(fullpath);
+    if (onFileClick) onFileClick(fullpath);
   };
 
   const tree = buildFileTree(uploadedFiles);
