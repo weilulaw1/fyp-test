@@ -1,5 +1,6 @@
 import json
 import os
+import subprocess
 import zipfile
 from django.conf import settings
 from io import BytesIO
@@ -177,3 +178,36 @@ def delete_file(request):
         return JsonResponse({"success": True})
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
+    
+@csrf_exempt
+def run_json_to_uml(request):
+    if request.method == "POST":
+        try:
+            filename = "bash_summary.json"
+            script_dir = r"C:\Users\weilu\OneDrive\Desktop\ntu\fyp\projct\test\files"
+            script_path = os.path.join(script_dir, "json_to_uml.py")
+
+            # Log the path and filename
+            print(f"Running script: {script_path} with file: {filename}")
+
+            result = subprocess.run(
+                ["python", script_path, filename],
+                capture_output=True,
+                text=True,
+                cwd=script_dir
+            )
+
+            # Log stdout and stderr
+            print("STDOUT:", result.stdout)
+            print("STDERR:", result.stderr)
+
+            if result.returncode == 0:
+                return JsonResponse({"success": True, "message": result.stdout or "Script executed successfully."})
+            else:
+                return JsonResponse({"success": False, "message": result.stderr or "Script returned an error."})
+
+        except Exception as e:
+            print("ERROR:", str(e))
+            return JsonResponse({"success": False, "message": str(e)})
+
+    return JsonResponse({"success": False, "message": "Invalid request method."})

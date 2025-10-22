@@ -74,8 +74,32 @@ export default function Sidebar({ isOpen, toggleSidebar, onSectionChange }) {
             onClick={() => onSectionChange("diagram")}
           >
             🧩 View Diagram
+          </button
+          >
+          <button
+          style={{
+              margin: "10px 0",
+              width: "180px",
+              padding: "10px",
+              backgroundColor: "#555",
+              border: "none",
+              borderRadius: "6px",
+              color: "white",
+              cursor: "pointer",
+            }}
+            onClick={() => {
+              fetch("http://localhost:8000/api/run-json-to-uml/", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ filename: "bash_summary.json" }),
+              })
+                .then((res) => res.json())
+                .then((data) => alert(`✅ ${data.message || "Command executed"}`))
+                .catch((err) => alert(`❌ Error: ${err.message}`));
+            }}
+          >
+            JSON to UML
           </button>
-          
         </>
       )}
     </div>

@@ -9,10 +9,10 @@ import CodeViewer from './CodeViewer';
 import FolderView from './FolderView'; 
 function App() {
   // Sidebar + view control
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [activeFile, setActiveFile] = useState(null);
-  const [activeSection, setActiveSection] = useState("diagram"); // "diagram" | "folder"
+  const [activeSection, setActiveSection] = useState("folder");
 
   // Toggle sidebar visibility
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
@@ -62,7 +62,7 @@ function App() {
             onFileClick={(file) => setActiveFile(file)}
             uploadedFiles={uploadedFiles}
             selectedFile={activeFile}
-
+            setSelectedFile={setActiveFile}
           />
         )}
       </div>
