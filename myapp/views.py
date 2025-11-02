@@ -184,27 +184,31 @@ def run_json_to_uml(request):
     if request.method == "POST":
         try:
             filename = "bash_summary.json"
-            script_dir = r"C:\Users\weilu\OneDrive\Desktop\ntu\fyp\projct\test\files"
+            script_dir = os.path.join(os.path.dirname(__file__), "..", "files")
             script_path = os.path.join(script_dir, "json_to_uml.py")
 
-            # Log the path and filename
             print(f"Running script: {script_path} with file: {filename}")
 
             result = subprocess.run(
                 ["python", script_path, filename],
                 capture_output=True,
                 text=True,
-                cwd=script_dir
+                cwd=script_dir,
             )
 
-            # Log stdout and stderr
             print("STDOUT:", result.stdout)
             print("STDERR:", result.stderr)
 
             if result.returncode == 0:
-                return JsonResponse({"success": True, "message": result.stdout or "Script executed successfully."})
+                return JsonResponse({
+                    "success": True,
+                    "message": result.stdout or "Script executed successfully.",
+                })
             else:
-                return JsonResponse({"success": False, "message": result.stderr or "Script returned an error."})
+                return JsonResponse({
+                    "success": False,
+                    "message": result.stderr or "Script returned an error.",
+                })
 
         except Exception as e:
             print("ERROR:", str(e))

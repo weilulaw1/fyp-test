@@ -1,6 +1,11 @@
 import json
 import sys
+import io
 from pathlib import Path
+
+
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+
 
 # Threshold: max classes per diagram before splitting
 MAX_CLASSES = 200
