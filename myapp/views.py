@@ -1,5 +1,7 @@
 import json
 import os
+import traceback
+import sys
 import subprocess
 import zipfile
 from django.conf import settings
@@ -179,39 +181,53 @@ def delete_file(request):
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
     
+
+
 @csrf_exempt
 def run_json_to_uml(request):
     if request.method == "POST":
+        uploaded_file = request.FILES.get("json_file")
+        if not uploaded_file:
+            return JsonResponse({"error": "No file uploaded"}, status=400)
+
+        upload_dir = os.path.join(os.path.dirname(__file__), "uploads")
+        os.makedirs(upload_dir, exist_ok=True)
+        file_path = os.path.join(upload_dir, uploaded_file.name)
+
+        with open(file_path, "wb+") as destination:
+            for chunk in uploaded_file.chunks():
+                destination.write(chunk)
+
+        script_dir = os.path.join(os.path.dirname(__file__), "..", "files")
+        script_path = os.path.join(script_dir, "json_to_uml.py")
+
+        output_dir = os.path.join(script_dir, "uml_output")
+        os.makedirs(output_dir, exist_ok=True)
+
         try:
-            filename = "bash_summary.json"
-            script_dir = os.path.join(os.path.dirname(__file__), "..", "files")
-            script_path = os.path.join(script_dir, "json_to_uml.py")
-
-            print(f"Running script: {script_path} with file: {filename}")
-
             result = subprocess.run(
-                ["python", script_path, filename],
+                [sys.executable, script_path, file_path, output_dir],
+                check=True,
                 capture_output=True,
                 text=True,
-                cwd=script_dir,
+                encoding="utf-8",
             )
-
             print("STDOUT:", result.stdout)
             print("STDERR:", result.stderr)
 
-            if result.returncode == 0:
-                return JsonResponse({
-                    "success": True,
-                    "message": result.stdout or "Script executed successfully.",
-                })
-            else:
-                return JsonResponse({
-                    "success": False,
-                    "message": result.stderr or "Script returned an error.",
-                })
+        except subprocess.CalledProcessError as e:
+            print("UML generation failed!")
+            print("STDERR:\n", e.stderr)
+            traceback.print_exc()
+            return JsonResponse({
+                "error": "UML generation failed",
+                "details": e.stderr,
+            }, status=500)
 
-        except Exception as e:
-            print("ERROR:", str(e))
-            return JsonResponse({"success": False, "message": str(e)})
+        return JsonResponse({
+            "status": "UML generated successfully",
+            "uploaded_file": uploaded_file.name,
+            "output_dir": output_dir,
+        })
 
-    return JsonResponse({"success": False, "message": "Invalid request method."})
+    return JsonResponse({"error": "Invalid request method"}, status=405)

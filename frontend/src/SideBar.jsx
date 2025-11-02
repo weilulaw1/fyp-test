@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import SidebarOutIcon from './assets/sidebar out.png';
 import SidebarInIcon from './assets/sidebar in.png';
 import FolderView from "./FolderView";
@@ -10,7 +10,35 @@ export default function Sidebar({
   onFileClick,
   selectedFile,
   setSelectedFile,
-}) {
+})
+{
+
+  const [selectedFileToUpload, setSelectedFileToUpload] = useState(null);
+
+  const handleFileChange = (e) => {
+    setSelectedFileToUpload(e.target.files[0]);
+  };
+
+  const handleUploadAndRun = () => {
+    if (!selectedFileToUpload) {
+      alert("Please select a JSON file first!");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("json_file", selectedFileToUpload);
+
+    fetch("http://localhost:8000/api/run-json-to-uml/", {
+      method: "POST",
+      body: formData,
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status) alert(`✅ ${data.status}`);
+        else alert(`❌ ${data.error}`);
+      })
+      .catch((err) => alert(`❌ Error: ${err.message}`));
+  };
   return (
     <div
       style={{
@@ -53,27 +81,34 @@ export default function Sidebar({
       {/* Sidebar content */}
       {isOpen && (
         <>
+          {/* File input */}
+          <input
+            type="file"
+            accept=".json"
+            onChange={handleFileChange}
+            style={{
+              margin: "10px 0",
+              width: "180px",
+              padding: "5px",
+              borderRadius: "6px",
+              cursor: "pointer",
+            }}
+          />
+
+          {/* Upload & run button */}
           <button
             style={{
               margin: "10px 0",
               width: "180px",
               padding: "10px",
-              backgroundColor: "#555",
+              backgroundColor:selectedFileToUpload?"#555": "#888",
               border: "none",
               borderRadius: "6px",
               color: "white",
-              cursor: "pointer",
+              cursor: selectedFileToUpload ? "pointer" : "not-allowed",
             }}
-            onClick={() => {
-              fetch("http://localhost:8000/api/run-json-to-uml/", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ filename: "bash_summary.json" }),
-              })
-                .then((res) => res.json())
-                .then((data) => alert(`✅ ${data.message || "Command executed"}`))
-                .catch((err) => alert(`❌ Error: ${err.message}`));
-            }}
+            onClick={handleUploadAndRun}
+            disabled={!selectedFileToUpload}
           >
             JSON to UML
           </button>
