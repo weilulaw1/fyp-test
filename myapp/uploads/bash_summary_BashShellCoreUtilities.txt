@@ -1,0 +1,80 @@
+@startuml
+class BashShellCoreUtilities {
+  name: str
+  summary: str
+}
+class bashgetopt {
+  internal_getopt()
+  reset_internal_getopt()
+  summary: string
+}
+class common {
+  bash_logout()
+  builtin_address()
+  builtin_address_internal()
+  builtin_error()
+  builtin_error_prolog()
+  builtin_usage()
+  builtin_warning()
+  describe_command()
+  display_signal_list()
+  dollar_vars_changed()
+  // ... (67 more not shown)
+}
+class evalfile {
+  _evalfile()
+  fc_execute_file()
+  maybe_execute_file()
+  source_file()
+  summary: string
+}
+class evalstring {
+  cat_file()
+  parse_and_execute()
+  parse_and_execute_cleanup()
+  parse_prologue()
+  parse_string()
+  summary: string
+}
+class gen_helpfiles {
+  main()
+  summary: string
+  write_documentation()
+  write_helpfiles()
+}
+class getopt {
+  sh_getopt()
+  sh_getopt_restore_state()
+  summary: string
+}
+class mkbuiltins {
+  _find_in_table()
+  add_documentation()
+  array_add()
+  array_create()
+  array_free()
+  builtin_handler()
+  comment_handler()
+  copy_builtin()
+  copy_string_array()
+  depends_on_handler()
+  // ... (27 more not shown)
+}
+class psize {
+  main()
+  sigpipe()
+  summary: string
+}
+bash --> BashShellCoreUtilities
+BashShellCoreUtilities --> bashgetopt
+BashShellCoreUtilities --> bashgetopt
+BashShellCoreUtilities --> common
+BashShellCoreUtilities --> common
+BashShellCoreUtilities --> evalfile
+BashShellCoreUtilities --> evalstring
+BashShellCoreUtilities --> gen_helpfiles
+BashShellCoreUtilities --> getopt
+BashShellCoreUtilities --> getopt
+BashShellCoreUtilities --> mkbuiltins
+BashShellCoreUtilities --> psize
+@enduml

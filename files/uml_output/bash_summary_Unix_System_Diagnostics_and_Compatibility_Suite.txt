@@ -1,0 +1,44 @@
+@startuml
+class Unix_System_Diagnostics_and_Compatibility_Suite {
+  name: str
+  summary: str
+}
+class Unix_System_Diagnostics_and_Compatibility_Utilities {
+  name: str
+  summary: str
+}
+class errlist {
+  fatal_error()
+  main()
+  programming_error()
+  summary: string
+}
+class hpux10_dlfcn {
+  dlclose()
+  dlerror()
+  dlopen()
+  dlsym()
+  summary: string
+}
+class open_files {
+  main()
+  summary: string
+}
+class sigs {
+  main()
+  summary: string
+}
+class sigstat {
+  init_signames()
+  main()
+  sigstat()
+  summary: string
+}
+bash --> Unix_System_Diagnostics_and_Compatibility_Suite
+Unix_System_Diagnostics_and_Compatibility_Suite --> Unix_System_Diagnostics_and_Compatibility_Utilities
+Unix_System_Diagnostics_and_Compatibility_Utilities --> errlist
+Unix_System_Diagnostics_and_Compatibility_Utilities --> hpux10_dlfcn
+Unix_System_Diagnostics_and_Compatibility_Utilities --> open_files
+Unix_System_Diagnostics_and_Compatibility_Utilities --> sigs
+Unix_System_Diagnostics_and_Compatibility_Utilities --> sigstat
+@enduml
