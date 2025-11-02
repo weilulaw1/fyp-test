@@ -1,14 +1,23 @@
 import React from "react";
 import SidebarOutIcon from './assets/sidebar out.png';
 import SidebarInIcon from './assets/sidebar in.png';
+import FolderView from "./FolderView";
 
-export default function Sidebar({ isOpen, toggleSidebar, onSectionChange }) {
+export default function Sidebar({
+  isOpen,
+  toggleSidebar,
+  uploadedFiles = [],
+  onFileClick,
+  selectedFile,
+  setSelectedFile,
+}) {
   return (
     <div
       style={{
         width: isOpen ? "250px" : "52px",
         transition: "width 0.3s ease",
-        overflow: "hidden",
+        overflowY: "auto",
+        overflowX: "hidden",
         position: "fixed",
         left: 0,
         top: 0,
@@ -41,43 +50,11 @@ export default function Sidebar({ isOpen, toggleSidebar, onSectionChange }) {
         />
       </div>
 
-      {/* Buttons */}
+      {/* Sidebar content */}
       {isOpen && (
         <>
           <button
             style={{
-              margin: "10px 0",
-              width: "180px",
-              padding: "10px",
-              backgroundColor: "#555",
-              border: "none",
-              borderRadius: "6px",
-              color: "white",
-              cursor: "pointer",
-            }}
-            onClick={() => onSectionChange("folder")}
-          >
-            📁 View Folder
-          </button>
-
-          <button
-            style={{
-              margin: "10px 0",
-              width: "180px",
-              padding: "10px",
-              backgroundColor: "#555",
-              border: "none",
-              borderRadius: "6px",
-              color: "white",
-              cursor: "pointer",
-            }}
-            onClick={() => onSectionChange("diagram")}
-          >
-            🧩 View Diagram
-          </button
-          >
-          <button
-          style={{
               margin: "10px 0",
               width: "180px",
               padding: "10px",
@@ -100,6 +77,23 @@ export default function Sidebar({ isOpen, toggleSidebar, onSectionChange }) {
           >
             JSON to UML
           </button>
+
+          {/* Folder view inside sidebar */}
+          <div
+            style={{
+              width: "100%",
+              padding: "10px",
+              overflowY: "auto",
+              flexGrow: 1,
+            }}
+          >
+            <FolderView
+              onFileClick={onFileClick}
+              uploadedFiles={uploadedFiles}
+              selectedFile={selectedFile}
+              setSelectedFile={setSelectedFile}
+            />
+          </div>
         </>
       )}
     </div>

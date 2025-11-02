@@ -1,6 +1,5 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
-// Helper: build nested folder tree
 function buildFileTree(paths) {
   const tree = {};
   paths.forEach((path) => {
@@ -16,7 +15,6 @@ function buildFileTree(paths) {
   return tree;
 }
 
-// Recursive tree renderer
 function FileTree({
   tree,
   level = 0,
@@ -25,7 +23,7 @@ function FileTree({
   onFileDelete,
   selectedFile,
 }) {
-  const [expandedFolders, setExpandedFolders] = React.useState({});
+  const [expandedFolders, setExpandedFolders] = useState({});
 
   const toggleFolder = (path) => {
     setExpandedFolders((prev) => ({
@@ -73,10 +71,11 @@ function FileTree({
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
-                backgroundColor: isSelected ? "rgba(255, 255, 255, 0.1)" : "transparent",
-                borderRadius: "4px",
+                borderRadius: "6px",
                 padding: "2px 6px",
                 cursor: "pointer",
+                width: "100%",
+                boxSizing: "border-box",
               }}
             >
               <div
@@ -144,19 +143,26 @@ export default function FolderView({
   selectedFile,
   setSelectedFile,
 }) {
+  const [files, setFiles] = useState(uploadedFiles);
+
   useEffect(() => {
-    // Optional: refetch file list from backend if not provided
+    // Fetch from backend only if no uploaded files
     if (uploadedFiles.length === 0) {
       fetch("http://localhost:8000/api/files/")
         .then((res) => res.json())
         .then((data) => {
-          if (data.files) console.log("Files loaded:", data.files);
+          if (data.files) {
+            setFiles(data.files); // ✅ store the files locally
+          }
         })
         .catch((err) => console.error("Failed to fetch files:", err));
+    } else {
+      setFiles(uploadedFiles);
     }
   }, [uploadedFiles]);
 
   const handleFileDelete = (fullpath) => {
+    setFiles((prev) => prev.filter((file) => file !== fullpath));
     if (setSelectedFile && selectedFile === fullpath) setSelectedFile(null);
   };
 
@@ -165,12 +171,12 @@ export default function FolderView({
     if (onFileClick) onFileClick(fullpath);
   };
 
-  const tree = buildFileTree(uploadedFiles);
+  const tree = buildFileTree(files);
 
   return (
     <div style={{ padding: "20px" }}>
       <h2>📁 Folder View</h2>
-      {uploadedFiles.length > 0 ? (
+      {files.length > 0 ? (
         <FileTree
           tree={tree}
           onFileClick={handleFileClick}
