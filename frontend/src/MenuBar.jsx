@@ -4,8 +4,8 @@ const menuItems = [
   {
     label: "File",
     actions: [
-      { name: "New", endpoint: "http://127.0.0.1:8000/api/file/new/" },
-      { name: "Open", endpoint: "http://127.0.0.1:8000/api/file/open/", isFileUpload: true },
+      { name: "Upload File", isSingleFile: true },
+      { name: "Upload Folder", isFileUpload: true },
       { name: "Save", endpoint: "http://127.0.0.1:8000/api/file/save/" },
     ],
   },
@@ -26,11 +26,16 @@ const menuItems = [
 
 export default function MenuBar({onToggleSidebar, sidebarOpen, setUploadedFiles }) {
   const [openMenu,setOpenMenu]= useState(null);
+  const SingleFileUpload = useRef(null); 
   const FileUploadAction = useRef(null);
   const handleClick = (action) => {
     if(action.isFileUpload) {
       FileUploadAction.current.click()
-    } else{
+    } 
+    else if(action.isSingleFile){
+      SingleFileUpload.current.click()
+    }
+    else{
     fetch(action.endpoint)
       .then((res) => res.json())
       //.then((data) => alert(data.message))
@@ -68,8 +73,8 @@ export default function MenuBar({onToggleSidebar, sidebarOpen, setUploadedFiles 
         method: "POST",
         body: formData,
       });
-      const data = await res.json();
-      setUploadedFiles(data.files);   // <- save list of files
+      await res.json();
+      setUploadedFiles(Date.now());   // <- save list of files
     } catch (err) {
       console.error("Upload failed:", err);
     }
@@ -148,6 +153,12 @@ export default function MenuBar({onToggleSidebar, sidebarOpen, setUploadedFiles 
           )}
         </div>
       ))}
+      <input
+        type="file"
+        ref={SingleFileUpload}
+        style={{ display: "none" }}
+        onChange={handleFileChange}
+      />
       <input
         type="file"
         webkitdirectory = "true" //allows whole files without zipping it (only on chromium based browsers)

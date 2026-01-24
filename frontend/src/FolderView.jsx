@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 
+// Helper: build nested folder tree (UNCHANGED)
 function buildFileTree(paths) {
   const tree = {};
   paths.forEach((path) => {
@@ -15,6 +16,7 @@ function buildFileTree(paths) {
   return tree;
 }
 
+// Recursive tree renderer (UNCHANGED structure)
 function FileTree({
   tree,
   level = 0,
@@ -45,7 +47,6 @@ function FileTree({
 
       const data = await res.json();
       if (data.success) {
-        alert(`Deleted "${fullpath}" successfully`);
         onFileDelete(fullpath);
       } else {
         alert(`Failed to delete: ${data.error}`);
@@ -71,11 +72,12 @@ function FileTree({
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
-                borderRadius: "6px",
+                backgroundColor: isSelected
+                  ? "rgba(255, 255, 255, 0.1)"
+                  : "transparent",
+                borderRadius: "4px",
                 padding: "2px 6px",
                 cursor: "pointer",
-                width: "100%",
-                boxSizing: "border-box",
               }}
             >
               <div
@@ -119,7 +121,6 @@ function FileTree({
               </span>
             </div>
 
-            {/* Render subfolders */}
             {isFolder && expandedFolders[key] && (
               <FileTree
                 tree={children}
@@ -137,6 +138,7 @@ function FileTree({
   );
 }
 
+// MAIN COMPONENT (minimal fix only)
 export default function FolderView({
   onFileClick,
   uploadedFiles = [],
@@ -145,25 +147,29 @@ export default function FolderView({
 }) {
   const [files, setFiles] = useState(uploadedFiles);
 
+
+  // On refresh: fetch from backend
   useEffect(() => {
-    // Fetch from backend only if no uploaded files
-    if (uploadedFiles.length === 0) {
-      fetch("http://localhost:8000/api/files/")
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.files) {
-            setFiles(data.files); // ✅ store the files locally
-          }
-        })
-        .catch((err) => console.error("Failed to fetch files:", err));
-    } else {
-      setFiles(uploadedFiles);
-    }
+    fetch("http://localhost:8000/api/files/")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data.files)) {
+          setFiles(data.files);
+        }
+      })
+      .catch((err) => console.error("Failed to fetch files:", err));
   }, [uploadedFiles]);
+  
 
   const handleFileDelete = (fullpath) => {
-    setFiles((prev) => prev.filter((file) => file !== fullpath));
-    if (setSelectedFile && selectedFile === fullpath) setSelectedFile(null);
+    if (setSelectedFile && selectedFile === fullpath) {
+      setSelectedFile(null);
+    }
+
+    // remove file or entire folder subtree from UI
+    setFiles((prev) =>
+      prev.filter((p) => p !== fullpath && !p.startsWith(fullpath + "/"))
+    );
   };
 
   const handleFileClick = (fullpath) => {

@@ -8,7 +8,7 @@ export default function DiagramView({ modeComponents = {} }) {
   }
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div style={{ padding: "20px 0", paddingLeft: "0px" }}>
       {/* Mode Selector */}
       <div style={{ marginBottom: "20px" }}>
         {Object.keys(modeComponents).map((mode) => (
@@ -30,7 +30,7 @@ export default function DiagramView({ modeComponents = {} }) {
       </div>
 
       {/* Render current mode */}
-      <div style={{ maxWidth: "1000px", margin: "0 auto", width: "100%" }}>
+      <div style={{ maxWidth: "none", margin: "0 auto", width: "100%" }}>
         {modeComponents[viewMode]}
       </div>
     </div>
