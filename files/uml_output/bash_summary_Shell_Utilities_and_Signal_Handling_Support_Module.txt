@@ -1,0 +1,64 @@
+@startuml
+class Shell_Utilities_and_Signal_Handling_Support_Module {
+  name: str
+  summary: str
+}
+class bashversion {
+  main()
+  summary: string
+  usage()
+}
+class man2html {
+  add_links()
+  add_to_index()
+  change_to_font()
+  change_to_size()
+  escape_input()
+  expand_char()
+  expand_string()
+  fill_words()
+  flush()
+  lookup_abbrev()
+  // ... (23 more not shown)
+}
+class mksignames {
+  main()
+  summary: string
+  write_signames()
+}
+class printenv {
+  main()
+  summary: string
+}
+class recho {
+  main()
+  strprint()
+  summary: string
+}
+class siglen {
+  main()
+  summary: string
+}
+class signames {
+  initialize_signames()
+  summary: string
+}
+class xcase {
+  main()
+  summary: string
+}
+class zecho {
+  main()
+  summary: string
+}
+bash --> Shell_Utilities_and_Signal_Handling_Support_Module
+Shell_Utilities_and_Signal_Handling_Support_Module --> bashversion
+Shell_Utilities_and_Signal_Handling_Support_Module --> man2html
+Shell_Utilities_and_Signal_Handling_Support_Module --> mksignames
+Shell_Utilities_and_Signal_Handling_Support_Module --> printenv
+Shell_Utilities_and_Signal_Handling_Support_Module --> recho
+Shell_Utilities_and_Signal_Handling_Support_Module --> siglen
+Shell_Utilities_and_Signal_Handling_Support_Module --> signames
+Shell_Utilities_and_Signal_Handling_Support_Module --> xcase
+Shell_Utilities_and_Signal_Handling_Support_Module --> zecho
+@enduml

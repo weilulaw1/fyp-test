@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "plantuml-encoder": "^1.4.0",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "swiper": "^12.0.1"
+  }
+}

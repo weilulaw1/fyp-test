@@ -1,0 +1,185 @@
+@startuml
+!theme plain
+
+' Define classes with different visibility levels
+class Animal {
+  # String name
+  # int age
+  + getName(): String
+  + getAge(): int
+  + makeSound(): void
+  # move(): void
+}
+
+class Mammal {
+  # double bodyTemperature
+  + regulateTemperature(): void
+  + giveBirth(): void
+}
+
+class Bird {
+  # double wingspan
+  + fly(): void
+  + buildNest(): void
+}
+
+class Fish {
+  # int finCount
+  + swim(): void
+  + breatheUnderwater(): void
+}
+
+class Dog {
+  - String breed
+  + bark(): void
+  + fetch(): void
+}
+
+class Cat {
+  - int lives
+  + meow(): void
+  + climb(): void
+}
+
+class Eagle {
+  - double eyesightQuality
+  + hunt(): void
+  + soar(): void
+}
+
+class Penguin {
+  - bool canFly
+  + slide(): void
+  + swim(): void
+}
+
+class Salmon {
+  - String migrationPattern
+  + jump(): void
+  + spawn(): void
+}
+
+class Shark {
+  - int toothCount
+  + attack(): void
+  + senseBlood(): void
+}
+
+' Abstract classes and interfaces
+abstract class Pet {
+  # String owner
+  + abstract play(): void
+  + getOwner(): String
+}
+
+interface Flyable {
+  + takeOff(): void
+  + land(): void
+  + getAltitude(): double
+}
+
+interface Swimmable {
+  + dive(): void
+  + surface(): void
+  + getDepth(): double
+}
+
+' Inheritance relationships
+Animal <|-- Mammal
+Animal <|-- Bird
+Animal <|-- Fish
+Mammal <|-- Dog
+Mammal <|-- Cat
+Bird <|-- Eagle
+Bird <|-- Penguin
+Fish <|-- Salmon
+Fish <|-- Shark
+
+' Interface implementations
+Bird ..|> Flyable
+Eagle ..|> Flyable
+Penguin ..|> Swimmable
+Fish ..|> Swimmable
+Salmon ..|> Swimmable
+Shark ..|> Swimmable
+
+' Composition and aggregation
+class Zoo {
+  - String name
+  - String location
+  + addAnimal(Animal): void
+  + removeAnimal(Animal): void
+}
+
+class Enclosure {
+  - String type
+  - double size
+  + clean(): void
+  + maintain(): void
+}
+
+class Zookeeper {
+  - String name
+  - int experience
+  + feedAnimal(Animal): void
+  + cleanEnclosure(Enclosure): void
+}
+
+' Relationships
+Zoo "1" *-- "many" Animal : contains
+Zoo "1" *-- "many" Enclosure : has
+Zoo "1" -- "many" Zookeeper : employs
+Zookeeper "1" -- "many" Animal : cares for
+Enclosure "1" -- "many" Animal : houses
+
+' Additional utility classes
+class Food {
+  - String type
+  - int quantity
+  + getNutrition(): int
+  + consume(): void
+}
+
+class MedicalRecord {
+  - Date lastCheckup
+  - List<String> vaccinations
+  + addVaccination(String): void
+  + getHealthStatus(): String
+}
+
+' Association relationships
+Animal "1" -- "many" MedicalRecord : has
+Zookeeper "1" -- "many" Food : manages
+Animal "1" -- "many" Food : consumes
+
+' Dependency relationships
+Zookeeper ..> Animal : feeds
+Zookeeper ..> Enclosure : cleans
+Zoo ..> Zookeeper : manages
+
+' Notes and comments
+note top of Animal: Base class for all animals
+note right of Flyable: Interface for flying capabilities
+note left of Swimmable: Interface for swimming capabilities
+
+' Enums
+enum AnimalStatus {
+  HEALTHY
+  SICK
+  IN_TREATMENT
+  RECOVERING
+}
+
+enum FoodType {
+  MEAT
+  VEGETABLES
+  FRUITS
+  FISH
+  INSECTS
+}
+
+' Relationships with enums
+Animal --> AnimalStatus : has status
+Food --> FoodType : is type
+
+@enduml
