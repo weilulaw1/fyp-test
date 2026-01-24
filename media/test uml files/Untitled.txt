@@ -1,0 +1,19 @@
+@startuml
+package "Backend Services" {
+  class AuthService {
+    + login(username, password)
+    + logout()
+  }
+  class ReportService {
+    + generateReport(type)
+  }
+  class UserService {
+    + addUser()
+    + deleteUser()
+    + updateUser()
+  }
+
+  AuthService --> UserService : validate user
+  ReportService --> UserService : fetch data
+}
+@enduml

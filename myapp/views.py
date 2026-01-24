@@ -11,6 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.core.files.storage import default_storage
+from pathlib import Path
 from django.core.files.base import ContentFile
 import logging
 from urllib.parse import unquote
@@ -112,16 +113,18 @@ def upload_file(request):
 
 @api_view(['GET'])
 def list_files(request):
-    media_dir = settings.MEDIA_ROOT  # 🔹 directly MEDIA_ROOT
-    file_paths = []
+    media_dir = Path(settings.MEDIA_ROOT)  # 🔹 directly MEDIA_ROOT
 
-    for root, dirs, files in os.walk(media_dir):
-        for file in files:
-            rel_dir = os.path.relpath(root, media_dir)
-            rel_file = os.path.join(rel_dir, file) if rel_dir != "." else file
-            file_paths.append(rel_file)
+    if not media_dir.exists():
+        return JsonResponse({"files": []})
+        
+    files = [
+        str(p.relative_to(media_dir)).replace("\\", "/")
+        for p in media_dir.rglob("*")
+        if p.is_file()
+    ]
 
-    return JsonResponse({"files": file_paths})
+    return JsonResponse({"files": files})
 
 
 @api_view(['GET'])
