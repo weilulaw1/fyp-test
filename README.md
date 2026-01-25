@@ -46,3 +46,17 @@ undo redo function?
 open renamed to upload folder, open to be used to actually open uml.txt
 
 possibility of getting folder from github
+
+
+
+
+Web UI: “Upload Folder”
+drag & drop or “Choose Folder”
+Backend extracts/rebuilds folder into:
+files/codebases/current/
+Backend clears old contents first
+Arch Rec always points to files/codebases/current/
+
+Run pipeline → JSON → UML
+✅ No path selection / security issues
+
