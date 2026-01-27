@@ -1,10 +1,15 @@
+<<<<<<< HEAD
 import React, { useEffect, useState, useRef } from "react";
+=======
+import React, { useEffect, useState , useRef} from "react";
+>>>>>>> origin/main
 
 const menuItems = [
   {
     label: "File",
     actions: [
       { name: "Upload File", isSingleFile: true },
+<<<<<<< HEAD
 
       // Keep your existing folder upload (to MEDIA/file tree)
       { name: "Upload Folder", isFileUpload: true },
@@ -14,6 +19,10 @@ const menuItems = [
 
       // Repurpose Save -> Run Arch Rec
       { name: "Run Summarize (Arch Rec)", endpoint: "http://127.0.0.1:8000/api/archrec/run-summarize/", method: "POST" },
+=======
+      { name: "Upload Folder", isFileUpload: true },
+      { name: "Save", endpoint: "http://127.0.0.1:8000/api/file/save/" },
+>>>>>>> origin/main
     ],
   },
   {
@@ -31,6 +40,7 @@ const menuItems = [
   },
 ];
 
+<<<<<<< HEAD
 export default function MenuBar({ onToggleSidebar, sidebarOpen, setUploadedFiles }) {
   const [openMenu, setOpenMenu] = useState(null);
 
@@ -98,6 +108,51 @@ export default function MenuBar({ onToggleSidebar, sidebarOpen, setUploadedFiles
     }
 
     formData.append("file_paths", JSON.stringify(filePaths));
+=======
+export default function MenuBar({onToggleSidebar, sidebarOpen, setUploadedFiles }) {
+  const [openMenu,setOpenMenu]= useState(null);
+  const SingleFileUpload = useRef(null); 
+  const FileUploadAction = useRef(null);
+  const handleClick = (action) => {
+    if(action.isFileUpload) {
+      FileUploadAction.current.click()
+    } 
+    else if(action.isSingleFile){
+      SingleFileUpload.current.click()
+    }
+    else{
+    fetch(action.endpoint)
+      .then((res) => res.json())
+      //.then((data) => alert(data.message))
+      .catch((err) => console.error(err));
+    }
+    setOpenMenu(null);    
+    // Call the toggle function if the endpoint is the toggle sidebar action
+    if (action.endpoint.includes("toggle_sidebar")) {
+      onToggleSidebar();
+    }
+  };
+  
+
+  // Handle file selection
+  const handleFileChange = async (e) => {
+    const files = e.target.files;
+    if (!files.length) return;
+    const formData = new FormData();
+    const filePaths = [];
+    for(let i = 0; i<files.length;i++){
+      const path = files[i].webkitRelativePath || files[i].name;
+      if (
+        path.includes("node_modules")||
+        path.includes("__pycache__")||
+        path.includes(".venv")
+      ){continue;}
+
+      filePaths.push(path)
+      formData.append("files",files[i])
+  }
+  formData.append("file_paths", JSON.stringify(filePaths));
+>>>>>>> origin/main
 
     try {
       const res = await fetch("http://127.0.0.1:8000/api/file/upload/", {
@@ -105,6 +160,7 @@ export default function MenuBar({ onToggleSidebar, sidebarOpen, setUploadedFiles
         body: formData,
       });
       await res.json();
+<<<<<<< HEAD
       setUploadedFiles(Date.now());
     } catch (err) {
       console.error("Upload failed:", err);
@@ -176,12 +232,23 @@ export default function MenuBar({ onToggleSidebar, sidebarOpen, setUploadedFiles
 
   // close menu when click outside
   useEffect(() => {
+=======
+      setUploadedFiles(Date.now());   // <- save list of files
+    } catch (err) {
+      console.error("Upload failed:", err);
+    }
+  };
+
+  //close menu when click outside
+   useEffect(() => {
+>>>>>>> origin/main
     const handleOutsideClick = () => setOpenMenu(null);
     window.addEventListener("click", handleOutsideClick);
     return () => window.removeEventListener("click", handleOutsideClick);
   }, []);
 
   return (
+<<<<<<< HEAD
     <div
       style={{
         display: "flex",
@@ -199,6 +266,25 @@ export default function MenuBar({ onToggleSidebar, sidebarOpen, setUploadedFiles
       }}
       onClick={(e) => e.stopPropagation()}
     >
+=======
+    <div style={
+      { 
+      display: "flex", 
+      background: "#ffffffff", 
+      padding: "10px",
+      alignItems: "center",
+      position: "fixed",      
+      justifyContent: "flex-start",
+      top: 0,
+      left: sidebarOpen ? "250px" : "52px",       // dynamically shift
+      width: sidebarOpen ? "calc(100% - 250px)" : "calc(100% - 20px)", 
+      borderBottom: "2px solid #333",
+      transition: "left 0.3s ease, width 0.3s ease", // smooth sliding
+      zIndex: 1000,
+      }}
+      onClick={(e)=> e.stopPropagation()} //prevent menu from closing when clicking inside
+      >
+>>>>>>> origin/main
       {menuItems.map((menu, index) => (
         <div
           key={menu.label}
@@ -208,6 +294,7 @@ export default function MenuBar({ onToggleSidebar, sidebarOpen, setUploadedFiles
             fontWeight: "bold",
             cursor: "pointer",
             color: "black",
+<<<<<<< HEAD
             borderRight: index !== menuItems.length - 1 ? "2px solid #333" : "none",
           }}
           onMouseEnter={() => setOpenMenu(menu.label)}
@@ -248,10 +335,52 @@ export default function MenuBar({ onToggleSidebar, sidebarOpen, setUploadedFiles
       ))}
 
       {/* Single file upload (JSON etc.) */}
+=======
+            borderRight: index !== menuItems.length - 1 ? "2px solid #333" : "none", // add border between items
+          }}
+          onMouseEnter={() => setOpenMenu(menu.label)}
+          onMouseLeave={() => setOpenMenu(null)}        
+        >
+          {menu.label}
+          {/* Only show dropdown if this menu is active */}
+          {openMenu === menu.label && (
+          <div
+            style={{
+              position: "absolute",
+              top: "35px",
+              left: 0,
+              background: "#f9f9f9",
+              border: "1px solid #333",
+              borderRadius: "4px",
+              padding: "5px 0",
+              boxShadow: "1px 1px 3px rgba(0,0,0,0.2)",
+              minWidth: "120px",
+              color: "black",
+              zIndex: 1000
+            }}
+            className="dropdown"
+          >
+            {menu.actions.map((action) => (
+              <div
+                key={action.name}
+                onClick={() => handleClick(action)}
+                style={{ padding: "5px 10px", cursor: "pointer" }}
+                onMouseEnter={(e) => (e.target.style.background = "#ddd")}
+                onMouseLeave={(e) => (e.target.style.background = "white")}
+              >
+                {action.name}
+              </div>
+            ))}
+          </div>
+          )}
+        </div>
+      ))}
+>>>>>>> origin/main
       <input
         type="file"
         ref={SingleFileUpload}
         style={{ display: "none" }}
+<<<<<<< HEAD
         onChange={handleNormalUploadChange}
       />
 
@@ -273,6 +402,17 @@ export default function MenuBar({ onToggleSidebar, sidebarOpen, setUploadedFiles
         ref={ArchRecFolderUpload}
         style={{ display: "none" }}
         onChange={handleArchRecUploadChange}
+=======
+        onChange={handleFileChange}
+      />
+      <input
+        type="file"
+        webkitdirectory = "true" //allows whole files without zipping it (only on chromium based browsers)
+        multiple
+        ref={FileUploadAction}
+        style={{ display: "none" }}
+        onChange={handleFileChange}
+>>>>>>> origin/main
       />
     </div>
   );
