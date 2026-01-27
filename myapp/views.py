@@ -4,6 +4,7 @@ import traceback
 import sys
 import subprocess
 import zipfile
+import shutil
 from django.conf import settings
 from io import BytesIO
 from django.http import HttpResponse, JsonResponse
@@ -234,3 +235,133 @@ def run_json_to_uml(request):
         })
 
     return JsonResponse({"error": "Invalid request method"}, status=405)
+
+
+@api_view(["POST"])
+def archrec_upload_to_projects(request):
+    """
+    Receives folder upload (files + file_paths) and writes into:
+      <files/arch rec demo>/data/projects/<project_name>/...
+
+    Clears the target project folder each upload (so it's always fresh).
+    """
+    files = request.FILES.getlist("files")
+    if not files:
+        return JsonResponse({"error": "No files uploaded."}, status=400)
+
+    file_paths_raw = request.POST.get("file_paths")
+    try:
+        file_paths = json.loads(file_paths_raw) if file_paths_raw else []
+    except Exception:
+        file_paths = []
+
+    # path to: projct/test/files/arch rec demo
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "files", "arch rec demo"))
+    projects_root = os.path.join(base_dir, "data", "projects")
+    os.makedirs(projects_root, exist_ok=True)
+
+    # Decide project_name: use first path segment if present, else "current"
+    # Example webkitRelativePath: "myrepo/src/main.py" -> project_name = "myrepo"
+    first_rel = file_paths[0] if file_paths else files[0].name
+    first_rel = first_rel.replace("\\", "/")
+    project_name = first_rel.split("/")[0] if "/" in first_rel else "current"
+
+    project_dir = os.path.join(projects_root, project_name)
+
+    # Clear previous upload for this project
+    if os.path.isdir(project_dir):
+        shutil.rmtree(project_dir)
+    os.makedirs(project_dir, exist_ok=True)
+
+    saved = 0
+    skipped = 0
+
+    deny_parts = {"node_modules", "__pycache__", ".venv", ".git", "dist", "build"}
+
+    for i, f in enumerate(files):
+        rel = file_paths[i] if i < len(file_paths) else f.name
+        rel = rel.replace("\\", "/")
+
+        if rel.endswith(".DS_Store"):
+            skipped += 1
+            continue
+
+        # filter junk
+        parts = [p for p in rel.split("/") if p]
+        if any(p in deny_parts for p in parts):
+            skipped += 1
+            continue
+
+        # remove the top folder name from the stored path so we don't nest twice
+        # store "src/a.py" instead of "myrepo/src/a.py"
+        if len(parts) >= 2 and parts[0] == project_name:
+            rel_inside = "/".join(parts[1:])
+        else:
+            rel_inside = "/".join(parts)
+
+        # safe normalize
+        rel_inside = os.path.normpath(rel_inside).lstrip("\\/")
+
+        out_path = os.path.join(project_dir, rel_inside)
+        os.makedirs(os.path.dirname(out_path), exist_ok=True)
+
+        with open(out_path, "wb") as dst:
+            for chunk in f.chunks():
+                dst.write(chunk)
+
+        saved += 1
+
+    return JsonResponse({
+        "status": "uploaded",
+        "project_name": project_name,
+        "project_dir": project_dir,
+        "files_saved": saved,
+        "files_skipped": skipped,
+    })
+
+@csrf_exempt
+def archrec_run_summarize(request):
+    """
+    Runs summarize_projects.py using its defaults:
+      projects_dir='data/projects'
+      output_dir='data/summaries'
+    Assumes uploads went into <base>/data/projects.
+    """
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid request method"}, status=405)
+
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "files", "arch rec demo"))
+    script_path = os.path.join(base_dir, "summarize_projects.py")
+
+    try:
+        res = subprocess.run(
+            [sys.executable, script_path],
+            cwd=base_dir,               # <-- THIS makes 'data/projects' resolve correctly
+            check=True,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+        )
+        print("SUMMARIZE STDOUT:", res.stdout)
+        print("SUMMARIZE STDERR:", res.stderr)
+    except subprocess.CalledProcessError as e:
+        print("=== SUMMARIZE FAILED ===")
+        print("RETURN CODE:", e.returncode)
+        print("STDOUT:\n", e.stdout)
+        print("STDERR:\n", e.stderr)
+        traceback.print_exc()
+        return JsonResponse({
+            "error": "Summarization failed",
+            "returncode": e.returncode,
+            "stdout": e.stdout,
+            "stderr": e.stderr,
+        }, status=500)
+
+
+    # You can optionally return the summaries folder path
+    summaries_dir = os.path.join(base_dir, "data", "summaries")
+    return JsonResponse({
+        "status": "summarization completed",
+        "summaries_dir": summaries_dir,
+        "stdout": res.stdout,
+    })
