@@ -8,10 +8,10 @@ urlpatterns = [
     path('api/file/new/', views.file_new),
     path('api/file/open/', views.file_open),
     path('api/file/save/', views.file_save),
-    
+
     path('api/edit/undo/', views.edit_undo),
     path('api/edit/redo/', views.edit_redo),
-    
+
     path("api/view/toggle_sidebar/", views.toggle_sidebar, name="toggle_sidebar"),
 
     path('api/file/upload/', upload_file, name="file-upload"),
@@ -25,10 +25,8 @@ urlpatterns = [
     path('api/delete-file/', views.delete_file, name='delete_file'),
 
     path("api/run-json-to-uml/", views.run_json_to_uml, name="run_json_to_uml"),
-<<<<<<< HEAD
 
+    # === Arch Rec endpoints ===
     path("api/archrec/upload-project/", views.archrec_upload_to_projects),
     path("api/archrec/run-summarize/", views.archrec_run_summarize),
-=======
->>>>>>> origin/main
 ]
