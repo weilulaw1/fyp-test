@@ -17,3 +17,21 @@ Thumbs.db
 .vscode/
 .idea/
 "@ | Set-Content -Encoding utf8 .gitignore
+
+# Django / Python
+__pycache__/
+*.py[cod]
+*.sqlite3
+db.sqlite3
+*.log
+venv/
+.env
+
+# React / Node
+node_modules/
+dist/
+build/
+
+# OS files
+.DS_Store
+Thumbs.db

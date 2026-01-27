@@ -1,0 +1,1335 @@
+@startuml
+class Shell_Environment_Utility_Suite {
+  name: str
+  summary: str
+}
+class Shell_Globbing_and_Pattern_Matching_Library {
+  name: str
+  summary: str
+}
+class collsyms {
+  summary: string
+}
+class glob {
+  dequote_pathname()
+  finddirs()
+  glob_dir_to_array()
+  glob_filename()
+  glob_pattern_p()
+  glob_testdir()
+  glob_vector()
+  mbskipname()
+  skipname()
+  summary: string
+  // ... (2 more not shown)
+}
+class glob_loop {
+  INTERNAL_GLOB_PATTERN_P()
+  summary: string
+}
+class gm_loop {
+  EXTGLOB_PATTERN_P()
+  MATCHLEN()
+  MATCH_PATTERN_CHAR()
+  summary: string
+}
+class gmisc {
+  match_pattern_char()
+  match_pattern_wchar()
+  summary: string
+  umatchlen()
+  wmatchlen()
+}
+class sm_loop {
+  BRACKMATCH()
+  EXTMATCH()
+  FCT()
+  GMATCH()
+  PARSE_COLLSYM()
+  PATSCAN()
+  STRCOMPARE()
+  summary: string
+}
+class smatch {
+  collequiv()
+  collequiv_wc()
+  collsym()
+  collwcsym()
+  is_cclass()
+  is_wcclass()
+  rangecmp()
+  rangecmp_wc()
+  summary: string
+  xstrmatch()
+}
+class strmatch {
+  main()
+  strmatch()
+  summary: string
+  wcsmatch()
+}
+class xmbsrtowcs {
+  summary: string
+  xdupmbstowcs()
+  xdupmbstowcs2()
+  xmbsrtowcs()
+}
+class Internationalization_and_Localization_Support_Library {
+  name: str
+  summary: str
+}
+class arg_nonnull {
+  _GL_ARG_NONNULL()
+  summary: string
+}
+class attribute {
+  ATTRIBUTE_ALLOC_SIZE()
+  ATTRIBUTE_ALWAYS_INLINE()
+  ATTRIBUTE_ARTIFICIAL()
+  ATTRIBUTE_COLD()
+  ATTRIBUTE_CONST()
+  ATTRIBUTE_DEALLOC()
+  ATTRIBUTE_DEALLOC_FREE()
+  ATTRIBUTE_ERROR()
+  ATTRIBUTE_EXTERNALLY_VISIBLE()
+  ATTRIBUTE_FALLTHROUGH()
+  // ... (16 more not shown)
+}
+class bindtextdom {
+  BINDTEXTDOMAIN()
+  BIND_TEXTDOMAIN_CODESET()
+  set_binding_values()
+  summary: string
+}
+class dcgettext {
+  DCGETTEXT()
+  summary: string
+}
+class dcigettext {
+  DCIGETTEXT()
+  _nl_find_msg()
+  category_to_name()
+  guess_category_value()
+  plural_lookup()
+  summary: string
+}
+class dcngettext {
+  DCNGETTEXT()
+  summary: string
+}
+class dgettext {
+  DGETTEXT()
+  summary: string
+}
+class dngettext {
+  DNGETTEXT()
+  summary: string
+}
+class eval_plural {
+  plural_eval()
+  summary: string
+}
+class explodename {
+  _nl_explode_name()
+  _nl_find_language()
+  summary: string
+}
+class export {
+  summary: string
+}
+class filename {
+  FILE_SYSTEM_PREFIX_LEN()
+  HAS_DEVICE()
+  ISSLASH()
+  IS_ABSOLUTE_FILE_NAME()
+  IS_FILE_NAME_WITH_DIR()
+  IS_RELATIVE_FILE_NAME()
+  _IS_DRIVE_LETTER()
+  summary: string
+}
+class finddomain {
+  _nl_find_domain()
+  libc_freeres_fn()
+  summary: string
+}
+class flexmember {
+  FLEXALIGNOF()
+  FLEXSIZEOF()
+  summary: string
+}
+class gettext {
+  GETTEXT()
+  summary: string
+}
+class gettextP {
+  _nl_find_domain()
+  _nl_find_msg()
+  _nl_free_domain_conv()
+  _nl_init_domain_conv()
+  _nl_load_domain()
+  _nl_unload_domain()
+  summary: string
+}
+class gmo {
+  UINT_MAX_32_BITS()
+  mo_file_header()
+  string_desc()
+  summary: string
+  sysdep_segment()
+  sysdep_string()
+}
+class hash_string {
+  __hash_string()
+  hash_string()
+  summary: string
+}
+class intl_compat {
+  bind_textdomain_codeset()
+  bindtextdomain()
+  dcgettext()
+  dcngettext()
+  dgettext()
+  dngettext()
+  gettext()
+  ngettext()
+  summary: string
+  textdomain()
+}
+class intl_exports {
+  VARIABLE()
+  summary: string
+}
+class l10nflist {
+  _nl_make_l10nflist()
+  _nl_normalize_codeset()
+  argz_count__()
+  argz_next__()
+  argz_stringify__()
+  pop()
+  stpcpy()
+  summary: string
+}
+class langprefs {
+  _nl_language_preferences_default()
+  _nl_language_preferences_win32_95()
+  _nl_language_preferences_win32_ME()
+  _nl_language_preferences_win32_mui()
+  _nl_language_preferences_win32_system()
+  summary: string
+}
+class libgnuintl_in {
+  bind_textdomain_codeset()
+  bindtextdomain()
+  dcgettext()
+  dcngettext()
+  dgettext()
+  dngettext()
+  gettext()
+  libintl_bind_textdomain_codeset()
+  libintl_bindtextdomain()
+  libintl_dcgettext()
+  // ... (12 more not shown)
+}
+class loadinfo {
+  _nl_expand_alias()
+  _nl_explode_name()
+  _nl_find_language()
+  _nl_make_l10nflist()
+  _nl_normalize_codeset()
+  summary: string
+}
+class loadmsgcat {
+  _nl_free_domain_conv()
+  _nl_init_domain_conv()
+  _nl_load_domain()
+  _nl_unload_domain()
+  get_sysdep_segment_value()
+  summary: string
+}
+class localcharset {
+  get_charset_aliases()
+  locale_charset()
+  summary: string
+}
+class localealias {
+  _nl_expand_alias()
+  alias_compare()
+  extend_alias_table()
+  read_alias_file()
+  summary: string
+}
+class localename_table {
+  locale_hash_function()
+  summary: string
+}
+class localename_table_in {
+  locale_hash_function()
+  summary: string
+}
+class localename {
+  _nl_locale_name()
+  summary: string
+}
+class lock {
+  glthread_lock_destroy()
+  glthread_lock_init()
+  glthread_lock_lock()
+  glthread_lock_unlock()
+  glthread_once()
+  glthread_once_multithreaded()
+  glthread_once_singlethreaded()
+  glthread_recursive_lock_destroy()
+  glthread_recursive_lock_destroy_multithreaded()
+  glthread_recursive_lock_init()
+  // ... (17 more not shown)
+}
+class log {
+  _nl_log_untranslated()
+  print_escaped()
+  summary: string
+}
+class ngettext {
+  NGETTEXT()
+  summary: string
+}
+class os2compat {
+  _nl_getenv()
+  nlos2_initialize()
+  summary: string
+}
+class osdep {
+  osdep_c()
+  summary: string
+}
+class plural_exp {
+  EXTRACT_PLURAL_EXPRESSION()
+  FREE_EXPRESSION()
+  GERMANIC_PLURAL()
+  PLURAL_PARSE()
+  plural_eval()
+  summary: string
+}
+class plural {
+  FREE_EXPRESSION()
+  __gettextparse()
+  summary: string
+  yyerror()
+  yylex()
+}
+class printf_args {
+  PRINTF_FETCHARGS()
+  summary: string
+}
+class printf_parse {
+  PRINTF_PARSE()
+  printf_parse()
+  summary: string
+}
+class printf {
+  libintl_asprintf()
+  libintl_fprintf()
+  libintl_fwprintf()
+  libintl_printf()
+  libintl_snprintf()
+  libintl_sprintf()
+  libintl_swprintf()
+  libintl_vasprintf()
+  libintl_vfprintf()
+  libintl_vfwprintf()
+  // ... (7 more not shown)
+}
+class relocatable {
+  DllMain()
+  compute_curr_prefix()
+  find_shared_library_fullname()
+  get_shared_library_fullname()
+  relocate()
+  set_relocation_prefix()
+  set_this_relocation_prefix()
+  summary: string
+}
+class setlocale_lock {
+  gl_get_setlocale_null_lock()
+  summary: string
+}
+class setlocale {
+  category_to_name()
+  libintl_newlocale()
+  libintl_setlocale()
+  search()
+  setlocale_unixlike()
+  summary: string
+}
+class setlocale_null {
+  setlocale_null()
+  setlocale_null_androidfix()
+  setlocale_null_r()
+  setlocale_null_unlocked()
+  setlocale_null_with_lock()
+  summary: string
+}
+class textdomain {
+  TEXTDOMAIN()
+  summary: string
+}
+class thread_optim {
+  gl_multithreaded()
+  summary: string
+}
+class threadlib {
+  dummy_thread_func()
+  glthread_in_use()
+  summary: string
+}
+class tsearch {
+  __tdelete()
+  __tdestroy()
+  __tfind()
+  __tsearch()
+  __twalk()
+  maybe_split_for_insert()
+  summary: string
+  tdelete()
+  tfind()
+  trecurse()
+  // ... (2 more not shown)
+}
+class vasnprintf {
+  VASNPRINTF()
+  asnprintf()
+  convert_to_decimal()
+  decimal_point_char()
+  decode_double()
+  decode_long_double()
+  divide()
+  floorlog10()
+  floorlog10l()
+  is_borderline()
+  // ... (14 more not shown)
+}
+class vasnwprintf {
+  asnwprintf()
+  summary: string
+  vasnwprintf()
+}
+class verify {
+  _GL_CONCAT()
+  _GL_CONCAT0()
+  _GL_COUNTER()
+  _GL_GENSYM()
+  _GL_VERIFY()
+  _GL_VERIFY_TRUE()
+  _GL_VERIFY_TYPE()
+  assume()
+  summary: string
+  verify()
+  // ... (1 more not shown)
+}
+class version {
+  main()
+  none()
+  summary: string
+}
+class wprintf_parse {
+  summary: string
+  wprintf_parse()
+}
+class xsize {
+  summary: string
+  xmax()
+  xsize_h()
+  xsum()
+  xsum3()
+  xsum4()
+}
+class GNU_Bash_Custom_Memory_Management_Module {
+  name: str
+  summary: str
+}
+class alloca {
+  alloca()
+  find_stack_direction()
+  i00afunc()
+  summary: string
+}
+class getpagesize {
+  getpagesize()
+  summary: string
+}
+class imalloc {
+  MALLOC_BZERO()
+  MALLOC_MEMCPY()
+  MALLOC_MEMSET()
+  MALLOC_ZERO()
+  summary: string
+}
+class malloc {
+  bcoalesce()
+  block_signals()
+  botch()
+  bsplit()
+  calloc()
+  cfree()
+  free()
+  internal_calloc()
+  internal_cfree()
+  internal_free()
+  // ... (23 more not shown)
+}
+class mstats {
+  malloc_bucket_stats()
+  malloc_stats()
+  print_malloc_stats()
+  summary: string
+  trace_malloc_stats()
+}
+class sbrk {
+  initbrk()
+  sbrk()
+  summary: string
+}
+class shmalloc {
+  fprint_malloc_stats()
+  malloc_set_register()
+  malloc_set_trace()
+  malloc_set_tracefn()
+  malloc_set_tracefp()
+  mregister_dump_table()
+  mregister_table_init()
+  print_malloc_stats()
+  sh_calloc()
+  sh_cfree()
+  // ... (7 more not shown)
+}
+class stats {
+  _imalloc_fopen()
+  _print_malloc_stats()
+  fprint_malloc_stats()
+  malloc_bucket_stats()
+  malloc_stats()
+  print_malloc_stats()
+  summary: string
+  trace_malloc_stats()
+}
+class stub {
+  bash_malloc_stub()
+  summary: string
+}
+class table {
+  _entry_flags()
+  _register_dump_table()
+  find_entry()
+  malloc_set_register()
+  mr_table_entry()
+  mregister_alloc()
+  mregister_describe_mem()
+  mregister_dump_table()
+  mregister_free()
+  mregister_table_init()
+  // ... (3 more not shown)
+}
+class trace {
+  malloc_set_trace()
+  malloc_set_tracefn()
+  malloc_set_tracefp()
+  malloc_trace_bin()
+  mtrace_alloc()
+  mtrace_free()
+  summary: string
+}
+class watch {
+  _malloc_ckwatch()
+  malloc_unwatch()
+  malloc_watch()
+  summary: string
+  watch_warn()
+}
+class xmalloc {
+  memory_error_and_abort()
+  summary: string
+  xfree()
+  xmalloc()
+  xrealloc()
+}
+class Readline_Command_Line_Interface_and_History_Management_Module {
+  name: str
+  summary: str
+}
+class Readline_Command_Line_Interface_and_History_Management_Examples {
+  name: str
+  summary: str
+}
+class excallback {
+  change_prompt()
+  get_prompt()
+  main()
+  process_line()
+  summary: string
+}
+class fileman {
+  com_cd()
+  com_delete()
+  com_help()
+  com_list()
+  com_pwd()
+  com_quit()
+  com_rename()
+  com_stat()
+  com_view()
+  command_generator()
+  // ... (10 more not shown)
+}
+class histexamp {
+  main()
+  summary: string
+}
+class manexamp {
+  invert_case_line()
+  rl_gets()
+  summary: string
+}
+class rl_callbacktest {
+  cb_linehandler()
+  sighandler()
+  summary: string
+}
+class rl {
+  main()
+  set_deftext()
+  summary: string
+  usage()
+}
+class rlcat {
+  fcopy()
+  main()
+  stdcat()
+  summary: string
+  usage()
+}
+class rltest {
+  main()
+  summary: string
+}
+class Shell_Utility_and_Compatibility_Library {
+  name: str
+  summary: str
+}
+class anonfile {
+  anonclose()
+  anonopen()
+  anonshmopen()
+  anonunlink()
+  summary: string
+}
+class casemod {
+  cval()
+  sh_modcase()
+  summary: string
+}
+class clktck {
+  get_clk_tck()
+  summary: string
+}
+class clock {
+  clock_t_to_secs()
+  print_clock_t()
+  summary: string
+}
+class compat {
+  compat_init()
+  legal_alias_name()
+  legal_identifier()
+  legal_number()
+  summary: string
+}
+class dprintf {
+  dprintf()
+  summary: string
+}
+class eaccess {
+  path_is_devfd()
+  sh_eaccess()
+  sh_euidaccess()
+  sh_stat()
+  sh_stataccess()
+  summary: string
+}
+class fmtullong {
+  fmtullong()
+  summary: string
+}
+class fmtulong {
+  fmtulong()
+  summary: string
+}
+class fmtumax {
+  fmtumax()
+  summary: string
+}
+class fnxform {
+  curencoding()
+  fnx_fromfs()
+  fnx_tofs()
+  init_fromfs()
+  init_tofs()
+  summary: string
+}
+class fpurge {
+  fpurge()
+  summary: string
+}
+class getcwd {
+  _path_checkino()
+  getcwd()
+  summary: string
+}
+class getenv {
+  _getenv()
+  getenv()
+  putenv()
+  setenv()
+  summary: string
+  unsetenv()
+}
+class gettimeofday {
+  gettimeofday()
+  initialize()
+  summary: string
+}
+class inet_aton {
+  inet_aton()
+  summary: string
+}
+class input_avail {
+  input_avail()
+  summary: string
+}
+class itos {
+  inttostr()
+  itos()
+  summary: string
+  uinttostr()
+  uitos()
+}
+class mailstat {
+  mailstat()
+  summary: string
+}
+class makepath {
+  sh_makepath()
+  summary: string
+}
+class mbscasecmp {
+  mbscasecmp()
+  summary: string
+}
+class mbschr {
+  mbschr()
+  summary: string
+}
+class mbscmp {
+  mbscmp()
+  summary: string
+}
+class mbsncmp {
+  mbsncmp()
+  summary: string
+}
+class memset {
+  memset()
+  summary: string
+}
+class mktime {
+  __mktime_internal()
+  mktime()
+  my_localtime_r()
+  summary: string
+  ydhms_tm_diff()
+}
+class netconn {
+  isnetconn()
+  summary: string
+}
+class netopen {
+  _getaddr()
+  _getserv()
+  _netopen()
+  _netopen4()
+  _netopen6()
+  netopen()
+  summary: string
+}
+class oslib {
+  bcopy()
+  bzero()
+  dup2()
+  getdtablesize()
+  gethostname()
+  getmaxchild()
+  getmaxgroups()
+  killpg()
+  mkfifo()
+  strchr()
+  // ... (2 more not shown)
+}
+class pathcanon {
+  _is_cygdrive()
+  _path_isdir()
+  sh_canonpath()
+  summary: string
+}
+class pathphys {
+  _path_readlink()
+  sh_physpath()
+  sh_realpath()
+  summary: string
+}
+class random {
+  brand()
+  brand32()
+  genseed()
+  get_urandom32()
+  getrandom()
+  intrand32()
+  perturb_rand32()
+  sbrand()
+  sbrand32()
+  seedrand()
+  // ... (3 more not shown)
+}
+class reallocarray {
+  reallocarray()
+  summary: string
+}
+class rename {
+  rename()
+  summary: string
+}
+class setlinebuf {
+  sh_setlinebuf()
+  summary: string
+}
+class shmatch {
+  sh_regmatch()
+  summary: string
+}
+class shmbchar {
+  mbsmbchar()
+  mbstrlen()
+  summary: string
+}
+class shquote {
+  sh_backslash_quote()
+  sh_backslash_quote_for_double_quotes()
+  sh_contains_shell_metas()
+  sh_double_quote()
+  sh_mkdoublequoted()
+  sh_single_quote()
+  sh_un_double_quote()
+  summary: string
+}
+class shtty {
+  summary: string
+  tt_setcbreak()
+  tt_seteightbit()
+  tt_setnocanon()
+  tt_setnoecho()
+  tt_setonechar()
+  ttattr()
+  ttcbreak()
+  tteightbit()
+  ttfd_cbreak()
+  // ... (11 more not shown)
+}
+class snprintf {
+  asprintf()
+  dfallback()
+  groupnum()
+  init_conv_flag()
+  init_data()
+  integral()
+  ldfallback()
+  log_10()
+  main()
+  memory_error_and_abort()
+  // ... (10 more not shown)
+}
+class spell {
+  dirspell()
+  mindist()
+  spdist()
+  spname()
+  summary: string
+}
+class strcasecmp {
+  strcasecmp()
+  strncasecmp()
+  summary: string
+}
+class strcasestr {
+  strcasestr()
+  summary: string
+}
+class strchrnul {
+  strchrnul()
+  summary: string
+}
+class strdup {
+  strdup()
+  summary: string
+}
+class strerror {
+  strerror()
+  summary: string
+}
+class strftime {
+  isleap()
+  iso8601wknum()
+  max()
+  min()
+  strftime()
+  summary: string
+  weeknumber()
+}
+class stringlist {
+  strlist_append()
+  strlist_copy()
+  strlist_create()
+  strlist_dispose()
+  strlist_flush()
+  strlist_from_word_list()
+  strlist_merge()
+  strlist_prefix_suffix()
+  strlist_print()
+  strlist_remove()
+  // ... (5 more not shown)
+}
+class stringvec {
+  strvec_copy()
+  strvec_create()
+  strvec_dispose()
+  strvec_flush()
+  strvec_from_word_list()
+  strvec_len()
+  strvec_remove()
+  strvec_resize()
+  strvec_sort()
+  strvec_strcmp()
+  // ... (2 more not shown)
+}
+class strlcpy {
+  strlcpy()
+  summary: string
+}
+class strnlen {
+  strnlen()
+  summary: string
+}
+class strpbrk {
+  strpbrk()
+  summary: string
+}
+class strscpy {
+  strscpy()
+  summary: string
+}
+class strstr {
+  strstr()
+  summary: string
+}
+class strtod {
+  strtod()
+  summary: string
+}
+class strtoimax {
+  main()
+  strtoimax()
+  summary: string
+}
+class strtol {
+  strtol()
+  summary: string
+}
+class strtoll {
+  main()
+  summary: string
+}
+class strtoul {
+  main()
+  summary: string
+}
+class strtoull {
+  strtoull()
+  summary: string
+}
+class strtoumax {
+  main()
+  strtoumax()
+  summary: string
+}
+class strtrans {
+  ansic_quote()
+  ansic_shouldquote()
+  ansicstr()
+  ansiexpand()
+  summary: string
+}
+class strvis {
+  sh_charvis()
+  sh_strvis()
+  summary: string
+}
+class timers {
+  shtimer_alloc()
+  shtimer_alrm()
+  shtimer_chktimeout()
+  shtimer_cleanup()
+  shtimer_clear()
+  shtimer_dispose()
+  shtimer_flush()
+  shtimer_select()
+  shtimer_set()
+  shtimer_unset()
+  // ... (2 more not shown)
+}
+class times {
+  summary: string
+  times()
+}
+class timeval {
+  addtimeval()
+  difftimeval()
+  print_timeval()
+  summary: string
+  timeval_to_cpu()
+  timeval_to_secs()
+}
+class tmpfile {
+  get_sys_tmpdir()
+  get_tmpdir()
+  sh_mktmpfd()
+  sh_mktmpfp()
+  sh_mktmpname()
+  summary: string
+}
+class uconvert {
+  summary: string
+  uconvert()
+}
+class ufuncs {
+  falarm()
+  fsleep()
+  summary: string
+}
+class unicode {
+  stub_charset()
+  summary: string
+  u32cconv()
+  u32tochar()
+  u32toutf8()
+}
+class utf8 {
+  summary: string
+  utf8_mblen()
+  utf8_mbschr()
+  utf8_mbscmp()
+  utf8_mbsmbchar()
+  utf8_mbsnlen()
+  utf8_mbstrlen()
+}
+class vprint {
+  summary: string
+  vfprintf()
+  vsprintf()
+}
+class wcsdup {
+  summary: string
+  wcsdup()
+}
+class wcsnwidth {
+  summary: string
+  wcsnwidth()
+}
+class wcswidth {
+  summary: string
+  wcswidth()
+}
+class winsize {
+  get_new_window_size()
+  summary: string
+}
+class zcatfd {
+  summary: string
+  zcatfd()
+}
+class zgetline {
+  summary: string
+  zgetline()
+}
+class zmapfd {
+  summary: string
+  zmapfd()
+}
+class zread {
+  summary: string
+  zread()
+  zreadc()
+  zreadcintr()
+  zreadintr()
+  zreadretry()
+  zreset()
+  zsyncfd()
+}
+class zwrite {
+  summary: string
+  zwrite()
+}
+class Terminal_Capability_Handling_Library {
+  name: str
+  summary: str
+}
+class ltcap {
+  None()
+  summary: string
+}
+class termcap {
+  compare_contin()
+  find_capability()
+  gobble_line()
+  memory_out()
+  name_match()
+  scan_file()
+  summary: string
+  tgetent()
+  tgetflag()
+  tgetnum()
+  // ... (7 more not shown)
+}
+class tparam {
+  memory_out()
+  summary: string
+  tgoto()
+  tparam()
+  tparam1()
+  xmalloc()
+  xrealloc()
+}
+class TildeExpansionAndEnvVarHandler {
+  name: str
+  summary: str
+}
+class shell {
+  get_env_value()
+  get_home_dir()
+  summary: string
+}
+class tilde {
+  glue_prefix_and_suffix()
+  isolate_tilde_prefix()
+  summary: string
+  tilde_expand()
+  tilde_expand_word()
+  tilde_find_prefix()
+  tilde_find_suffix()
+  tilde_find_word()
+}
+bash --> Shell_Environment_Utility_Suite
+Shell_Environment_Utility_Suite --> Shell_Globbing_and_Pattern_Matching_Library
+Shell_Globbing_and_Pattern_Matching_Library --> collsyms
+Shell_Globbing_and_Pattern_Matching_Library --> glob
+Shell_Globbing_and_Pattern_Matching_Library --> glob
+Shell_Globbing_and_Pattern_Matching_Library --> glob_loop
+Shell_Globbing_and_Pattern_Matching_Library --> gm_loop
+Shell_Globbing_and_Pattern_Matching_Library --> gmisc
+Shell_Globbing_and_Pattern_Matching_Library --> sm_loop
+Shell_Globbing_and_Pattern_Matching_Library --> smatch
+Shell_Globbing_and_Pattern_Matching_Library --> strmatch
+Shell_Globbing_and_Pattern_Matching_Library --> strmatch
+Shell_Globbing_and_Pattern_Matching_Library --> xmbsrtowcs
+Shell_Environment_Utility_Suite --> Internationalization_and_Localization_Support_Library
+Internationalization_and_Localization_Support_Library --> arg_nonnull
+Internationalization_and_Localization_Support_Library --> attribute
+Internationalization_and_Localization_Support_Library --> bindtextdom
+Internationalization_and_Localization_Support_Library --> dcgettext
+Internationalization_and_Localization_Support_Library --> dcigettext
+Internationalization_and_Localization_Support_Library --> dcngettext
+Internationalization_and_Localization_Support_Library --> dgettext
+Internationalization_and_Localization_Support_Library --> dngettext
+Internationalization_and_Localization_Support_Library --> eval_plural
+Internationalization_and_Localization_Support_Library --> explodename
+Internationalization_and_Localization_Support_Library --> export
+Internationalization_and_Localization_Support_Library --> filename
+Internationalization_and_Localization_Support_Library --> finddomain
+Internationalization_and_Localization_Support_Library --> flexmember
+Internationalization_and_Localization_Support_Library --> gettext
+Internationalization_and_Localization_Support_Library --> gettextP
+Internationalization_and_Localization_Support_Library --> gmo
+Internationalization_and_Localization_Support_Library --> hash_string
+Internationalization_and_Localization_Support_Library --> hash_string
+Internationalization_and_Localization_Support_Library --> intl_compat
+Internationalization_and_Localization_Support_Library --> intl_exports
+Internationalization_and_Localization_Support_Library --> l10nflist
+Internationalization_and_Localization_Support_Library --> langprefs
+Internationalization_and_Localization_Support_Library --> libgnuintl_in
+Internationalization_and_Localization_Support_Library --> loadinfo
+Internationalization_and_Localization_Support_Library --> loadmsgcat
+Internationalization_and_Localization_Support_Library --> localcharset
+Internationalization_and_Localization_Support_Library --> localcharset
+Internationalization_and_Localization_Support_Library --> localealias
+Internationalization_and_Localization_Support_Library --> localename_table
+Internationalization_and_Localization_Support_Library --> localename_table_in
+Internationalization_and_Localization_Support_Library --> localename
+Internationalization_and_Localization_Support_Library --> lock
+Internationalization_and_Localization_Support_Library --> lock
+Internationalization_and_Localization_Support_Library --> log
+Internationalization_and_Localization_Support_Library --> ngettext
+Internationalization_and_Localization_Support_Library --> os2compat
+Internationalization_and_Localization_Support_Library --> os2compat
+Internationalization_and_Localization_Support_Library --> osdep
+Internationalization_and_Localization_Support_Library --> plural_exp
+Internationalization_and_Localization_Support_Library --> plural_exp
+Internationalization_and_Localization_Support_Library --> plural
+Internationalization_and_Localization_Support_Library --> plural
+Internationalization_and_Localization_Support_Library --> printf_args
+Internationalization_and_Localization_Support_Library --> printf_args
+Internationalization_and_Localization_Support_Library --> printf_parse
+Internationalization_and_Localization_Support_Library --> printf_parse
+Internationalization_and_Localization_Support_Library --> printf
+Internationalization_and_Localization_Support_Library --> relocatable
+Internationalization_and_Localization_Support_Library --> relocatable
+Internationalization_and_Localization_Support_Library --> setlocale_lock
+Internationalization_and_Localization_Support_Library --> setlocale
+Internationalization_and_Localization_Support_Library --> setlocale_null
+Internationalization_and_Localization_Support_Library --> setlocale_null
+Internationalization_and_Localization_Support_Library --> textdomain
+Internationalization_and_Localization_Support_Library --> thread_optim
+Internationalization_and_Localization_Support_Library --> threadlib
+Internationalization_and_Localization_Support_Library --> tsearch
+Internationalization_and_Localization_Support_Library --> tsearch
+Internationalization_and_Localization_Support_Library --> vasnprintf
+Internationalization_and_Localization_Support_Library --> vasnprintf
+Internationalization_and_Localization_Support_Library --> vasnwprintf
+Internationalization_and_Localization_Support_Library --> verify
+Internationalization_and_Localization_Support_Library --> version
+Internationalization_and_Localization_Support_Library --> wprintf_parse
+Internationalization_and_Localization_Support_Library --> xsize
+Internationalization_and_Localization_Support_Library --> xsize
+Shell_Environment_Utility_Suite --> GNU_Bash_Custom_Memory_Management_Module
+GNU_Bash_Custom_Memory_Management_Module --> alloca
+GNU_Bash_Custom_Memory_Management_Module --> getpagesize
+GNU_Bash_Custom_Memory_Management_Module --> imalloc
+GNU_Bash_Custom_Memory_Management_Module --> malloc
+GNU_Bash_Custom_Memory_Management_Module --> mstats
+GNU_Bash_Custom_Memory_Management_Module --> sbrk
+GNU_Bash_Custom_Memory_Management_Module --> shmalloc
+GNU_Bash_Custom_Memory_Management_Module --> stats
+GNU_Bash_Custom_Memory_Management_Module --> stub
+GNU_Bash_Custom_Memory_Management_Module --> table
+GNU_Bash_Custom_Memory_Management_Module --> table
+GNU_Bash_Custom_Memory_Management_Module --> trace
+GNU_Bash_Custom_Memory_Management_Module --> watch
+GNU_Bash_Custom_Memory_Management_Module --> watch
+GNU_Bash_Custom_Memory_Management_Module --> xmalloc
+Shell_Environment_Utility_Suite --> Readline_Command_Line_Interface_and_History_Management_Module
+Readline_Command_Line_Interface_and_History_Management_Module --> Readline_Command_Line_Interface_and_History_Management_Examples
+Readline_Command_Line_Interface_and_History_Management_Examples --> excallback
+Readline_Command_Line_Interface_and_History_Management_Examples --> fileman
+Readline_Command_Line_Interface_and_History_Management_Examples --> histexamp
+Readline_Command_Line_Interface_and_History_Management_Examples --> manexamp
+Readline_Command_Line_Interface_and_History_Management_Examples --> rl_callbacktest
+Readline_Command_Line_Interface_and_History_Management_Examples --> rl
+Readline_Command_Line_Interface_and_History_Management_Examples --> rlcat
+Readline_Command_Line_Interface_and_History_Management_Examples --> rltest
+Shell_Environment_Utility_Suite --> Shell_Utility_and_Compatibility_Library
+Shell_Utility_and_Compatibility_Library --> anonfile
+Shell_Utility_and_Compatibility_Library --> casemod
+Shell_Utility_and_Compatibility_Library --> clktck
+Shell_Utility_and_Compatibility_Library --> clock
+Shell_Utility_and_Compatibility_Library --> compat
+Shell_Utility_and_Compatibility_Library --> dprintf
+Shell_Utility_and_Compatibility_Library --> eaccess
+Shell_Utility_and_Compatibility_Library --> fmtullong
+Shell_Utility_and_Compatibility_Library --> fmtulong
+Shell_Utility_and_Compatibility_Library --> fmtumax
+Shell_Utility_and_Compatibility_Library --> fnxform
+Shell_Utility_and_Compatibility_Library --> fpurge
+Shell_Utility_and_Compatibility_Library --> getcwd
+Shell_Utility_and_Compatibility_Library --> getenv
+Shell_Utility_and_Compatibility_Library --> gettimeofday
+Shell_Utility_and_Compatibility_Library --> inet_aton
+Shell_Utility_and_Compatibility_Library --> input_avail
+Shell_Utility_and_Compatibility_Library --> itos
+Shell_Utility_and_Compatibility_Library --> mailstat
+Shell_Utility_and_Compatibility_Library --> makepath
+Shell_Utility_and_Compatibility_Library --> mbscasecmp
+Shell_Utility_and_Compatibility_Library --> mbschr
+Shell_Utility_and_Compatibility_Library --> mbscmp
+Shell_Utility_and_Compatibility_Library --> mbsncmp
+Shell_Utility_and_Compatibility_Library --> memset
+Shell_Utility_and_Compatibility_Library --> mktime
+Shell_Utility_and_Compatibility_Library --> netconn
+Shell_Utility_and_Compatibility_Library --> netopen
+Shell_Utility_and_Compatibility_Library --> oslib
+Shell_Utility_and_Compatibility_Library --> pathcanon
+Shell_Utility_and_Compatibility_Library --> pathphys
+Shell_Utility_and_Compatibility_Library --> random
+Shell_Utility_and_Compatibility_Library --> reallocarray
+Shell_Utility_and_Compatibility_Library --> rename
+Shell_Utility_and_Compatibility_Library --> setlinebuf
+Shell_Utility_and_Compatibility_Library --> shmatch
+Shell_Utility_and_Compatibility_Library --> shmbchar
+Shell_Utility_and_Compatibility_Library --> shquote
+Shell_Utility_and_Compatibility_Library --> shtty
+Shell_Utility_and_Compatibility_Library --> snprintf
+Shell_Utility_and_Compatibility_Library --> spell
+Shell_Utility_and_Compatibility_Library --> strcasecmp
+Shell_Utility_and_Compatibility_Library --> strcasestr
+Shell_Utility_and_Compatibility_Library --> strchrnul
+Shell_Utility_and_Compatibility_Library --> strdup
+Shell_Utility_and_Compatibility_Library --> strerror
+Shell_Utility_and_Compatibility_Library --> strftime
+Shell_Utility_and_Compatibility_Library --> stringlist
+Shell_Utility_and_Compatibility_Library --> stringvec
+Shell_Utility_and_Compatibility_Library --> strlcpy
+Shell_Utility_and_Compatibility_Library --> strnlen
+Shell_Utility_and_Compatibility_Library --> strpbrk
+Shell_Utility_and_Compatibility_Library --> strscpy
+Shell_Utility_and_Compatibility_Library --> strstr
+Shell_Utility_and_Compatibility_Library --> strtod
+Shell_Utility_and_Compatibility_Library --> strtoimax
+Shell_Utility_and_Compatibility_Library --> strtol
+Shell_Utility_and_Compatibility_Library --> strtoll
+Shell_Utility_and_Compatibility_Library --> strtoul
+Shell_Utility_and_Compatibility_Library --> strtoull
+Shell_Utility_and_Compatibility_Library --> strtoumax
+Shell_Utility_and_Compatibility_Library --> strtrans
+Shell_Utility_and_Compatibility_Library --> strvis
+Shell_Utility_and_Compatibility_Library --> timers
+Shell_Utility_and_Compatibility_Library --> times
+Shell_Utility_and_Compatibility_Library --> timeval
+Shell_Utility_and_Compatibility_Library --> tmpfile
+Shell_Utility_and_Compatibility_Library --> uconvert
+Shell_Utility_and_Compatibility_Library --> ufuncs
+Shell_Utility_and_Compatibility_Library --> unicode
+Shell_Utility_and_Compatibility_Library --> utf8
+Shell_Utility_and_Compatibility_Library --> vprint
+Shell_Utility_and_Compatibility_Library --> wcsdup
+Shell_Utility_and_Compatibility_Library --> wcsnwidth
+Shell_Utility_and_Compatibility_Library --> wcswidth
+Shell_Utility_and_Compatibility_Library --> winsize
+Shell_Utility_and_Compatibility_Library --> zcatfd
+Shell_Utility_and_Compatibility_Library --> zgetline
+Shell_Utility_and_Compatibility_Library --> zmapfd
+Shell_Utility_and_Compatibility_Library --> zread
+Shell_Utility_and_Compatibility_Library --> zwrite
+Shell_Environment_Utility_Suite --> Terminal_Capability_Handling_Library
+Terminal_Capability_Handling_Library --> ltcap
+Terminal_Capability_Handling_Library --> termcap
+Terminal_Capability_Handling_Library --> termcap
+Terminal_Capability_Handling_Library --> tparam
+Terminal_Capability_Handling_Library --> version
+Shell_Environment_Utility_Suite --> TildeExpansionAndEnvVarHandler
+TildeExpansionAndEnvVarHandler --> shell
+TildeExpansionAndEnvVarHandler --> tilde
+TildeExpansionAndEnvVarHandler --> tilde
+@enduml
