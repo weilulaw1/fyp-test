@@ -1,0 +1,215 @@
+Code Changes in arch rec demo
+1. settings.py
+🔧 Added / changed
+
+Switched LLM to local Ollama model
+
+OLLAMA_ENDPOINT = "http://localhost:11434"
+LLAMA_33_MODEL = "qwen3-coder:30b"   # later recommended qwen3:8b
+
+
+Added Ollama model to pricing maps (to avoid KeyError)
+
+'qwen3-coder:30b': 0
+
+
+Added context window entry for Ollama model
+
+MODEL2CONTEXT_WINDOW['qwen3-coder:30b'] = 32768
+
+2. openai_models.py
+🔧 Model routing changes
+
+Replaced hard-coded model
+
+- model="llama3.3:70b"
++ model=self.model
+
+
+Ensured Ollama is used when model == LLAMA_33_MODEL
+
+ollama_llm = ChatOllama(
+    model=self.model,
+    base_url=OLLAMA_ENDPOINT,
+    seed=seed,
+    format="json" if response_json else None
+)
+
+🔧 Concurrency safety
+
+Reduced max thread count
+
+- MAX_MULTI_THREAD_REQUESTS = 100
++ MAX_MULTI_THREAD_REQUESTS = 4
+
+🔧 Token handling
+
+Disabled OpenAI tokenizer–based truncation
+
+- messages_stripped = strip_oversized_message(messages, self.max_tokens)
++ messages_stripped = messages
+
+🔧 MongoDB robustness
+
+Prevented crashes when MongoDB is unavailable
+
+Added connection test (ping)
+
+Disabled cache + logging if Mongo is unreachable
+
+Guarded _get_cache() when col_mongo is None
+
+3. summarize_projects.py
+🔧 LLM selection
+
+Changed default model from OpenAI to Ollama
+
+- gpt_type=GPT_41_NANO_MODEL
++ gpt_type=LLAMA_33_MODEL
+
+
+Explicitly passed Ollama model in main()
+
+summarize_project(
+    project_path,
+    gpt_type=LLAMA_33_MODEL,
+    use_cache=True,
+    seed=0
+)
+
+🔧 Directory traversal (critical fix)
+
+Excluded irrelevant folders
+
+EXCLUDED_DIRS = {
+    ".venv", "venv", "env",
+    "node_modules",
+    "__pycache__",
+    ".git",
+    ".idea", ".vscode",
+    "dist", "build", "out",
+    ".pytest_cache", ".mypy_cache", ".ruff_cache",
+    "site-packages",
+}
+
+dirs[:] = [d for d in dirs if d not in EXCLUDED_DIRS]
+
+🔧 File summarization logic
+
+Merged file + function summaries into one LLM call
+
+summarize_file_and_functions(...)
+
+
+Standardized structured JSON output
+
+{
+  "file_summary": "...",
+  "functions": [
+    { "name": "...", "summary": "..." }
+  ]
+}
+
+
+Added pickle-based cache
+
+data/cache/file_summaries/<project>_file_summaries.pkl
+
+🔧 Concurrency fix (local inference)
+
+Reduced ThreadPoolExecutor workers
+
+- max_workers=32
++ max_workers=4
+
+
+(Optional) Avoided sharing GPTModel across threads
+
+GPTModel(model=gpt_type, use_cache=use_cache)
+
+4. Output & validation changes
+🔧 Architecture output
+
+Generated hierarchical module tree
+
+Summarized modules bottom-up
+
+Exported final architecture as JSON
+
+data/summaries/<project>_summary.json
+
+🔧 Verified offline execution
+
+Confirmed:
+
+Price: 0.000000
+
+
+
+Patch openai_models.py (final form)
+
+Replace this line:
+
+from langchain_ollama import ChatOllama
+
+
+with this safe optional import:
+
+try:
+    from langchain_ollama import ChatOllama
+except ImportError:
+    ChatOllama = None
+
+
+
+import requests
+
+
+
+Replace this whole block:
+
+elif self.model == LLAMA_33_MODEL:
+            
+    langchain_messages = [map_message(msg) for msg in messages]
+    ollama_llm = ChatOllama(
+        model=self.model,
+        base_url=OLLAMA_ENDPOINT,
+        seed=seed,
+        format="json" if response_json else ""
+    )
+    
+    response = ollama_llm.invoke(langchain_messages)
+    self.is_langchain_model = True
+
+
+with this:
+
+elif self.model == LLAMA_33_MODEL:
+    # Ollama HTTP backend (no langchain needed)
+    url = OLLAMA_ENDPOINT.rstrip("/") + "/api/chat"
+
+    payload = {
+        "model": self.model,
+        "messages": messages,          # OpenAI-style messages works with Ollama /api/chat
+        "stream": False,
+        "options": {
+            "seed": int(seed) if seed is not None else 0,
+            "temperature": 0,
+        }
+    }
+
+    # Ask for JSON-only when needed
+    if response_json:
+        payload["format"] = "json"
+
+    r = requests.post(url, json=payload, timeout=600)
+    r.raise_for_status()
+    data = r.json()
+
+    # Ollama /api/chat response shape: {"message": {"role": "...", "content": "..."}, ...}
+    content = (data.get("message") or {}).get("content", "")
+
+    # mark as "langchain model" to skip _update_states (no token usage object)
+    self.is_langchain_model = True
+    response = type("OllamaResp", (), {"content": content, "usage_metadata": {"input_tokens": 0, "output_tokens": 0}, "response_metadata": {}})()
+

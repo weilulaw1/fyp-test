@@ -1,3 +1,23 @@
+@"
+# Python
+__pycache__/
+*.pyc
+
+# Django
+media/
+myapp/uploads/
+
+# Generated outputs
+files/uml_output/
+files/*_summary.json
+
+# OS/Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+"@ | Set-Content -Encoding utf8 .gitignore
+
 # Django / Python
 __pycache__/
 *.py[cod]
