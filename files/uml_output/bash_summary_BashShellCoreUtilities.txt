@@ -1,14 +1,48 @@
 @startuml
 class BashShellCoreUtilities {
-  name: str
-  summary: str
+  Summary:
+  --
+  This module provides core functionalities
+  for command-line option parsing, built-in
+  command management, script evaluation,
+  help file generation, and system resource
+  querying within the Bash shell
+  environment.
+  --
+  name: BashShellCoreUtilities
 }
 class bashgetopt {
+  Summary:
+  --
+  The file declares external variables and
+  The file implements a custom version of
+  functions related to command-line option
+  the getopt function for parsing command-
+  line options within the Bash shell,
+  parsing in Bash, serving as an interface
+  for the corresponding implementation in
+  handling various option formats and
+  argument requirements.
+  bashgetopt.c.
+  --
   internal_getopt()
   reset_internal_getopt()
   summary: string
 }
 class common {
+  Summary:
+  --
+  The common.h file provides external
+  The file provides utility functions for
+  declarations, macros, and constants for
+  error handling, argument processing,
+  directory management, job control, signal
+  functions and features used across the
+  Bash shell implementation, facilitating
+  listing, and builtin command lookup in the
+  Bash shell implementation.
+  modularity and code organization.
+  --
   bash_logout()
   builtin_address()
   builtin_address_internal()
@@ -22,6 +56,14 @@ class common {
   // ... (67 more not shown)
 }
 class evalfile {
+  Summary:
+  --
+  The file provides functions to read,
+  evaluate, and execute commands from files
+  or file descriptors within the Bash shell,
+  handling various execution contexts and
+  error conditions.
+  --
   _evalfile()
   fc_execute_file()
   maybe_execute_file()
@@ -29,6 +71,14 @@ class evalfile {
   summary: string
 }
 class evalstring {
+  Summary:
+  --
+  The file provides functions to parse,
+  evaluate, and execute shell command
+  strings, including handling command
+  substitution and cleanup procedures in a
+  shell environment.
+  --
   cat_file()
   parse_and_execute()
   parse_and_execute_cleanup()
@@ -37,17 +87,43 @@ class evalstring {
   summary: string
 }
 class gen_helpfiles {
+  Summary:
+  --
+  The code generates help text files for
+  built-in commands in GNU Bash, organizing
+  documentation into separate help files or
+  strings for translation purposes.
+  --
   main()
   summary: string
   write_documentation()
   write_helpfiles()
 }
 class getopt {
+  Summary:
+  --
+  The file implements a custom version of
+  The file provides declarations and
+  external variable definitions for the
+  the getopt function for parsing command-
+  getopt functionality used in parsing
+  line options in Bash, handling option
+  characters, arguments, and special cases.
+  command-line options in Bash.
+  --
   sh_getopt()
   sh_getopt_restore_state()
   summary: string
 }
 class mkbuiltins {
+  Summary:
+  --
+  The mkbuiltins.c file processes
+  builtins.def files to generate C source
+  and header files defining shell built-in
+  commands, along with associated
+  documentation and help files.
+  --
   _find_in_table()
   add_documentation()
   array_add()
@@ -61,6 +137,13 @@ class mkbuiltins {
   // ... (27 more not shown)
 }
 class psize {
+  Summary:
+  --
+  The code repeatedly writes 128-byte chunks
+  to standard output to determine the pipe
+  buffer size until a SIGPIPE occurs, then
+  reports the total number of bytes written.
+  --
   main()
   sigpipe()
   summary: string

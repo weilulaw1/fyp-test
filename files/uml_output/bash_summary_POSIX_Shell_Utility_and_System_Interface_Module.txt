@@ -1,9 +1,26 @@
 @startuml
 class POSIX_Shell_Utility_and_System_Interface_Module {
-  name: str
-  summary: str
+  Summary:
+  --
+  This module provides a comprehensive set
+  of portable, system-level, and utility
+  headers for process control, file and
+  directory management, character handling,
+  memory allocation, timing, and I/O
+  operations to support the development of a
+  POSIX-compliant shell environment.
+  --
+  name: POSIX Shell Utility and System Interface Module
 }
 class ansi_stdlib {
+  Summary:
+  --
+  The file provides minimal ANSI standard
+  declarations for common C library
+  functions used in Bash, including string
+  conversion, memory management, and process
+  control functions.
+  --
   abort()
   atof()
   atoi()
@@ -17,6 +34,14 @@ class ansi_stdlib {
   // ... (1 more not shown)
 }
 class chartypes {
+  Summary:
+  --
+  This header file extends the standard
+  ctype.h macros with additional character
+  classification and transformation macros,
+  ensuring portability and consistency
+  across different systems.
+  --
   DIGIT()
   HEXVALUE()
   IN_CTYPE_DOMAIN()
@@ -30,15 +55,37 @@ class chartypes {
   // ... (19 more not shown)
 }
 class filecntl {
+  Summary:
+  --
+  This header file defines macros and
+  functions for setting file descriptors to
+  close-on-exec and handling non-blocking
+  I/O in a portable manner.
+  --
   SET_CLOSE_ON_EXEC()
   SET_OPEN_ON_EXEC()
   summary: string
 }
 class gettext {
+  Summary:
+  --
+  The file provides conditional macros and
+  includes for supporting GNU gettext
+  message translation functions, with
+  fallbacks for systems without NLS support.
+  --
   gettext_noop()
   summary: string
 }
 class intprops_internal {
+  Summary:
+  --
+  The file defines internal macros and
+  functions to determine properties and
+  perform safe operations on integer types,
+  such as overflow detection, type
+  promotion, and range checking.
+  --
   _GL_EXPR_SIGNED()
   _GL_HAS_BUILTIN_ADD_OVERFLOW()
   _GL_HAS_BUILTIN_MUL_OVERFLOW()
@@ -52,13 +99,36 @@ class intprops_internal {
   // ... (15 more not shown)
 }
 class maxpath {
+  Summary:
+  --
+  The file defines macros to determine
+  system-specific values for PATH_MAX and
+  NAME_MAX, providing default fallbacks if
+  they are not defined.
+  --
   summary: string
 }
 class memalloc {
+  Summary:
+  --
+  The file memalloc.h consolidates platform-
+  specific includes and definitions for the
+  alloca function to facilitate dynamic
+  memory allocation across different systems
+  and compilers.
+  --
   none()
   summary: string
 }
 class ocache {
+  Summary:
+  --
+  The file provides a minimal object caching
+  implementation with macros for creating,
+  destroying, allocating, freeing, and
+  flushing cached objects to optimize memory
+  management.
+  --
   ocache_alloc()
   ocache_create()
   ocache_destroy()
@@ -67,19 +137,48 @@ class ocache {
   summary: string
 }
 class posixdir {
+  Summary:
+  --
+  The file provides conditional includes and
+  macro definitions to facilitate portable
+  directory reading functionality across
+  different POSIX-compliant systems.
+  --
   D_NAMLEN()
   REAL_DIR_ENTRY()
   summary: string
 }
 class posixjmp {
+  Summary:
+  --
+  The file provides a wrapper for including
+  and configuring setjmp/longjmp
+  functionality with POSIX signal handling
+  considerations.
+  --
   none()
   summary: string
 }
 class posixselect {
+  Summary:
+  --
+  The file provides conditional includes,
+  macro definitions, and a utility macro for
+  handling select(2) system calls in POSIX-
+  compliant systems.
+  --
   USEC_TO_TIMEVAL()
   summary: string
 }
 class posixstat {
+  Summary:
+  --
+  The file provides POSIX-compliant
+  definitions and macros for file types and
+  permissions, ensuring compatibility on
+  systems lacking certain <sys/stat.h>
+  features.
+  --
   S_ISBLK()
   S_ISCHR()
   S_ISDIR()
@@ -90,19 +189,49 @@ class posixstat {
   summary: string
 }
 class posixtime {
+  Summary:
+  --
+  The file provides a wrapper for including
+  system time headers and defines constants
+  related to system clock ticks for
+  portability across different systems.
+  --
   None()
   summary: string
 }
 class posixwait {
+  Summary:
+  --
+  The file defines POSIX-compliant and
+  system-specific macros and types for
+  process wait status handling, facilitating
+  job control in POSIX systems and Bash.
+  --
   summary: string
 }
 class shmbchar {
+  Summary:
+  --
+  The file defines a multibyte character
+  data type and associated macros and
+  functions for handling multibyte
+  characters in a locale-aware, portable,
+  and efficient manner.
+  --
   is_basic()
   mb_copy()
   mb_width_aux()
   summary: string
 }
 class shmbutil {
+  Summary:
+  --
+  The file provides utility functions and
+  macros for handling multibyte character
+  strings in C, with conditional support
+  based on whether multibyte handling is
+  enabled.
+  --
   mbstrlen()
   summary: string
   xdupmbstowcs()
@@ -110,6 +239,14 @@ class shmbutil {
   xstrchr()
 }
 class shtty {
+  Summary:
+  --
+  The file provides system-dependent
+  includes, macros, and function
+  declarations for manipulating terminal
+  (tty) settings in a portable manner across
+  different Unix-like systems.
+  --
   summary: string
   tt_setcbreak()
   tt_seteightbit()
@@ -123,6 +260,14 @@ class shtty {
   // ... (11 more not shown)
 }
 class stat_time {
+  Summary:
+  --
+  The file provides functions and macros for
+  accessing and comparing high-resolution
+  file timestamps within the stat structure,
+  handling various platform-specific
+  differences.
+  --
   get_stat_atime()
   get_stat_atime_ns()
   get_stat_birthtime()
@@ -135,19 +280,49 @@ class stat_time {
   timespec_cmp()
 }
 class stdc {
+  Summary:
+  --
+  The file provides macros and definitions
+  to ensure compatibility of C source code
+  across different compiler standards and
+  versions, including ANSI C and traditional
+  K&R C.
+  --
   summary: string
 }
 class stdckdint_in {
+  Summary:
+  --
+  The file provides macros for checked
+  integer addition, subtraction, and
+  multiplication that detect overflow
+  conditions.
+  --
   ckd_add()
   ckd_mul()
   ckd_sub()
   summary: string
 }
 class systimes {
+  Summary:
+  --
+  The file defines a structure and function
+  prototype for retrieving process CPU
+  times, providing compatibility for systems
+  without <sys/times.h>.
+  --
   summary: string
   times()
 }
 class timer {
+  Summary:
+  --
+  The file defines data structures,
+  constants, and function prototypes for
+  managing timers within the GNU Bash shell,
+  including allocation, configuration, and
+  cleanup of timer objects.
+  --
   shtimer_alloc()
   shtimer_alrm()
   shtimer_chktimeout()
@@ -161,9 +336,24 @@ class timer {
   // ... (1 more not shown)
 }
 class typemax {
+  Summary:
+  --
+  The file defines macros to determine the
+  maximum and minimum values for various
+  integer types, including support for long
+  long types if available.
+  --
   summary: string
 }
 class unionwait {
+  Summary:
+  --
+  The file defines a union wait structure
+  and associated macros to handle process
+  termination and status information on
+  systems without a native `union wait`
+  implementation.
+  --
   WEXITSTATUS()
   WIFCORED()
   WIFEXITED()
@@ -175,6 +365,14 @@ class unionwait {
   summary: string
 }
 class unlocked_io {
+  Summary:
+  --
+  This header file provides macro wrappers
+  for standard I/O functions to use their
+  unlocked, more efficient versions when
+  available, optimizing single-threaded I/O
+  operations.
+  --
   clearerr()
   feof()
   ferror()

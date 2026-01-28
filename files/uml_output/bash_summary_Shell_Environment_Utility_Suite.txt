@@ -1,16 +1,55 @@
 @startuml
 class Shell_Environment_Utility_Suite {
-  name: str
-  summary: str
+  Summary:
+  --
+  This software module offers a suite of
+  functionalities for shell pattern
+  matching, internationalization, custom
+  memory management, command-line interface
+  enhancements, system utilities, terminal
+  capabilities, and environment variable
+  handling to support robust and portable
+  shell environment operations.
+  --
+  name: Shell Environment Utility Suite
 }
 class Shell_Globbing_and_Pattern_Matching_Library {
-  name: str
-  summary: str
+  Summary:
+  --
+  This module provides comprehensive
+  functions for filename pattern matching,
+  globbing, and character classification
+  supporting extended glob patterns,
+  multibyte character encodings, and POSIX-
+  compliant collating symbols, primarily
+  used in shell environments like Bash.
+  --
+  name: Shell Globbing and Pattern Matching Library
 }
 class collsyms {
+  Summary:
+  --
+  The file defines a data structure and a
+  static array mapping symbolic names to
+  ASCII characters for collating symbol
+  names as specified by POSIX.2, primarily
+  used for character classification and
+  lookup.
+  --
   summary: string
 }
 class glob {
+  Summary:
+  --
+  The file defines constants, function
+  The file implements filename pattern
+  matching and globbing functions for Bash,
+  prototypes, and external variables for
+  enabling expansion of wildcard patterns in
+  pattern matching and filename globbing in
+  GNU Bash.
+  file paths.
+  --
   dequote_pathname()
   finddirs()
   glob_dir_to_array()
@@ -24,16 +63,38 @@ class glob {
   // ... (2 more not shown)
 }
 class glob_loop {
+  Summary:
+  --
+  The file provides functions to detect the
+  presence of special globbing characters in
+  pattern strings for filename matching in
+  Bash.
+  --
   INTERNAL_GLOB_PATTERN_P()
   summary: string
 }
 class gm_loop {
+  Summary:
+  --
+  The file implements pattern matching and
+  globbing functions used in shell filename
+  expansion, including pattern recognition,
+  character matching, and pattern length
+  calculation.
+  --
   EXTGLOB_PATTERN_P()
   MATCHLEN()
   MATCH_PATTERN_CHAR()
   summary: string
 }
 class gmisc {
+  Summary:
+  --
+  The gmisc.c file provides miscellaneous
+  pattern matching utility functions for
+  Bash, including support for wide
+  characters and various pattern constructs.
+  --
   match_pattern_char()
   match_pattern_wchar()
   summary: string
@@ -41,6 +102,14 @@ class gmisc {
   wmatchlen()
 }
 class sm_loop {
+  Summary:
+  --
+  The file implements pattern matching
+  functions used for filename globbing,
+  including support for extended glob
+  patterns, character classes, and collating
+  symbols in the GNU Bash shell.
+  --
   BRACKMATCH()
   EXTMATCH()
   FCT()
@@ -51,6 +120,14 @@ class sm_loop {
   summary: string
 }
 class smatch {
+  Summary:
+  --
+  The file implements extended pattern
+  matching functions similar to shell
+  globbing, supporting both single-byte and
+  multi-byte character encodings with
+  locale-aware comparisons.
+  --
   collequiv()
   collequiv_wc()
   collsym()
@@ -63,26 +140,75 @@ class smatch {
   xstrmatch()
 }
 class strmatch {
+  Summary:
+  --
+  The file defines constants, macros, and
+  The file implements pattern matching
+  function prototypes for pattern matching
+  functions similar to shell globbing,
+  of strings, similar to filename globbing,
+  supporting extended pattern matching and
+  optional multibyte character handling.
+  with support for extended matching
+  --
+  options.
+  --
   main()
   strmatch()
   summary: string
   wcsmatch()
 }
 class xmbsrtowcs {
+  Summary:
+  --
+  The file provides a replacement
+  implementation of the mbsrtowcs function
+  for converting multibyte strings to wide
+  character strings, with additional
+  utilities for handling multibyte to wide
+  character conversions, including optional
+  support for advanced functions like
+  mbsnrtowcs.
+  --
   summary: string
   xdupmbstowcs()
   xdupmbstowcs2()
   xmbsrtowcs()
 }
 class Internationalization_and_Localization_Support_Library {
-  name: str
-  summary: str
+  Summary:
+  --
+  This module provides comprehensive
+  internationalization and localization
+  support functions, including message
+  translation, locale management, character
+  encoding handling, pluralization rules,
+  and thread-safe operations for software
+  applications.
+  --
+  name: Internationalization and Localization Support Library
 }
 class arg_nonnull {
+  Summary:
+  --
+  The file defines a macro for annotating
+  function arguments that must not be NULL,
+  utilizing compiler-specific attributes for
+  static analysis.
+  --
   _GL_ARG_NONNULL()
   summary: string
 }
 class attribute {
+  Summary:
+  --
+  This header file defines macros for
+  compiler attributes and diagnostics,
+  primarily for use with GCC and similar
+  compilers, to annotate functions,
+  variables, and types with specific
+  properties.
+  --
   ATTRIBUTE_ALLOC_SIZE()
   ATTRIBUTE_ALWAYS_INLINE()
   ATTRIBUTE_ARTIFICIAL()
@@ -96,16 +222,38 @@ class attribute {
   // ... (16 more not shown)
 }
 class bindtextdom {
+  Summary:
+  --
+  The file implements functions to bind
+  message domains to specific directories
+  and character encodings for
+  internationalization support in GNU libc.
+  --
   BINDTEXTDOMAIN()
   BIND_TEXTDOMAIN_CODESET()
   set_binding_values()
   summary: string
 }
 class dcgettext {
+  Summary:
+  --
+  The file implements the dcgettext(3)
+  function, which retrieves localized
+  message strings from message catalogs
+  based on domain, message ID, and category.
+  --
   DCGETTEXT()
   summary: string
 }
 class dcigettext {
+  Summary:
+  --
+  The file implements internal functions for
+  gettext message translation, including
+  message lookup, domain management, and
+  locale handling in GNU libc and related
+  environments.
+  --
   DCIGETTEXT()
   _nl_find_msg()
   category_to_name()
@@ -114,30 +262,81 @@ class dcigettext {
   summary: string
 }
 class dcngettext {
+  Summary:
+  --
+  The file implements the dcngettext
+  function for retrieving localized message
+  strings with plural forms based on the
+  specified category.
+  --
   DCNGETTEXT()
   summary: string
 }
 class dgettext {
+  Summary:
+  --
+  The file implements the dgettext(3)
+  function for message translation based on
+  locale and domain, handling name conflicts
+  and compatibility with the GNU C Library.
+  --
   DGETTEXT()
   summary: string
 }
 class dngettext {
+  Summary:
+  --
+  The file implements the dngettext
+  function, which retrieves the appropriate
+  localized message based on pluralization
+  rules for a given domain and message
+  identifiers.
+  --
   DNGETTEXT()
   summary: string
 }
 class eval_plural {
+  Summary:
+  --
+  The file implements a recursive evaluation
+  of plural expressions used in GNU Bash to
+  determine plural forms based on numeric
+  values.
+  --
   plural_eval()
   summary: string
 }
 class explodename {
+  Summary:
+  --
+  The file provides functions for parsing
+  and extracting components from locale or
+  language name strings, supporting
+  different syntax styles.
+  --
   _nl_explode_name()
   _nl_find_language()
   summary: string
 }
 class export {
+  Summary:
+  --
+  This header file defines macros for
+  controlling symbol visibility and export
+  attributes across different platforms and
+  build configurations.
+  --
   summary: string
 }
 class filename {
+  Summary:
+  --
+  This header file provides macros for
+  handling and analyzing filename strings
+  across different operating systems,
+  focusing on path characteristics and
+  device specifications.
+  --
   FILE_SYSTEM_PREFIX_LEN()
   HAS_DEVICE()
   ISSLASH()
@@ -148,20 +347,49 @@ class filename {
   summary: string
 }
 class finddomain {
+  Summary:
+  --
+  The file manages the loading and retrieval
+  of message catalog data for different
+  locales and domains, supporting locale
+  aliasing and hierarchical locale fallback.
+  --
   _nl_find_domain()
   libc_freeres_fn()
   summary: string
 }
 class flexmember {
+  Summary:
+  --
+  The file provides macros and definitions
+  for calculating the size of structs with
+  flexible array members, ensuring proper
+  alignment and avoiding overflow issues.
+  --
   FLEXALIGNOF()
   FLEXSIZEOF()
   summary: string
 }
 class gettext {
+  Summary:
+  --
+  The file provides an implementation of the
+  gettext function for message localization,
+  handling message catalog lookups based on
+  locale settings.
+  --
   GETTEXT()
   summary: string
 }
 class gettextP {
+  Summary:
+  --
+  The file defines internal data structures,
+  macros, and function prototypes for the
+  internals of the GNU libintl library,
+  which handles message localization and
+  translation.
+  --
   _nl_find_domain()
   _nl_find_msg()
   _nl_free_domain_conv()
@@ -171,6 +399,13 @@ class gettextP {
   summary: string
 }
 class gmo {
+  Summary:
+  --
+  The file defines data structures, macros,
+  and type definitions for handling GNU
+  message catalog (.mo) binary files used in
+  localization.
+  --
   UINT_MAX_32_BITS()
   mo_file_header()
   string_desc()
@@ -179,11 +414,30 @@ class gmo {
   sysdep_string()
 }
 class hash_string {
+  Summary:
+  --
+  The file defines a string hashing function
+  The file implements a string hashing
+  function based on the hashpjw algorithm
+  using the hashpjw algorithm for use in GNU
+  Bash.
+  used for generating hash values from
+  --
+  strings.
+  --
   __hash_string()
   hash_string()
   summary: string
 }
 class intl_compat {
+  Summary:
+  --
+  This file provides stub functions that
+  redirect gettext-related calls to the GNU
+  libintl library, ensuring compatibility
+  and extended features across different
+  systems.
+  --
   bind_textdomain_codeset()
   bindtextdomain()
   dcgettext()
@@ -196,10 +450,25 @@ class intl_compat {
   textdomain()
 }
 class intl_exports {
+  Summary:
+  --
+  The file defines macros and variables to
+  export symbols from the libintl library on
+  Cygwin, ensuring proper symbol visibility
+  across different platforms.
+  --
   VARIABLE()
   summary: string
 }
 class l10nflist {
+  Summary:
+  --
+  The file provides functions to create and
+  manage a list of localization files,
+  including path handling, filename
+  construction, and normalization of codeset
+  names.
+  --
   _nl_make_l10nflist()
   _nl_normalize_codeset()
   argz_count__()
@@ -210,6 +479,14 @@ class l10nflist {
   summary: string
 }
 class langprefs {
+  Summary:
+  --
+  The file provides functions to determine
+  the user's language preferences across
+  different operating systems and
+  environments, including macOS, Windows,
+  and Unix-like systems.
+  --
   _nl_language_preferences_default()
   _nl_language_preferences_win32_95()
   _nl_language_preferences_win32_ME()
@@ -218,6 +495,15 @@ class langprefs {
   summary: string
 }
 class libgnuintl_in {
+  Summary:
+  --
+  The file provides declarations, macros,
+  and inline functions for
+  internationalization message catalog
+  handling, including gettext and locale
+  management, with platform-specific
+  adaptations.
+  --
   bind_textdomain_codeset()
   bindtextdomain()
   dcgettext()
@@ -231,6 +517,15 @@ class libgnuintl_in {
   // ... (12 more not shown)
 }
 class loadinfo {
+  Summary:
+  --
+  This header file declares functions,
+  macros, and data structures for handling
+  locale-dependent information, including
+  locale name parsing, normalization, and
+  message catalog lookup in the GNU C
+  Library.
+  --
   _nl_expand_alias()
   _nl_explode_name()
   _nl_find_language()
@@ -239,6 +534,14 @@ class loadinfo {
   summary: string
 }
 class loadmsgcat {
+  Summary:
+  --
+  The loadmsgcat.c file provides functions
+  for loading, initializing, and unloading
+  GNU gettext message catalogs, including
+  handling system-dependent string formats
+  and character set conversions.
+  --
   _nl_free_domain_conv()
   _nl_init_domain_conv()
   _nl_load_domain()
@@ -247,11 +550,31 @@ class loadmsgcat {
   summary: string
 }
 class localcharset {
+  Summary:
+  --
+  The file declares an interface for
+  The file provides functions to determine
+  and canonicalize the current locale's
+  determining the canonical name of the
+  character encoding, handling various
+  current locale's character encoding in a
+  C/C++ program.
+  platform-specific details and alias
+  --
+  resolution.
+  --
   get_charset_aliases()
   locale_charset()
   summary: string
 }
 class localealias {
+  Summary:
+  --
+  The file manages locale name aliases by
+  reading alias files, storing mappings, and
+  providing functions to expand locale names
+  based on these aliases.
+  --
   _nl_expand_alias()
   alias_compare()
   extend_alias_table()
@@ -259,18 +582,58 @@ class localealias {
   summary: string
 }
 class localename_table {
+  Summary:
+  --
+  The file implements a hash table and
+  associated functions for mapping locale
+  objects to locale category names, with
+  conditional compilation based on system
+  features.
+  --
   locale_hash_function()
   summary: string
 }
 class localename_table_in {
+  Summary:
+  --
+  The file defines data structures,
+  constants, and synchronization mechanisms
+  for managing a thread-safe hash table that
+  maps locale objects to their category
+  names in a multilingual environment.
+  --
   locale_hash_function()
   summary: string
 }
 class localename {
+  Summary:
+  --
+  The file provides functionality to
+  determine and retrieve the current
+  locale's name in a standardized format
+  across different operating systems,
+  primarily POSIX-compliant systems and
+  Windows.
+  --
   _nl_locale_name()
   summary: string
 }
 class lock {
+  Summary:
+  --
+  The file provides implementations for
+  This header file provides a cross-platform
+  abstraction layer for various locking
+  various thread synchronization primitives
+  primitives used in multithreaded
+  such as locks, read-write locks, recursive
+  locks, and one-time initialization
+  programming, supporting multiple threading
+  functions across different threading
+  libraries and offering error-handling
+  macros.
+  models and platforms.
+  --
   glthread_lock_destroy()
   glthread_lock_init()
   glthread_lock_lock()
@@ -284,24 +647,68 @@ class lock {
   // ... (17 more not shown)
 }
 class log {
+  Summary:
+  --
+  The file provides functions for logging
+  untranslated messages in a gettext
+  localization system, including handling
+  escaped strings and managing log file
+  resources.
+  --
   _nl_log_untranslated()
   print_escaped()
   summary: string
 }
 class ngettext {
+  Summary:
+  --
+  The file implements the ngettext function
+  for handling pluralized message
+  translations in internationalization
+  support.
+  --
   NGETTEXT()
   summary: string
 }
 class os2compat {
+  Summary:
+  --
+  The file provides OS/2 compatibility
+  definitions and macros for the GNU Bash
+  functions and initialization routines for
+  environment-specific directory paths in
+  project to ensure proper functionality on
+  GNU Bash.
+  OS/2 systems.
+  --
   _nl_getenv()
   nlos2_initialize()
   summary: string
 }
 class osdep {
+  Summary:
+  --
+  The file provides OS-dependent
+  implementations and compatibility code for
+  the libintl library used in GNU Bash.
+  --
   osdep_c()
   summary: string
 }
 class plural_exp {
+  Summary:
+  --
+  The file defines data structures, macros,
+  The file provides functions and data
+  and function prototypes for parsing and
+  structures for parsing and determining
+  evaluating expressions used to determine
+  plural forms based on language-specific
+  plural forms in localization.
+  rules, primarily for use in localization
+  --
+  within GNU Bash.
+  --
   EXTRACT_PLURAL_EXPRESSION()
   FREE_EXPRESSION()
   GERMANIC_PLURAL()
@@ -310,6 +717,17 @@ class plural_exp {
   summary: string
 }
 class plural {
+  Summary:
+  --
+  The file defines the interface and token
+  The file implements a parser for plural
+  form expressions used in
+  types for a Bison-generated parser used in
+  internationalization, utilizing GNU Bison
+  plural form handling in gettext.
+  --
+  to generate the parsing code.
+  --
   FREE_EXPRESSION()
   __gettextparse()
   summary: string
@@ -317,15 +735,48 @@ class plural {
   yylex()
 }
 class printf_args {
+  Summary:
+  --
+  The file provides a function to extract
+  This header file defines data structures,
+  and assign variadic printf arguments to a
+  types, and macros for handling and parsing
+  structured argument list based on their
+  variable argument lists in a printf-like
+  function, supporting various data types
+  types.
+  --
+  and extensions.
+  --
   PRINTF_FETCHARGS()
   summary: string
 }
 class printf_parse {
+  Summary:
+  --
+  The file implements a parser for printf-
+  This header file defines data structures,
+  macros, and a function prototype for
+  style format strings, extracting
+  directives, flags, width, precision, and
+  parsing printf format strings in C.
+  --
+  argument types for formatted output.
+  --
   PRINTF_PARSE()
   printf_parse()
   summary: string
 }
 class printf {
+  Summary:
+  --
+  The file provides implementations of
+  various formatted output functions
+  supporting POSIX/XSI format strings,
+  including both standard and wide-character
+  variants, with compatibility
+  considerations across different systems.
+  --
   libintl_asprintf()
   libintl_fprintf()
   libintl_fwprintf()
@@ -339,6 +790,19 @@ class printf {
   // ... (7 more not shown)
 }
 class relocatable {
+  Summary:
+  --
+  The file provides declarations and macros
+  The file provides functions and mechanisms
+  for handling relocatable package paths,
+  to support relocatable installation
+  allowing dynamic adjustment of
+  prefixes for packages, allowing pathnames
+  installation prefixes in software.
+  to be dynamically adjusted based on the
+  --
+  installation location.
+  --
   DllMain()
   compute_curr_prefix()
   find_shared_library_fullname()
@@ -349,10 +813,28 @@ class relocatable {
   summary: string
 }
 class setlocale_lock {
+  Summary:
+  --
+  This file provides platform-specific
+  implementations for retrieving an internal
+  lock used by the setlocale_null_r
+  function, ensuring thread safety across
+  different operating systems and threading
+  models.
+  --
   gl_get_setlocale_null_lock()
   summary: string
 }
 class setlocale {
+  Summary:
+  --
+  The file provides a platform-specific
+  implementation of the setlocale() function
+  that handles locale setting and name
+  translation across different operating
+  systems, including special handling for
+  macOS, Windows, and Android.
+  --
   category_to_name()
   libintl_newlocale()
   libintl_setlocale()
@@ -361,6 +843,19 @@ class setlocale {
   summary: string
 }
 class setlocale_null {
+  Summary:
+  --
+  The code provides thread-safe and
+  This header file declares thread-safe
+  functions for retrieving locale names
+  platform-specific implementations for
+  associated with specific categories,
+  retrieving locale information, including
+  providing buffer-based and pointer-based
+  workarounds for Android and Windows
+  interfaces.
+  systems.
+  --
   setlocale_null()
   setlocale_null_androidfix()
   setlocale_null_r()
@@ -369,19 +864,54 @@ class setlocale_null {
   summary: string
 }
 class textdomain {
+  Summary:
+  --
+  This file implements the textdomain(3)
+  function, which manages the current
+  message catalog domain for localization
+  purposes.
+  --
   TEXTDOMAIN()
   summary: string
 }
 class thread_optim {
+  Summary:
+  --
+  The file provides macros and mechanisms to
+  optimize multithreaded code by detecting
+  single-threaded environments and
+  conditionally executing synchronization
+  code.
+  --
   gl_multithreaded()
   summary: string
 }
 class threadlib {
+  Summary:
+  --
+  The file provides functions to detect
+  whether POSIX threading support is
+  available and in use on the system.
+  --
   dummy_thread_func()
   glthread_in_use()
   summary: string
 }
 class tsearch {
+  Summary:
+  --
+  The file defines a binary tree data
+  The file implements red-black tree data
+  structure interface with functions for
+  structures and algorithms for searching,
+  inserting, deleting, and traversing nodes
+  searching, inserting, deleting, and
+  traversing tree nodes, providing
+  within the tree.
+  --
+  compatibility with systems that may or may
+  not have the standard tsearch library.
+  --
   __tdelete()
   __tdestroy()
   __tfind()
@@ -395,6 +925,20 @@ class tsearch {
   // ... (2 more not shown)
 }
 class vasnprintf {
+  Summary:
+  --
+  The file declares functions for
+  The file implements a flexible, memory-
+  allocating version of snprintf-like
+  dynamically allocating and formatting
+  functions supporting various character
+  strings similar to printf, with support
+  encodings and formatting directives, with
+  for variable argument lists.
+  --
+  fallback mechanisms for systems lacking
+  certain standard functions.
+  --
   VASNPRINTF()
   asnprintf()
   convert_to_decimal()
@@ -408,11 +952,25 @@ class vasnprintf {
   // ... (14 more not shown)
 }
 class vasnwprintf {
+  Summary:
+  --
+  The file declares functions for performing
+  formatted wide-character string output
+  with automatic memory allocation, similar
+  to printf, but for wide strings.
+  --
   asnwprintf()
   summary: string
   vasnwprintf()
 }
 class verify {
+  Summary:
+  --
+  The file provides compile-time assertion
+  macros and utilities to verify conditions
+  during compilation across various C and
+  C++ compilers.
+  --
   _GL_CONCAT()
   _GL_CONCAT0()
   _GL_COUNTER()
@@ -426,15 +984,42 @@ class verify {
   // ... (1 more not shown)
 }
 class version {
+  Summary:
+  --
+  The file defines and initializes the
+  The file defines version information for
+  the GNU termcap library and includes
+  version number for the libintl library,
+  including licensing information.
+  licensing details.
+  --
   main()
   none()
   summary: string
 }
 class wprintf_parse {
+  Summary:
+  --
+  This header file defines data structures,
+  macros, and a function prototype for
+  parsing wide-character printf format
+  strings.
+  --
   summary: string
   wprintf_parse()
 }
 class xsize {
+  Summary:
+  --
+  The file defines inline functions related
+  The file provides inline functions and
+  macros to perform size_t computations with
+  to size calculations, likely for handling
+  dimensions or sizes in a graphical or
+  overflow detection to ensure safe memory
+  layout context.
+  size calculations.
+  --
   summary: string
   xmax()
   xsize_h()
@@ -443,20 +1028,51 @@ class xsize {
   xsum4()
 }
 class GNU_Bash_Custom_Memory_Management_Module {
-  name: str
-  summary: str
+  Summary:
+  --
+  This module implements a custom memory
+  management system with functions for
+  allocation, deallocation, tracking,
+  debugging, and statistics collection
+  tailored for the GNU Bash environment.
+  --
+  name: GNU Bash Custom Memory Management Module
 }
 class alloca {
+  Summary:
+  --
+  This file provides a portable
+  implementation of the alloca function,
+  which allocates memory on the stack that
+  is automatically reclaimed upon function
+  exit, with system-specific support for
+  stack address calculation.
+  --
   alloca()
   find_stack_direction()
   i00afunc()
   summary: string
 }
 class getpagesize {
+  Summary:
+  --
+  The file provides a portable
+  implementation of the getpagesize()
+  function for systems that lack it, using
+  various system-specific macros and
+  fallbacks.
+  --
   getpagesize()
   summary: string
 }
 class imalloc {
+  Summary:
+  --
+  The file defines internal memory
+  allocation macros and utility functions
+  for optimized memory operations in the GNU
+  Bash source code.
+  --
   MALLOC_BZERO()
   MALLOC_MEMCPY()
   MALLOC_MEMSET()
@@ -464,6 +1080,16 @@ class imalloc {
   summary: string
 }
 class malloc {
+  Summary:
+  --
+  The file implements a custom dynamic
+  memory allocator for GNU Bash, managing
+  memory blocks of various sizes with
+  functions for allocation, deallocation,
+  reallocation, and alignment, along with
+  system-specific optimizations and
+  debugging features.
+  --
   bcoalesce()
   block_signals()
   botch()
@@ -477,6 +1103,13 @@ class malloc {
   // ... (23 more not shown)
 }
 class mstats {
+  Summary:
+  --
+  The file defines data structures and
+  function prototypes for collecting and
+  reporting malloc memory allocation
+  statistics when MALLOC_STATS is enabled.
+  --
   malloc_bucket_stats()
   malloc_stats()
   print_malloc_stats()
@@ -484,11 +1117,26 @@ class mstats {
   trace_malloc_stats()
 }
 class sbrk {
+  Summary:
+  --
+  The file provides an implementation of the
+  sbrk() function using brk() for systems
+  that lack a native sbrk(), managing heap
+  memory adjustments.
+  --
   initbrk()
   sbrk()
   summary: string
 }
 class shmalloc {
+  Summary:
+  --
+  The file provides function declarations
+  and macros for debugging, tracking, and
+  managing memory allocation in the shell,
+  including custom malloc, realloc, free,
+  and related functions.
+  --
   fprint_malloc_stats()
   malloc_set_register()
   malloc_set_trace()
@@ -502,6 +1150,14 @@ class shmalloc {
   // ... (7 more not shown)
 }
 class stats {
+  Summary:
+  --
+  The file provides functions for
+  collecting, computing, and printing
+  statistics related to memory allocation
+  and usage in a program, primarily for
+  debugging and performance analysis.
+  --
   _imalloc_fopen()
   _print_malloc_stats()
   fprint_malloc_stats()
@@ -512,10 +1168,27 @@ class stats {
   trace_malloc_stats()
 }
 class stub {
+  Summary:
+  --
+  The file contains a stub function for
+  memory allocation in the Bash shell
+  implementation, serving as a placeholder.
+  --
   bash_malloc_stub()
   summary: string
 }
 class table {
+  Summary:
+  --
+  The file defines data structures, macros,
+  The file provides bookkeeping functions
+  and function prototypes for tracking and
+  for tracking memory allocations and
+  deallocations, primarily for debugging and
+  managing memory allocations within a
+  custom memory registration system in C.
+  memory management purposes in GNU Bash.
+  --
   _entry_flags()
   _register_dump_table()
   find_entry()
@@ -529,6 +1202,13 @@ class table {
   // ... (3 more not shown)
 }
 class trace {
+  Summary:
+  --
+  The file provides tracing functions for
+  monitoring memory allocation and
+  deallocation, including configurable
+  verbosity and output options.
+  --
   malloc_set_trace()
   malloc_set_tracefn()
   malloc_set_tracefp()
@@ -538,6 +1218,19 @@ class trace {
   summary: string
 }
 class watch {
+  Summary:
+  --
+  The file defines data structures, macros,
+  The file implements watchpoint management
+  and function prototypes for tracking
+  functions for tracking memory allocations
+  and deallocations in a custom malloc
+  memory allocations and deallocations in a
+  debugging or monitoring context within the
+  implementation.
+  --
+  GNU Bash project.
+  --
   _malloc_ckwatch()
   malloc_unwatch()
   malloc_watch()
@@ -545,6 +1238,14 @@ class watch {
   watch_warn()
 }
 class xmalloc {
+  Summary:
+  --
+  The file provides safe wrapper functions
+  for memory allocation and deallocation,
+  namely xmalloc, xrealloc, and xfree, with
+  error handling for memory allocation
+  failures.
+  --
   memory_error_and_abort()
   summary: string
   xfree()
@@ -552,14 +1253,36 @@ class xmalloc {
   xrealloc()
 }
 class Readline_Command_Line_Interface_and_History_Management_Module {
-  name: str
-  summary: str
+  Summary:
+  --
+  This module offers example programs
+  demonstrating the use of the GNU Readline
+  library for interactive command-line
+  input, history management, file
+  manipulation, and event handling.
+  --
+  name: Readline Command-Line Interface and History Management Module
 }
 class Readline_Command_Line_Interface_and_History_Management_Examples {
-  name: str
-  summary: str
+  Summary:
+  --
+  This module provides example programs
+  demonstrating the use of the GNU Readline
+  library for interactive command-line
+  input, history management, file
+  manipulation, and event handling.
+  --
+  name: Readline Command-Line Interface and History Management Examples
 }
 class excallback {
+  Summary:
+  --
+  This C program demonstrates the use of the
+  readline library's alternate interface to
+  interactively change prompts and handle
+  input without blocking, while managing
+  terminal settings appropriately.
+  --
   change_prompt()
   get_prompt()
   main()
@@ -567,6 +1290,14 @@ class excallback {
   summary: string
 }
 class fileman {
+  Summary:
+  --
+  The file implements an interactive
+  command-line file management utility using
+  the GNU Readline library, allowing users
+  to execute commands like list, view,
+  delete, rename, and navigate directories.
+  --
   com_cd()
   com_delete()
   com_help()
@@ -580,26 +1311,68 @@ class fileman {
   // ... (10 more not shown)
 }
 class histexamp {
+  Summary:
+  --
+  The file demonstrates the use of the GNU
+  Readline library to implement a simple
+  command-line history management program
+  with features like adding, listing,
+  deleting, saving, and reading command
+  history.
+  --
   main()
   summary: string
 }
 class manexamp {
+  Summary:
+  --
+  The file provides example implementations
+  demonstrating how to read input lines and
+  manipulate text within the GNU Readline
+  library environment.
+  --
   invert_case_line()
   rl_gets()
   summary: string
 }
 class rl_callbacktest {
+  Summary:
+  --
+  The code implements a simple readline-
+  based interactive command-line interface
+  with signal handling and an event loop to
+  process user input and window resize
+  events.
+  --
   cb_linehandler()
   sighandler()
   summary: string
 }
 class rl {
+  Summary:
+  --
+  The code implements a command-line utility
+  that reads a line of input from the user
+  or a specified file descriptor, with
+  options for customizing the prompt,
+  default text, and number of characters to
+  read, utilizing the GNU Readline library
+  for input handling.
+  --
   main()
   set_deftext()
   summary: string
   usage()
 }
 class rlcat {
+  Summary:
+  --
+  The rlcat.c file implements a command-line
+  utility that concatenates and displays
+  file contents, optionally using readline
+  for interactive input with history
+  support.
+  --
   fcopy()
   main()
   stdcat()
@@ -607,14 +1380,40 @@ class rlcat {
   usage()
 }
 class rltest {
+  Summary:
+  --
+  The code implements a simple interactive
+  command-line interface that uses the GNU
+  Readline library to read user input,
+  display command history, and handle basic
+  commands like 'quit' and 'list'.
+  --
   main()
   summary: string
 }
 class Shell_Utility_and_Compatibility_Library {
-  name: str
-  summary: str
+  Summary:
+  --
+  This software module provides a
+  comprehensive set of functions and
+  utilities for system compatibility, string
+  manipulation, file and path handling,
+  network operations, terminal control,
+  timing, memory management, and encoding
+  conversions to support a portable and
+  feature-rich shell environment.
+  --
+  name: Shell Utility and Compatibility Library
 }
 class anonfile {
+  Summary:
+  --
+  The file provides functions to create and
+  manage anonymous or temporary files,
+  including memory-backed and shared memory
+  files, with mechanisms for opening and
+  closing these files.
+  --
   anonclose()
   anonopen()
   anonshmopen()
@@ -622,20 +1421,49 @@ class anonfile {
   summary: string
 }
 class casemod {
+  Summary:
+  --
+  The file provides functions to modify the
+  case of characters in strings, supporting
+  operations like uppercase, lowercase,
+  capitalize, uncapitalize, toggle case, and
+  word-based modifications, with support for
+  multibyte character encodings.
+  --
   cval()
   sh_modcase()
   summary: string
 }
 class clktck {
+  Summary:
+  --
+  The file provides a function to retrieve
+  the system's clock ticks per second
+  (CLK_TCK) value, with compatibility
+  considerations across different systems.
+  --
   get_clk_tck()
   summary: string
 }
 class clock {
+  Summary:
+  --
+  The file provides functions to convert and
+  display clock_t values into human-readable
+  time formats, primarily for timing and
+  profiling purposes.
+  --
   clock_t_to_secs()
   print_clock_t()
   summary: string
 }
 class compat {
+  Summary:
+  --
+  The file provides compatibility functions
+  to support older versions of built-in
+  commands and features in GNU Bash.
+  --
   compat_init()
   legal_alias_name()
   legal_identifier()
@@ -643,10 +1471,25 @@ class compat {
   summary: string
 }
 class dprintf {
+  Summary:
+  --
+  The file implements a custom version of
+  the dprintf function that outputs
+  formatted data to a specified file
+  descriptor.
+  --
   dprintf()
   summary: string
 }
 class eaccess {
+  Summary:
+  --
+  The file provides custom implementations
+  of access-related functions for a shell
+  environment, including handling special
+  device files and effective user
+  permissions.
+  --
   path_is_devfd()
   sh_eaccess()
   sh_euidaccess()
@@ -655,18 +1498,47 @@ class eaccess {
   summary: string
 }
 class fmtullong {
+  Summary:
+  --
+  The file provides functionality to convert
+  a `long long int` to its string
+  representation, leveraging existing code
+  for unsigned long long conversions.
+  --
   fmtullong()
   summary: string
 }
 class fmtulong {
+  Summary:
+  --
+  The file provides a function to convert an
+  unsigned long integer to a string
+  representation in various bases with
+  formatting options.
+  --
   fmtulong()
   summary: string
 }
 class fmtumax {
+  Summary:
+  --
+  The file provides functionality to convert
+  a uintmax_t value to its string
+  representation by leveraging existing code
+  for unsigned long integers.
+  --
   fmtumax()
   summary: string
 }
 class fnxform {
+  Summary:
+  --
+  The file provides functions to convert
+  strings between different character
+  encodings, primarily using iconv, for
+  filename transformations in a shell
+  environment.
+  --
   curencoding()
   fnx_fromfs()
   fnx_tofs()
@@ -675,15 +1547,37 @@ class fnxform {
   summary: string
 }
 class fpurge {
+  Summary:
+  --
+  The file implements a cross-platform
+  function to flush or purge the buffers of
+  a FILE stream, ensuring the stream's
+  buffer is cleared appropriately across
+  different systems.
+  --
   fpurge()
   summary: string
 }
 class getcwd {
+  Summary:
+  --
+  The file provides an implementation of the
+  getcwd function to retrieve the current
+  working directory path, especially for
+  systems lacking a native getcwd.
+  --
   _path_checkino()
   getcwd()
   summary: string
 }
 class getenv {
+  Summary:
+  --
+  The file provides custom implementations
+  of environment variable management
+  functions for the Bash shell, including
+  getenv, setenv, putenv, and unsetenv.
+  --
   _getenv()
   getenv()
   putenv()
@@ -692,19 +1586,49 @@ class getenv {
   unsetenv()
 }
 class gettimeofday {
+  Summary:
+  --
+  This code provides an implementation of
+  the gettimeofday function for systems that
+  lack it or have a broken version,
+  supporting both Unix-like and Windows
+  platforms.
+  --
   gettimeofday()
   initialize()
   summary: string
 }
 class inet_aton {
+  Summary:
+  --
+  The file provides an implementation of the
+  inet_aton function, which converts an IPv4
+  address from its string representation to
+  a binary network format.
+  --
   inet_aton()
   summary: string
 }
 class input_avail {
+  Summary:
+  --
+  The file provides a function to check
+  whether data is available for reading on a
+  specified file descriptor, using either
+  select() or ioctl() system calls depending
+  on system capabilities.
+  --
   input_avail()
   summary: string
 }
 class itos {
+  Summary:
+  --
+  The file provides functions to convert
+  integer values to their string
+  representations, supporting both signed
+  and unsigned integers.
+  --
   inttostr()
   itos()
   summary: string
@@ -712,34 +1636,90 @@ class itos {
   uitos()
 }
 class mailstat {
+  Summary:
+  --
+  The file provides a function to retrieve
+  and aggregate mailbox statistics from
+  maildir-style directories, emulating
+  certain stat fields for mailboxes.
+  --
   mailstat()
   summary: string
 }
 class makepath {
+  Summary:
+  --
+  The file provides a function to
+  concatenate a directory path and a
+  directory name into a full pathname, with
+  optional tilde expansion and handling of
+  special cases.
+  --
   sh_makepath()
   summary: string
 }
 class mbscasecmp {
+  Summary:
+  --
+  The file implements a function for case-
+  insensitive comparison of multibyte
+  strings, primarily used in environments
+  with multibyte character support.
+  --
   mbscasecmp()
   summary: string
 }
 class mbschr {
+  Summary:
+  --
+  The file provides a multibyte-aware
+  implementation of the strchr function to
+  correctly locate characters within
+  multibyte strings in various locales.
+  --
   mbschr()
   summary: string
 }
 class mbscmp {
+  Summary:
+  --
+  The file implements a multibyte string
+  comparison function 'mbscmp' for
+  environments lacking native support,
+  enabling comparison of multibyte character
+  strings.
+  --
   mbscmp()
   summary: string
 }
 class mbsncmp {
+  Summary:
+  --
+  The file implements a multibyte string
+  comparison function that compares up to N
+  multibyte characters between two strings.
+  --
   mbsncmp()
   summary: string
 }
 class memset {
+  Summary:
+  --
+  The file implements a custom version of
+  the memset function to set a block of
+  memory to a specific value.
+  --
   memset()
   summary: string
 }
 class mktime {
+  Summary:
+  --
+  The file implements a custom version of
+  the mktime function to convert a struct tm
+  to a time_t value, handling time zone and
+  leap second considerations.
+  --
   __mktime_internal()
   mktime()
   my_localtime_r()
@@ -747,10 +1727,22 @@ class mktime {
   ydhms_tm_diff()
 }
 class netconn {
+  Summary:
+  --
+  The file provides a function to determine
+  whether a given file descriptor represents
+  a network connection or socket.
+  --
   isnetconn()
   summary: string
 }
 class netopen {
+  Summary:
+  --
+  The netopen.c file provides functions to
+  establish TCP and UDP network connections,
+  supporting both IPv4 and IPv6 protocols.
+  --
   _getaddr()
   _getserv()
   _netopen()
@@ -760,6 +1752,13 @@ class netopen {
   summary: string
 }
 class oslib {
+  Summary:
+  --
+  The oslib.c file provides implementations
+  and replacements for various system-
+  dependent functions to ensure portability
+  across different Unix-like systems.
+  --
   bcopy()
   bzero()
   dup2()
@@ -773,18 +1772,41 @@ class oslib {
   // ... (2 more not shown)
 }
 class pathcanon {
+  Summary:
+  --
+  The file provides functions to
+  canonicalize and manipulate filesystem
+  pathnames, handling normalization, special
+  segments, and platform-specific path
+  features.
+  --
   _is_cygdrive()
   _path_isdir()
   sh_canonpath()
   summary: string
 }
 class pathphys {
+  Summary:
+  --
+  The file provides functions to resolve and
+  expand symbolic links in file paths,
+  producing absolute, symlink-free
+  pathnames.
+  --
   _path_readlink()
   sh_physpath()
   sh_realpath()
   summary: string
 }
 class random {
+  Summary:
+  --
+  The file provides functions for generating
+  and managing 16-bit and 32-bit pseudo-
+  random numbers, including seeding,
+  generating, and handling system entropy
+  sources.
+  --
   brand()
   brand32()
   genseed()
@@ -798,27 +1820,72 @@ class random {
   // ... (3 more not shown)
 }
 class reallocarray {
+  Summary:
+  --
+  The file provides a custom implementation
+  of the reallocarray function, which
+  reallocates memory for an array based on
+  element count and size, with overflow
+  checking.
+  --
   reallocarray()
   summary: string
 }
 class rename {
+  Summary:
+  --
+  The file provides a custom implementation
+  of the 'rename' function for systems that
+  lack a native version, handling file
+  renaming with checks for file existence
+  and identity.
+  --
   rename()
   summary: string
 }
 class setlinebuf {
+  Summary:
+  --
+  The file provides a function to set line-
+  buffering mode on a standard I/O stream,
+  with platform-specific handling.
+  --
   sh_setlinebuf()
   summary: string
 }
 class shmatch {
+  Summary:
+  --
+  The file provides a shell interface for
+  performing POSIX regular expression
+  matching, including compiling patterns,
+  executing matches, and optionally
+  capturing subexpressions into shell
+  variables.
+  --
   sh_regmatch()
   summary: string
 }
 class shmbchar {
+  Summary:
+  --
+  The file provides functions for handling
+  multibyte character strings, including
+  calculating string length and locating
+  multibyte characters.
+  --
   mbsmbchar()
   mbstrlen()
   summary: string
 }
 class shquote {
+  Summary:
+  --
+  The file provides functions for quoting,
+  dequoting, and detecting special
+  characters in strings to facilitate safe
+  shell input processing and parsing.
+  --
   sh_backslash_quote()
   sh_backslash_quote_for_double_quotes()
   sh_contains_shell_metas()
@@ -829,6 +1896,14 @@ class shquote {
   summary: string
 }
 class shtty {
+  Summary:
+  --
+  The file provides an abstract interface
+  for terminal control, allowing
+  manipulation of terminal attributes such
+  as mode, echo, and character input
+  behavior across different system types.
+  --
   summary: string
   tt_setcbreak()
   tt_seteightbit()
@@ -842,6 +1917,16 @@ class shtty {
   // ... (11 more not shown)
 }
 class snprintf {
+  Summary:
+  --
+  The file provides an implementation of the
+  snprintf function with support for various
+  format specifiers, locale-aware grouping,
+  floating-point formatting, and
+  compatibility features, primarily for
+  environments lacking native snprintf
+  support.
+  --
   asprintf()
   dfallback()
   groupnum()
@@ -855,6 +1940,13 @@ class snprintf {
   // ... (10 more not shown)
 }
 class spell {
+  Summary:
+  --
+  The file provides functions for spelling
+  correction and suggestion of pathnames by
+  comparing directory entries to potentially
+  misspelled names.
+  --
   dirspell()
   mindist()
   spdist()
@@ -862,27 +1954,72 @@ class spell {
   summary: string
 }
 class strcasecmp {
+  Summary:
+  --
+  The file provides implementations of case-
+  insensitive string comparison functions,
+  including strcasecmp and strncasecmp, for
+  environments lacking native support.
+  --
   strcasecmp()
   strncasecmp()
   summary: string
 }
 class strcasestr {
+  Summary:
+  --
+  The file implements a case-insensitive
+  version of the strstr function to find a
+  substring within another string regardless
+  of case.
+  --
   strcasestr()
   summary: string
 }
 class strchrnul {
+  Summary:
+  --
+  The file implements a function to locate
+  the first occurrence of a character or the
+  null terminator in a string, optimized for
+  performance using longword-sized memory
+  operations.
+  --
   strchrnul()
   summary: string
 }
 class strdup {
+  Summary:
+  --
+  The file implements a custom version of
+  the strdup function that creates a
+  duplicate of a given string in dynamically
+  allocated memory.
+  --
   strdup()
   summary: string
 }
 class strerror {
+  Summary:
+  --
+  The file provides an implementation of the
+  strerror function to return a string
+  describing an error code, especially when
+  the system's native strerror is
+  unavailable.
+  --
   strerror()
   summary: string
 }
 class strftime {
+  Summary:
+  --
+  The file provides an implementation of the
+  ISO C library routine 'strftime' for
+  formatting date and time into a string,
+  including support for various extensions
+  and locale-independent features.
+  --
   isleap()
   iso8601wknum()
   max()
@@ -892,6 +2029,12 @@ class strftime {
   weeknumber()
 }
 class stringlist {
+  Summary:
+  --
+  The file provides a set of functions for
+  creating, manipulating, and managing a
+  dynamic list of strings in C.
+  --
   strlist_append()
   strlist_copy()
   strlist_create()
@@ -905,6 +2048,14 @@ class stringlist {
   // ... (5 more not shown)
 }
 class stringvec {
+  Summary:
+  --
+  The file provides functions for creating,
+  resizing, copying, sorting, and managing
+  arrays of strings, including conversions
+  to and from internal shell word list
+  structures.
+  --
   strvec_copy()
   strvec_create()
   strvec_dispose()
@@ -918,56 +2069,154 @@ class stringvec {
   // ... (2 more not shown)
 }
 class strlcpy {
+  Summary:
+  --
+  The file implements the strlcpy function,
+  which safely copies a string to a
+  destination buffer with size checking to
+  prevent overflows.
+  --
   strlcpy()
   summary: string
 }
 class strnlen {
+  Summary:
+  --
+  The file implements a custom version of
+  the strnlen function that calculates the
+  length of a string up to a specified
+  maximum length.
+  --
   strnlen()
   summary: string
 }
 class strpbrk {
+  Summary:
+  --
+  The file implements a custom version of
+  the strpbrk function to locate the first
+  occurrence in a string of any character
+  from a set of accepted characters.
+  --
   strpbrk()
   summary: string
 }
 class strscpy {
+  Summary:
+  --
+  The file implements a safe string copy
+  function that copies a null-terminated
+  string into a buffer with length checking
+  to prevent overflow.
+  --
   strscpy()
   summary: string
 }
 class strstr {
+  Summary:
+  --
+  The file provides a custom implementation
+  of the strstr() function to locate a
+  substring within a string, optimized for
+  performance.
+  --
   strstr()
   summary: string
 }
 class strtod {
+  Summary:
+  --
+  The file provides a custom implementation
+  of the strtod function to convert strings
+  to double-precision floating-point
+  numbers, handling various edge cases and
+  errors.
+  --
   strtod()
   summary: string
 }
 class strtoimax {
+  Summary:
+  --
+  The file provides an implementation of the
+  strtoimax function, which converts a
+  string to an intmax_t value, with support
+  for different platform-specific integer
+  types.
+  --
   main()
   strtoimax()
   summary: string
 }
 class strtol {
+  Summary:
+  --
+  The file provides an implementation of the
+  strtol function for converting strings to
+  long integers, including handling various
+  bases and edge cases.
+  --
   strtol()
   summary: string
 }
 class strtoll {
+  Summary:
+  --
+  The file provides an implementation or
+  compatibility layer for the strtoll
+  function, converting string
+  representations of numbers into long long
+  integers.
+  --
   main()
   summary: string
 }
 class strtoul {
+  Summary:
+  --
+  The file provides a conditional
+  implementation of the strtoul function,
+  which converts a string to an unsigned
+  long integer, by including an existing
+  implementation if not already available.
+  --
   main()
   summary: string
 }
 class strtoull {
+  Summary:
+  --
+  The file provides an implementation for
+  converting a string to an unsigned long
+  long integer, primarily when the system
+  lacks a native strtoull function.
+  --
   strtoull()
   summary: string
 }
 class strtoumax {
+  Summary:
+  --
+  The file provides an implementation of the
+  strtoumax function, which converts a
+  string to a uintmax_t integer type, with
+  conditional support for different
+  platform-specific integer types.
+  --
   main()
   strtoumax()
   summary: string
 }
 class strtrans {
+  Summary:
+  --
+  The file provides functions to translate
+  strings with ANSI-C escape sequences into
+  their literal characters, quote strings
+  with ANSI-C style escapes, and determine
+  if strings need quoting, primarily for
+  shell scripting purposes.
+  --
   ansic_quote()
   ansic_shouldquote()
   ansicstr()
@@ -975,11 +2224,25 @@ class strtrans {
   summary: string
 }
 class strvis {
+  Summary:
+  --
+  The file provides functions to convert
+  non-graphical or unsafe characters in a
+  string into a visible, escaped format for
+  better readability and debugging.
+  --
   sh_charvis()
   sh_strvis()
   summary: string
 }
 class timers {
+  Summary:
+  --
+  The file provides functions to create,
+  manage, and handle timers within the shell
+  environment, including setting, unsetting,
+  and checking timer expiration.
+  --
   shtimer_alloc()
   shtimer_alrm()
   shtimer_chktimeout()
@@ -993,10 +2256,25 @@ class timers {
   // ... (2 more not shown)
 }
 class times {
+  Summary:
+  --
+  The file provides an implementation of the
+  times() function, which retrieves process
+  and child process CPU times, with
+  conditional support based on system
+  capabilities.
+  --
   summary: string
   times()
 }
 class timeval {
+  Summary:
+  --
+  The file provides functions to perform
+  arithmetic and conversions on struct
+  timeval objects, including addition,
+  subtraction, and formatting for display.
+  --
   addtimeval()
   difftimeval()
   print_timeval()
@@ -1005,6 +2283,14 @@ class timeval {
   timeval_to_secs()
 }
 class tmpfile {
+  Summary:
+  --
+  The code provides functions to generate,
+  open, and manage temporary files and
+  filenames safely within a shell
+  environment, ensuring proper directory
+  selection and unique naming.
+  --
   get_sys_tmpdir()
   get_tmpdir()
   sh_mktmpfd()
@@ -1013,15 +2299,38 @@ class tmpfile {
   summary: string
 }
 class uconvert {
+  Summary:
+  --
+  The file provides a function to convert
+  string representations of decimal numbers
+  into integer and fractional parts, scaled
+  appropriately for further numerical
+  processing.
+  --
   summary: string
   uconvert()
 }
 class ufuncs {
+  Summary:
+  --
+  The ufuncs.c file provides implementations
+  of sleep and alarm functions that support
+  fractional seconds and compatibility
+  across different system environments.
+  --
   falarm()
   fsleep()
   summary: string
 }
 class unicode {
+  Summary:
+  --
+  The file provides functions for converting
+  Unicode characters between different
+  encodings and formats, including UTF-8 and
+  ASCII, with support for locale-specific
+  conversions.
+  --
   stub_charset()
   summary: string
   u32cconv()
@@ -1029,6 +2338,13 @@ class unicode {
   u32toutf8()
 }
 class utf8 {
+  Summary:
+  --
+  The file provides functions for handling
+  UTF-8 encoded strings, including character
+  length, comparison, and character boundary
+  detection.
+  --
   summary: string
   utf8_mblen()
   utf8_mbschr()
@@ -1038,39 +2354,106 @@ class utf8 {
   utf8_mbstrlen()
 }
 class vprint {
+  Summary:
+  --
+  The file provides emulated implementations
+  of vfprintf and vsprintf functions for BSD
+  systems, enabling formatted output to
+  files and strings.
+  --
   summary: string
   vfprintf()
   vsprintf()
 }
 class wcsdup {
+  Summary:
+  --
+  The file provides an implementation of the
+  wcsdup function to duplicate wide
+  character strings if not already available
+  in the environment.
+  --
   summary: string
   wcsdup()
 }
 class wcsnwidth {
+  Summary:
+  --
+  The file provides a function to compute
+  the display width of a wide character
+  string up to a specified maximum width,
+  returning the length in wide characters
+  that fit within that width.
+  --
   summary: string
   wcsnwidth()
 }
 class wcswidth {
+  Summary:
+  --
+  The file provides an implementation of the
+  wcswidth function to compute the display
+  width of a wide character string,
+  especially when not provided by the
+  system.
+  --
   summary: string
   wcswidth()
 }
 class winsize {
+  Summary:
+  --
+  The code handles terminal window size
+  detection and updates for a shell
+  environment, including signal handling and
+  compatibility across different systems.
+  --
   get_new_window_size()
   summary: string
 }
 class zcatfd {
+  Summary:
+  --
+  The file defines a function that copies
+  data from one file descriptor to another,
+  handling errors appropriately.
+  --
   summary: string
   zcatfd()
 }
 class zgetline {
+  Summary:
+  --
+  The file implements a custom version of
+  the getline function, named zgetline,
+  which reads a line of input from a
+  specified file descriptor into a
+  dynamically allocated buffer, supporting
+  both buffered and unbuffered reading
+  modes.
+  --
   summary: string
   zgetline()
 }
 class zmapfd {
+  Summary:
+  --
+  The code defines a function that reads the
+  entire contents of a file descriptor into
+  a dynamically allocated buffer, handling
+  errors and resizing as needed.
+  --
   summary: string
   zmapfd()
 }
 class zread {
+  Summary:
+  --
+  The file provides functions for reading
+  data from file descriptors with support
+  for retries, interruption handling,
+  buffering, and synchronization.
+  --
   summary: string
   zread()
   zreadc()
@@ -1081,18 +2464,52 @@ class zread {
   zsyncfd()
 }
 class zwrite {
+  Summary:
+  --
+  The file provides a function to reliably
+  write a specified number of bytes from a
+  buffer to a file descriptor, retrying on
+  certain errors.
+  --
   summary: string
   zwrite()
 }
 class Terminal_Capability_Handling_Library {
-  name: str
-  summary: str
+  Summary:
+  --
+  The module provides functions to parse,
+  retrieve, and manipulate terminal
+  capability data and control sequences from
+  the termcap database for terminal handling
+  and output formatting.
+  --
+  name: Terminal Capability Handling Library
 }
 class ltcap {
+  Summary:
+  --
+  The file ltcap.h defines macros and
+  includes licensing information for the
+  termcap library, serving as a header file
+  with declarations and constants.
+  --
   None()
   summary: string
 }
 class termcap {
+  Summary:
+  --
+  The file declares the public interface and
+  The file provides functions and mechanisms
+  function prototypes for the termcap
+  to parse, retrieve, and handle terminal
+  capability data from termcap database
+  library, which provides terminal
+  capability handling functions.
+  entries, supporting capabilities lookup,
+  --
+  string processing, and output formatting.
+  --
   compare_contin()
   find_capability()
   gobble_line()
@@ -1106,6 +2523,14 @@ class termcap {
   // ... (7 more not shown)
 }
 class tparam {
+  Summary:
+  --
+  The file provides functions to merge
+  parameters into termcap strings, handling
+  parameter expansion and string
+  manipulation for terminal control
+  sequences.
+  --
   memory_out()
   summary: string
   tgoto()
@@ -1115,15 +2540,45 @@ class tparam {
   xrealloc()
 }
 class TildeExpansionAndEnvVarHandler {
-  name: str
-  summary: str
+  Summary:
+  --
+  This module provides functions for
+  handling tilde expansion and environment
+  variable retrieval in shell-like
+  environments, enabling user input
+  processing with support for expanding ~ to
+  user home directories or environment
+  variables.
+  --
+  name: TildeExpansionAndEnvVarHandler
 }
 class shell {
+  Summary:
+  --
+  The file provides utility functions for
+  handling tilde expansion and environment
+  variables in a shell, specifically
+  retrieving environment variable values and
+  the user's home directory.
+  --
   get_env_value()
   get_home_dir()
   summary: string
 }
 class tilde {
+  Summary:
+  --
+  The file declares external variables and
+  The file implements tilde expansion
+  functionality for shell-like environments,
+  functions related to tilde expansion for
+  allowing the expansion of ~ to user home
+  the Readline library, facilitating user
+  directories or environment variables.
+  input processing with tilde expansion
+  --
+  features.
+  --
   glue_prefix_and_suffix()
   isolate_tilde_prefix()
   summary: string

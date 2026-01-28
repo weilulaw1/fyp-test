@@ -1,14 +1,37 @@
 @startuml
 class Shell_Utilities_and_Signal_Handling_Support_Module {
-  name: str
-  summary: str
+  Summary:
+  --
+  This module provides utilities for shell
+  environment inspection, signal handling,
+  text processing, and documentation
+  conversion, including version display,
+  environment variable management, signal
+  name generation, case conversion, argument
+  echoing, and man page to HTML conversion.
+  --
+  name: Shell Utilities and Signal Handling Support Module
 }
 class bashversion {
+  Summary:
+  --
+  The file implements a command-line utility
+  that displays various version and build
+  information about the Bash shell based on
+  user-specified options.
+  --
   main()
   summary: string
   usage()
 }
 class man2html {
+  Summary:
+  --
+  man2html.c is a program that converts Unix
+  man pages into HTML format with added
+  links and formatting, supporting various
+  macros and embedded commands.
+  --
   add_links()
   add_to_index()
   change_to_font()
@@ -22,32 +45,83 @@ class man2html {
   // ... (23 more not shown)
 }
 class mksignames {
+  Summary:
+  --
+  The code generates a C header file
+  containing an array of signal names,
+  either writing to a specified file or
+  standard output.
+  --
   main()
   summary: string
   write_signames()
 }
 class printenv {
+  Summary:
+  --
+  This code implements a minimal version of
+  the Unix 'printenv' command that displays
+  environment variables or the value of a
+  specified variable.
+  --
   main()
   summary: string
 }
 class recho {
+  Summary:
+  --
+  The code implements a program that prints
+  command-line arguments enclosed in angle
+  brackets, with non-printable characters
+  made visible using caret notation.
+  --
   main()
   strprint()
   summary: string
 }
 class siglen {
+  Summary:
+  --
+  The program iterates through all signal
+  numbers, displays their corresponding
+  signal messages if a verbose flag is set,
+  and outputs the length of the longest
+  signal message.
+  --
   main()
   summary: string
 }
 class signames {
+  Summary:
+  --
+  The file initializes and populates an
+  array of signal names corresponding to
+  system signal numbers, including real-time
+  and special signals, for use in signal
+  handling within GNU Bash.
+  --
   initialize_signames()
   summary: string
 }
 class xcase {
+  Summary:
+  --
+  The code implements a command-line utility
+  that converts the case of characters in a
+  file or standard input, toggling between
+  uppercase and lowercase based on user
+  options.
+  --
   main()
   summary: string
 }
 class zecho {
+  Summary:
+  --
+  The code implements a simple command-line
+  program that echoes its arguments to
+  standard output, separated by spaces.
+  --
   main()
   summary: string
 }
