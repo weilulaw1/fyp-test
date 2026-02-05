@@ -214,7 +214,8 @@ def run_json_to_uml(request):
                 check=True,
                 capture_output=True,
                 text=True,
-                encoding="utf-8",
+                encoding="mbcs",
+                errors="replace",
             )
             print("STDOUT:", result.stdout)
             print("STDERR:", result.stderr)
@@ -322,33 +323,30 @@ def archrec_upload_to_projects(request):
 @csrf_exempt
 def archrec_run_summarize(request):
     """
-    Runs summarize_projects.py using its defaults:
-      projects_dir='data/projects'
-      output_dir='data/summaries'
-    Assumes uploads went into <base>/data/projects.
+    CHAINED:
+      1) Run summarize_projects.py
+      2) Find latest summary JSON
+      3) Run json_to_uml.py using that JSON
+      4) Copy summary + uml output into MEDIA_ROOT so frontend FolderView can see it
     """
     if request.method != "POST":
         return JsonResponse({"error": "Invalid request method"}, status=405)
 
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "files", "arch rec demo"))
-    script_path = os.path.join(base_dir, "summarize_projects.py")
+    summarize_script = os.path.join(base_dir, "summarize_projects.py")
 
+    # 1) Run summarizer
     try:
         res = subprocess.run(
-            [sys.executable, script_path],
-            cwd=base_dir,               # <-- THIS makes 'data/projects' resolve correctly
+            [sys.executable, summarize_script],
+            cwd=base_dir,
             check=True,
             capture_output=True,
             text=True,
-            encoding="utf-8",
+            encoding="mbcs",
+            errors="replace",
         )
-        print("SUMMARIZE STDOUT:", res.stdout)
-        print("SUMMARIZE STDERR:", res.stderr)
     except subprocess.CalledProcessError as e:
-        print("=== SUMMARIZE FAILED ===")
-        print("RETURN CODE:", e.returncode)
-        print("STDOUT:\n", e.stdout)
-        print("STDERR:\n", e.stderr)
         traceback.print_exc()
         return JsonResponse({
             "error": "Summarization failed",
@@ -357,11 +355,146 @@ def archrec_run_summarize(request):
             "stderr": e.stderr,
         }, status=500)
 
-
-    # You can optionally return the summaries folder path
+    project_name = _pick_project_name(base_dir)
     summaries_dir = os.path.join(base_dir, "data", "summaries")
+
+    # 2) Pick summary JSON
+    summary_json = _find_latest_summary_json(summaries_dir, project_name)
+    if not summary_json:
+        return JsonResponse({
+            "error": "No summary JSON found after summarization",
+            "summaries_dir": summaries_dir,
+            "stdout": res.stdout,
+        }, status=500)
+
+    # 3) Run json_to_uml into a temp/output folder under arch rec demo
+    uml_local_out = os.path.join(base_dir, "uml_output", project_name)
+    try:
+        # clean old uml for this project
+        if os.path.isdir(uml_local_out):
+            shutil.rmtree(uml_local_out)
+        uml_run = _run_json_to_uml_local(base_dir, summary_json, uml_local_out)
+    except Exception as e:
+        traceback.print_exc()
+        return JsonResponse({
+            "error": "UML generation failed",
+            "details": str(e),
+            "summary_json": summary_json,
+        }, status=500)
+
+    # 4) "Auto upload folder" = copy artifacts into MEDIA_ROOT
+    # so FolderView (which lists MEDIA_ROOT) can show them.
+    media_summaries_dir = os.path.join(settings.MEDIA_ROOT, "archrec", "summaries", project_name)
+    media_uml_dir = os.path.join(settings.MEDIA_ROOT, "uml_output", project_name)
+
+    try:
+        os.makedirs(media_summaries_dir, exist_ok=True)
+
+        # copy summary json
+        shutil.copy2(summary_json, os.path.join(media_summaries_dir, os.path.basename(summary_json)))
+
+        # replace UML folder
+        if os.path.isdir(media_uml_dir):
+            shutil.rmtree(media_uml_dir)
+        shutil.copytree(uml_local_out, media_uml_dir)
+    except Exception as e:
+        traceback.print_exc()
+        return JsonResponse({
+            "error": "Failed to copy outputs into MEDIA_ROOT",
+            "details": str(e),
+            "media_uml_dir": media_uml_dir,
+            "media_summaries_dir": media_summaries_dir,
+        }, status=500)
+
     return JsonResponse({
-        "status": "summarization completed",
-        "summaries_dir": summaries_dir,
-        "stdout": res.stdout,
+        "status": "pipeline completed",
+        "project_name": project_name,
+        "summary_json": summary_json,
+        "media_summary_dir": media_summaries_dir.replace("\\", "/"),
+        "media_uml_dir": media_uml_dir.replace("\\", "/"),
+        "summarize_stdout": res.stdout,
+        "uml_stdout": uml_run.get("stdout", ""),
     })
+
+
+
+def _pick_project_name(base_dir: str) -> str:
+    projects_root = os.path.join(base_dir, "data", "projects")
+    if not os.path.isdir(projects_root):
+        return "current"
+
+    # Prefer: if exactly one project folder exists, use it
+    candidates = [
+        d for d in os.listdir(projects_root)
+        if os.path.isdir(os.path.join(projects_root, d))
+    ]
+    if len(candidates) == 1:
+        return candidates[0]
+
+    # Fallback: newest modified project folder
+    if candidates:
+        candidates.sort(
+            key=lambda d: os.path.getmtime(os.path.join(projects_root, d)),
+            reverse=True
+        )
+        return candidates[0]
+
+    return "current"
+
+
+def _find_latest_summary_json(summaries_dir: str, project_name: str) -> str | None:
+    """
+    Tries to find the most relevant JSON produced by summarize_projects.py.
+    Prefers files that contain project_name in filename, else newest json.
+    """
+    if not os.path.isdir(summaries_dir):
+        return None
+
+    all_json = []
+    for root, _, files in os.walk(summaries_dir):
+        for f in files:
+            if f.lower().endswith(".json"):
+                p = os.path.join(root, f)
+                all_json.append(p)
+
+    if not all_json:
+        return None
+
+    # Prefer name match
+    matched = [p for p in all_json if project_name.lower() in os.path.basename(p).lower()]
+    target_list = matched if matched else all_json
+
+    target_list.sort(key=lambda p: os.path.getmtime(p), reverse=True)
+    return target_list[0]
+
+
+def _run_json_to_uml_local(base_dir: str, json_path: str, out_dir: str) -> dict:
+    """
+    Finds and runs json_to_uml.py somewhere under base_dir.
+    """
+    script_path = _find_file_recursive(base_dir, "json_to_uml.py")
+    if not script_path:
+        raise FileNotFoundError(f"json_to_uml.py not found under: {base_dir}")
+    if not os.path.exists(json_path):
+        raise FileNotFoundError(f"summary json not found at: {json_path}")
+
+    os.makedirs(out_dir, exist_ok=True)
+
+    res = subprocess.run(
+        [sys.executable, script_path, json_path, out_dir],
+        cwd=os.path.dirname(script_path),     # safer for relative imports
+        check=True,
+        capture_output=True,
+        text=True,
+        encoding="mbcs",
+        errors="replace",
+    )
+    return {"stdout": res.stdout, "stderr": res.stderr, "script_path": script_path}
+
+
+def _find_file_recursive(root_dir: str, filename: str) -> str | None:
+    for root, _, files in os.walk(root_dir):
+        if filename in files:
+            return os.path.join(root, filename)
+    return None
+
