@@ -1,7 +1,7 @@
 import React, {useState} from "react";
-import SidebarOutIcon from './assets/sidebar out.png';
-import SidebarInIcon from './assets/sidebar in.png';
-import FolderView from "./FolderView";
+import SidebarOutIcon from '../../assets/sidebar-out.png';
+import SidebarInIcon from '../../assets/sidebar-in.png';
+import FolderView from "../archrec/FolderView";
 
 export default function Sidebar({
   isOpen,

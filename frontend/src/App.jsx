@@ -1,11 +1,13 @@
-import './App.css';
+import "./styles/App.css";
 import { useState } from "react";
-import MenuBar from './MenuBar';
-import Sidebar from './SideBar';
-import DiagramView from './DiagramView';
-import PlantUMLTestSVG from './plantUMLsvg';
-import PlantUMLpdfTest from './plantUMLpdf';
-import CodeViewer from './CodeViewer';
+
+import Sidebar from "./components/layout/Sidebar";
+import Topbar from "./components/layout/Topbar";
+
+import DiagramView from "./components/archrec/DiagramView";
+import PlantUMLTestSVG from "./components/archrec/plantUMLsvg";
+import PlantUMLpdfTest from "./components/archrec/plantUMLpdf";
+import CodeViewer from "./components/archrec/CodeViewer";
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -22,7 +24,6 @@ function App() {
 
   return (
     <div>
-      {/* Sidebar */}
       <Sidebar
         isOpen={sidebarOpen}
         toggleSidebar={toggleSidebar}
@@ -35,14 +36,12 @@ function App() {
         setSelectedFile={setActiveFile}
       />
 
-      {/* Menu bar */}
-      <MenuBar
+      <Topbar
         onToggleSidebar={toggleSidebar}
         sidebarOpen={sidebarOpen}
         setUploadedFiles={setUploadedFiles}
       />
 
-      {/* Main content */}
       <div
         style={{
           padding: "20px",
