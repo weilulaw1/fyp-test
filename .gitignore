@@ -35,3 +35,10 @@ build/
 # OS files
 .DS_Store
 Thumbs.db
+
+# secrets
+keys.py
+**/keys.py
+.env
+**/.env
+
