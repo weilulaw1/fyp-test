@@ -4,16 +4,29 @@ import Topbar from "../components/layout/Topbar";
 export default function DashboardLayout({
   sidebarOpen,
   onToggleSidebar,
+  uploadedFiles,
+  activeFile,
+  setActiveFile,
   children,
 }) {
   return (
-    <div style={{ minHeight: "100vh", background: "#f4f6fa" }}>
-      <Sidebar isOpen={sidebarOpen} toggleSidebar={onToggleSidebar} />
-
-      <Topbar
-        sidebarOpen={sidebarOpen}
-        onToggleSidebar={onToggleSidebar}
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "transparent",
+        overflow: "visible",
+      }}
+    >
+      <Sidebar
+        isOpen={sidebarOpen}
+        toggleSidebar={onToggleSidebar}
+        uploadedFiles={uploadedFiles}
+        onFileClick={(f) => setActiveFile(f)}
+        selectedFile={activeFile}
+        setSelectedFile={setActiveFile}
       />
+
+      <Topbar sidebarOpen={sidebarOpen} onToggleSidebar={onToggleSidebar} />
 
       <main
         style={{
@@ -21,6 +34,8 @@ export default function DashboardLayout({
           paddingTop: "72px",
           padding: "24px",
           transition: "margin-left 0.3s ease",
+          minHeight: "100vh",
+          overflow: "hidden",
         }}
       >
         {children}

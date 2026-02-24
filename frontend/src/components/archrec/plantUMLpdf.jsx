@@ -45,7 +45,7 @@ const PlantUMLpdfTest= ({file})=> {
           <object
             data={pdfUrl}
             type="application/pdf"
-            width="200%"
+            width="100%"
             height="100%"
           >
             <p>

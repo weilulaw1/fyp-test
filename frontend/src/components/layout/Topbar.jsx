@@ -19,22 +19,7 @@ const menuItems = [
       },
     ],
   },
-  {
-    label: "Edit",
-    actions: [
-      { name: "Undo", endpoint: "http://127.0.0.1:8000/api/edit/undo/" },
-      { name: "Redo", endpoint: "http://127.0.0.1:8000/api/edit/redo/" },
-    ],
-  },
-  {
-    label: "View",
-    actions: [
-      {
-        name: "Toggle Sidebar",
-        endpoint: "http://127.0.0.1:8000/api/view/toggle_sidebar/",
-      },
-    ],
-  },
+  
 ];
 
 function safeJsonParse(text) {
