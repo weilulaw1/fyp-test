@@ -4,146 +4,124 @@ import os
 import io
 from pathlib import Path
 import textwrap
+import hashlib
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 
-# Threshold: max classes per diagram before splitting
-MAX_CLASSES = 200
-MAX_DEPTH = 3  # Optional depth limit
-
-# Summary-as-comments formatting (inside class)
-SUMMARY_WRAP_WIDTH = 42
-SUMMARY_MAX_LINES = None  # set to an int (e.g., 8) to cap summary height
-SUMMARY_CLIP_CHARS = 2000  # safety cap so notes don't explode
+# --- Configuration ---
+MAX_CLASSES = 40          # hard cap per diagram (keeps PlantUML stable)
+MAX_DEPTH = 3
+SUMMARY_WRAP_WIDTH = 40
+MAX_METHODS_SHOWN = 12
 
 # Global stores
-# classes: { class_name: set(lines) }
-classes = {}
-relationships = []
+classes = {}        # { class_id: {"name": str, "attrs": set[str], "summary": str} }
+relationships = []  # list[(parent_id, child_id)]
 
-# Globals set in main()
-file_path = None
+OUTPUT_DIR = None
 base_name = None
 part_index = 1
-OUTPUT_DIR = None
 
 
-def sanitize(name):
-    """Make a safe class name for PlantUML (consistent)."""
-    if name is None:
-        return "Unnamed"
+def safe_text(s: object) -> str:
+    """Make text safer for PlantUML rendering."""
+    if s is None:
+        return ""
     return (
-        str(name)
-        .replace("/", "_")
-        .replace(".", "_")
-        .replace(" ", "_")
-        .replace("-", "_")
+        str(s)
+        .replace('"', "'")
+        .replace("{", "(")
+        .replace("}", ")")
     )
 
 
-def add_class(name, attributes):
-    """Register a PlantUML class with given attributes."""
-    safe = sanitize(name)
-    if safe not in classes:
-        classes[safe] = set()
-    for attr, val in attributes.items():
-        classes[safe].add(f"{attr}: {val}")
+def sanitize_id(raw: object) -> str:
+    """
+    Creates a stable, collision-safe PlantUML ID:
+    - readable base made of alnum/_ only
+    - short md5 suffix to avoid collisions
+    """
+    if not raw:
+        raw = "Unnamed"
+    s = str(raw)
+    base = "".join(c if c.isalnum() else "_" for c in s)
+    h = hashlib.md5(s.encode("utf-8")).hexdigest()[:8]
+    return f"{base}_{h}"
 
 
-def add_summary_as_comments(class_name, summary):
-    if not isinstance(summary, str) or not summary.strip():
-        return
-
-    safe = sanitize(class_name)
-    classes.setdefault(safe, set())
-
-    text = summary.strip().replace("\r", "")
-    if len(text) > SUMMARY_CLIP_CHARS:
-        text = text[:SUMMARY_CLIP_CHARS] + "..."
-
-    wrapped = textwrap.wrap(text, width=SUMMARY_WRAP_WIDTH)
-
-    # Header
-    classes[safe].add("__SUMMARY__0000Summary:")
-    classes[safe].add("__SUMMARY__0001--")
-
-    # Body
-    for i, line in enumerate(wrapped):
-        classes[safe].add(f"__SUMMARY__{i + 2:04d}{line}")
-
-    # Divider AFTER all summary lines
-    end_index = len(wrapped) + 2
-    classes[safe].add(
-        f"__SUMMARY__{end_index:04d}{'--'}"
-    )
+SKIP_KEYS = {"summary", "children", "files", "functions", "path", "name"}
 
 
-def add_class_from_path(path, summary, functions):
-    """Create a class from a file path and its functions."""
-    class_name = sanitize(Path(path).stem)
+def register_class(node_id: str, display_name: str, summary: str = "", attributes=None):
+    """Ensure a class exists; don't overwrite summary if already set."""
+    if node_id not in classes:
+        classes[node_id] = {
+            "name": safe_text(display_name),
+            "attrs": set(),
+            "summary": safe_text(summary),
+        }
+    else:
+        # keep the first non-empty summary we saw (avoids oscillation)
+        if summary and not classes[node_id]["summary"]:
+            classes[node_id]["summary"] = safe_text(summary)
 
-    # Keep your original marker attribute (optional)
-    add_class(class_name, {"summary": "string"})
-
-    # Put the actual summary inside the class (comments)
-    add_summary_as_comments(class_name, summary)
-
-    # Methods
-    for func in functions or []:
-        if isinstance(func, dict) and "name" in func:
-            func_name = sanitize(func["name"])
-            classes[class_name].add(f"{func_name}()")
-        elif isinstance(func, str):
-            classes[class_name].add(f"{sanitize(func)}()")
+    if attributes:
+        for k, v in attributes.items():
+            if k in SKIP_KEYS:
+                continue
+            if isinstance(v, (dict, list)):
+                continue
+            classes[node_id]["attrs"].add(f"{safe_text(k)}: {safe_text(v)}")
 
 
 def reset_globals():
-    """Clear classes/relationships before generating a new diagram."""
     global classes, relationships
     classes = {}
     relationships = []
 
 
-def flush_diagram(filename_suffix):
-    """Write current UML part to file."""
-    global base_name, part_index, OUTPUT_DIR
+def flush_diagram(filename_suffix: str, title: str = "Diagram"):
+    global part_index, base_name, OUTPUT_DIR
 
     filename = f"{base_name}{filename_suffix}"
-    uml_lines = ["@startuml"]
 
-    MAX_ITEMS_PER_CLASS = 10
-    for cls, attrs in classes.items():
-        uml_lines.append(f"class {cls} {{")
+    uml_lines = [
+        "@startuml",
+        "skinparam monochrome true",
+        "top to bottom direction",
+        "skinparam linetype ortho",
+        "skinparam classAttributeIconSize 0",
+        "skinparam noteFontSize 11",
+        "skinparam noteBackgroundColor #f9f9f9",
+    ]
+    uml_lines.append(f"title {safe_text(title)} - Part {part_index}")
 
-        summary_lines = sorted([a for a in attrs if a.startswith("__SUMMARY__")])
-        other_lines = sorted([a for a in attrs if not a.startswith("__SUMMARY__")])
+    # 1) Classes + their attributes (limited)
+    for cid, data in classes.items():
+        uml_lines.append(f'class "{data["name"]}" as {cid} {{')
 
-        # Print ALL summary lines (remove marker)
-        for line in summary_lines:
-            uml_lines.append(f"  {line[len('__SUMMARY__') + 4:]}")
+        sorted_attrs = sorted(list(data["attrs"]))
+        visible = sorted_attrs[:MAX_METHODS_SHOWN]
+        for attr in visible:
+            uml_lines.append(f"  {attr}")
 
-
-        # Print limited non-summary lines
-        if len(other_lines) > MAX_ITEMS_PER_CLASS:
-            visible = other_lines[:MAX_ITEMS_PER_CLASS]
-            remaining = len(other_lines) - MAX_ITEMS_PER_CLASS
-            for line in visible:
-                uml_lines.append(f"  {line}")
-            uml_lines.append(f"  // ... ({remaining} more not shown)")
-        else:
-            for line in other_lines:
-                uml_lines.append(f"  {line}")
+        if len(sorted_attrs) > MAX_METHODS_SHOWN:
+            uml_lines.append(f"  ... ({len(sorted_attrs) - MAX_METHODS_SHOWN} more)")
 
         uml_lines.append("}")
 
+        # 2) Summary note (wrapped, outside the class)
+        if data["summary"]:
+            wrapped_lines = textwrap.wrap(data["summary"], width=SUMMARY_WRAP_WIDTH)
+            uml_lines.append(f"note bottom of {cid}")
+            for line in wrapped_lines:
+                uml_lines.append(f"  {line}")
+            uml_lines.append("end note")
 
-    # Relationships
-    for rel in relationships:
-        if isinstance(rel, tuple):
-            a, b = rel
-            uml_lines.append(f"{sanitize(a)} --> {sanitize(b)}")
-        else:
-            uml_lines.append(rel)
+    # 3) Relationships (only if both endpoints exist in this part)
+    for parent, child in set(relationships):
+        if parent in classes and child in classes:
+            uml_lines.append(f"{parent} --> {child}")
 
     uml_lines.append("@enduml")
 
@@ -151,146 +129,97 @@ def flush_diagram(filename_suffix):
     with open(out, "w", encoding="utf-8") as f:
         f.write("\n".join(uml_lines))
 
-    print(f"[OK] UML written to {out} (part {part_index})")
+    print(f"[OK] Saved: {out}")
     part_index += 1
 
 
-def process_node(node, parent_name=None, depth=0):
-    global relationships
-
+def process_node(node: dict, parent_id: str | None = None, depth: int = 0):
     if depth > MAX_DEPTH:
         return
 
-    if isinstance(node, dict):
-        # File node (your JSON format: has "path")
-        if "path" in node:
-            add_class_from_path(
-                node["path"],
-                node.get("summary", ""),
-                node.get("functions", []),
-            )
-            if parent_name:
-                relationships.append((parent_name, Path(node["path"]).stem))
+    # hard cap for stability
+    if len(classes) >= MAX_CLASSES:
+        return
 
-        # General node (project/module/etc.)
-        else:
-            name = node.get("name", "Unnamed")
-            safe_name = sanitize(name)
+    # Determine display name + stable ID
+    name = node.get("name") or (Path(node["path"]).stem if "path" in node else "Unnamed")
+    node_id = sanitize_id(node.get("path") or name)  # path is a better unique basis
 
-            # Keep attributes small + human-readable (not type names)
-            attributes = {}
-            for k, v in node.items():
-                if isinstance(v, (dict, list)):
-                    continue
-                if k == "summary":
-                    continue  # summary goes inside class as comments
-                attributes[k] = str(v)
+    # Register class (skip path/name so boxes don't get huge)
+    register_class(node_id, name, summary=node.get("summary", ""), attributes=node)
 
-            # Always add something so the class isn't empty (optional)
-            if not attributes:
-                attributes = {"name": "string"}
+    # Add functions as methods
+    for func in node.get("functions", []) or []:
+        func_name = func.get("name") if isinstance(func, dict) else str(func)
+        func_name = safe_text(func_name)
+        if func_name:
+            classes[node_id]["attrs"].add(f"{func_name}()")
 
-            add_class(safe_name, attributes)
+    # Link to parent
+    if parent_id:
+        relationships.append((parent_id, node_id))
 
-            # Put summary inside class
-            add_summary_as_comments(safe_name, node.get("summary", ""))
-
-            if parent_name:
-                relationships.append((parent_name, safe_name))
-
-        # Split if too many classes
-        if len(classes) >= MAX_CLASSES:
-            flush_diagram(f"_part{part_index}.txt")
-            reset_globals()
-
-        # Recurse into children/files
-        current_parent = sanitize(
-            node.get("name") or (Path(node["path"]).stem if "path" in node else None)
-        )
-        for key in ["children", "files"]:
-            if key in node and isinstance(node[key], list):
-                for child in node[key]:
-                    process_node(child, parent_name=current_parent, depth=depth + 1)
-
-        # Attach functions to non-path nodes as methods
-        if "functions" in node and "path" not in node:
-            owner = sanitize(node.get("name", "Unnamed"))
-            for func in node["functions"] or []:
-                if isinstance(func, dict) and "name" in func:
-                    classes.setdefault(owner, set()).add(f"{sanitize(func['name'])}()")
-                elif isinstance(func, str):
-                    classes.setdefault(owner, set()).add(f"{sanitize(func)}()")
-
-    elif isinstance(node, list):
-        for item in node:
-            process_node(item, parent_name, depth)
+    # Recurse
+    for key in ["children", "files"]:
+        for child in node.get(key, []) or []:
+            if isinstance(child, dict):
+                process_node(child, parent_id=node_id, depth=depth + 1)
 
 
-def count_nodes(node):
-    if isinstance(node, dict):
-        total = 1
-        for key in ["children", "files", "functions"]:
-            if key in node and isinstance(node[key], list):
-                for child in node[key]:
-                    total += count_nodes(child)
-        return total
-    if isinstance(node, list):
-        return sum(count_nodes(n) for n in node)
-    return 0
+def main(fp: str, out_path: str):
+    global base_name, OUTPUT_DIR, part_index
 
-
-def main(fp, output_dir):
-    global file_path, base_name, part_index, OUTPUT_DIR
-
-    file_path = fp
-    base_name = Path(file_path).stem
-    part_index = 1
-
-    OUTPUT_DIR = Path(output_dir)
+    file_path = Path(fp)
+    base_name = file_path.stem
+    OUTPUT_DIR = Path(out_path)
     os.makedirs(OUTPUT_DIR, exist_ok=True)
+    part_index = 1
 
     with open(file_path, encoding="utf-8") as f:
         data = json.load(f)
 
-    total_nodes = count_nodes(data)
-    print(f"Total nodes in JSON: {total_nodes}")
-
-    if total_nodes <= MAX_CLASSES or not (isinstance(data, dict) and "children" in data):
-        print("Generating single UML diagram...")
+    # Split by top-level children if present
+    if isinstance(data, dict) and data.get("children"):
+        # 1) Overview diagram
         reset_globals()
-        process_node(data)
-        flush_diagram(".txt")
-    else:
-        print("JSON too big, splitting into multiple diagrams...")
+        root_name = data.get("name", "Root")
+        root_id = sanitize_id(root_name)
+        register_class(root_id, root_name, summary=data.get("summary", ""))
 
-        # Overview
-        reset_globals()
-        root_name = sanitize(data.get("name", "Root"))
-        add_class(root_name, {"name": "str"})
+        for child in data["children"]:
+            if not isinstance(child, dict):
+                continue
+            c_name = child.get("name") or (Path(child["path"]).stem if "path" in child else "Module")
+            c_id = sanitize_id(child.get("path") or c_name)
+            register_class(c_id, c_name)
+            relationships.append((root_id, c_id))
 
-        # Root summary inside class (comments)
-        add_summary_as_comments(root_name, data.get("summary", ""))
+        flush_diagram("_overview.txt", title="Project Overview")
 
-        if "children" in data:
-            for child in data["children"]:
-                child_name = sanitize(child.get("name", "Child"))
-                add_class(child_name, {"name": "str"})
-                relationships.append((root_name, child_name))
-
-        flush_diagram("_overview.txt")
-
-        # One diagram per child
-        for child in data.get("children", []):
+        # 2) One detailed diagram per top-level child
+        for child in data["children"]:
+            if not isinstance(child, dict):
+                continue
             reset_globals()
-            process_node(child, parent_name=root_name)
-            flush_diagram(f"_{sanitize(child.get('name','Child'))}.txt")
+
+            # re-add root so child isn't orphaned
+            register_class(root_id, root_name)
+
+            process_node(child, parent_id=root_id)
+
+            child_label = child.get("name") or (Path(child["path"]).stem if "path" in child else "Module")
+            flush_diagram(f"_{sanitize_id(child_label)}.txt", title=f"Module: {child_label}")
+
+    else:
+        # Single diagram for smaller JSON
+        reset_globals()
+        if isinstance(data, dict):
+            process_node(data)
+        flush_diagram(".txt", title="System Architecture")
 
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print("Usage: python json_to_uml.py <file.json> <output_dir>")
+        print("Usage: python json_to_uml.py <input.json> <output_dir>")
         sys.exit(1)
-
-    file_path = sys.argv[1]
-    output_dir = sys.argv[2]
-    main(file_path, output_dir)
+    main(sys.argv[1], sys.argv[2])

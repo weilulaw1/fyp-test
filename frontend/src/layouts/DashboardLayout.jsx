@@ -5,6 +5,7 @@ export default function DashboardLayout({
   sidebarOpen,
   onToggleSidebar,
   uploadedFiles,
+  setUploadedFiles,
   activeFile,
   setActiveFile,
   children,
@@ -26,7 +27,10 @@ export default function DashboardLayout({
         setSelectedFile={setActiveFile}
       />
 
-      <Topbar sidebarOpen={sidebarOpen} onToggleSidebar={onToggleSidebar} />
+      <Topbar 
+      sidebarOpen={sidebarOpen} 
+      onToggleSidebar={onToggleSidebar}
+      setUploadedFiles={setUploadedFiles}   />
 
       <main
         style={{

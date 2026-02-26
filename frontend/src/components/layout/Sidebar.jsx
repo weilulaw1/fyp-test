@@ -19,26 +19,35 @@ export default function Sidebar({
     setSelectedFileToUpload(e.target.files[0]);
   };
 
-  const handleUploadAndRun = () => {
+  const handleUploadAndRun = async (e) => {
+    e?.preventDefault();
+  
     if (!selectedFileToUpload) {
       alert("Please select a JSON file first!");
       return;
     }
-
+  
     const formData = new FormData();
     formData.append("json_file", selectedFileToUpload);
-
-    fetch("http://localhost:8000/api/run-json-to-uml/", {
+  
+    const res = await fetch("http://localhost:8000/api/run-json-to-uml/", {
       method: "POST",
       body: formData,
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.status) alert(`✅ ${data.status}`);
-        else alert(`❌ ${data.error}`);
-      })
-      .catch((err) => alert(`❌ Error: ${err.message}`));
+    });
+  
+    const text = await res.text();
+    let data;
+    try { data = JSON.parse(text); }
+    catch { data = { error: text }; }
+  
+    if (!res.ok) {
+      alert(`❌ HTTP ${res.status}\n${data.error || "Request failed"}\n\n${data.details || ""}`);
+      return;
+    }
+  
+    alert(`✅ ${data.status || "OK"}`);
   };
+  
   return (
     <div
       style={{

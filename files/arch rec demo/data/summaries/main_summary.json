@@ -2,413 +2,177 @@
     "name": "main",
     "summary": "The main project is a Bluetooth robot navigation system for Android that enables robot control and navigation through Bluetooth communication. The system includes device communication capabilities, map management, path planning algorithms, and emergency obstacle handling features for autonomous robot operation.",
     "children": [
-        {
-            "name": "BluetoothRobotNavigationModule",
-            "summary": "This module enables Bluetooth-based robot control and navigation for Android systems through device communication, map management, path planning, and emergency obstacle handling.",
-            "children": [
-                {
-                    "name": "BluetoothRobotNavigationModule",
-                    "summary": "This module enables Bluetooth-based robot control and navigation for Android systems through device communication, map management, path planning, and emergency obstacle handling.",
-                    "children": [
-                        {
-                            "name": "BluetoothRobotNavigationModule",
-                            "summary": "This module enables Bluetooth-based robot control and navigation for Android systems through device communication, map management, path planning, and emergency obstacle handling.",
-                            "children": [
-                                {
-                                    "name": "RobotNavigationAndControlModule",
-                                    "summary": "This module provides comprehensive Bluetooth-based robot control and navigation functionality, including device communication, map management, path planning, and emergency obstacle handling for an Android-based robot system.",
-                                    "files": [
-                                        {
-                                            "path": "java/com/example/mdp_group_14/BluetoothCommunications.java",
-                                            "summary": "This Android fragment handles Bluetooth communication by allowing users to send and receive messages through a GUI with text input, display, and Bluetooth connection integration.",
-                                            "functions": [
-                                                {
-                                                    "name": "onCreate",
-                                                    "summary": "Initializes the fragment by registering a broadcast receiver to listen for incoming messages and setting up a StringBuilder to store messages."
-                                                },
-                                                {
-                                                    "name": "onCreateView",
-                                                    "summary": "Inflates the layout for the fragment, initializes UI components like text views and edit texts, sets up a click listener for the send button to handle message sending via Bluetooth."
-                                                },
-                                                {
-                                                    "name": "showLog",
-                                                    "summary": "Logs debug messages using Android's Log utility with a predefined tag for debugging purposes."
-                                                },
-                                                {
-                                                    "name": "getMessageReceivedTextView",
-                                                    "summary": "Returns the TextView component used to display received messages."
-                                                },
-                                                {
-                                                    "name": "getTypeBoxEditText",
-                                                    "summary": "Returns the EditText component used for typing messages to be sent."
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "path": "java/com/example/mdp_group_14/BluetoothConnectionService.java",
-                                            "summary": "This file implements a Bluetooth connection service for Android that handles both server-side listening for incoming connections and client-side connecting to remote devices, with support for sending and receiving data over Bluetooth.",
-                                            "functions": [
-                                                {
-                                                    "name": "BluetoothConnectionService",
-                                                    "summary": "Constructor that initializes the Bluetooth adapter and starts the accept thread to listen for incoming connections."
-                                                },
-                                                {
-                                                    "name": "AcceptThread",
-                                                    "summary": "Inner thread class that listens for incoming Bluetooth connections as a server."
-                                                },
-                                                {
-                                                    "name": "AcceptThread.run",
-                                                    "summary": "Runs the accept thread to wait for and accept incoming Bluetooth connections."
-                                                },
-                                                {
-                                                    "name": "AcceptThread.cancel",
-                                                    "summary": "Cancels the Bluetooth server socket and stops the accept thread."
-                                                },
-                                                {
-                                                    "name": "ConnectThread",
-                                                    "summary": "Inner thread class that handles connecting to a remote Bluetooth device as a client."
-                                                },
-                                                {
-                                                    "name": "ConnectThread.run",
-                                                    "summary": "Runs the connect thread to establish a Bluetooth connection to a remote device."
-                                                },
-                                                {
-                                                    "name": "ConnectThread.cancel",
-                                                    "summary": "Cancels the Bluetooth socket connection and stops the connect thread."
-                                                },
-                                                {
-                                                    "name": "startAcceptThread",
-                                                    "summary": "Starts a new accept thread to listen for incoming Bluetooth connections."
-                                                },
-                                                {
-                                                    "name": "startClientThread",
-                                                    "summary": "Starts a new connect thread to initiate a Bluetooth connection to a remote device."
-                                                },
-                                                {
-                                                    "name": "ConnectedThread",
-                                                    "summary": "Inner thread class that manages an active Bluetooth connection for sending and receiving data."
-                                                },
-                                                {
-                                                    "name": "ConnectedThread.run",
-                                                    "summary": "Runs the connected thread to continuously read incoming data from the Bluetooth connection."
-                                                },
-                                                {
-                                                    "name": "ConnectedThread.write",
-                                                    "summary": "Writes data to the output stream of the Bluetooth connection."
-                                                },
-                                                {
-                                                    "name": "ConnectedThread.cancel",
-                                                    "summary": "Cancels the Bluetooth socket connection and stops the connected thread."
-                                                },
-                                                {
-                                                    "name": "connected",
-                                                    "summary": "Handles the establishment of a Bluetooth connection and starts the connected thread."
-                                                },
-                                                {
-                                                    "name": "write",
-                                                    "summary": "Writes data to the currently connected Bluetooth device through the connected thread."
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "path": "java/com/example/mdp_group_14/BluetoothSetUp.java",
-                                            "summary": null
-                                        },
-                                        {
-                                            "path": "java/com/example/mdp_group_14/ControlFragment.java",
-                                            "summary": "This Android fragment implements the control interface for a robot, handling user interactions with movement buttons, task timers, and communication with the robot via Bluetooth.",
-                                            "functions": [
-                                                {
-                                                    "name": "timerRunnableExplore",
-                                                    "summary": "A runnable that updates the exploration timer display every 500 milliseconds during the exploration task."
-                                                },
-                                                {
-                                                    "name": "timerRunnableFastest",
-                                                    "summary": "A runnable that updates the fastest path timer display every 500 milliseconds during the fastest path task."
-                                                },
-                                                {
-                                                    "name": "onCreate",
-                                                    "summary": "Initializes the fragment's lifecycle and sets up basic fragment creation logic."
-                                                },
-                                                {
-                                                    "name": "onCreateView",
-                                                    "summary": "Inflates the control layout and initializes all UI components, button listeners, and timer handlers for robot control and task management."
-                                                },
-                                                {
-                                                    "name": "updateRobotPosition",
-                                                    "summary": "Updates the robot's position and direction on the grid based on provided coordinates and direction value."
-                                                },
-                                                {
-                                                    "name": "generateFullPath",
-                                                    "summary": "Generates a complete path by interpolating intermediate points between robot movement coordinates based on direction."
-                                                },
-                                                {
-                                                    "name": "calculateDirection",
-                                                    "summary": "Calculates the direction value for a given point, though currently returns a placeholder value."
-                                                },
-                                                {
-                                                    "name": "showLog",
-                                                    "summary": "Logs debug messages with the fragment's tag for debugging purposes."
-                                                },
-                                                {
-                                                    "name": "showToast",
-                                                    "summary": "Displays a short toast message to the user with the provided message text."
-                                                },
-                                                {
-                                                    "name": "onDestroy",
-                                                    "summary": "Handles cleanup when the fragment is destroyed, calling the parent onDestroy method."
-                                                },
-                                                {
-                                                    "name": "updateStatus",
-                                                    "summary": "Displays a toast message at the top of the screen with the provided status message."
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "path": "java/com/example/mdp_group_14/DataManager.java",
-                                            "summary": "This file implements a singleton DataManager class that manages robot positions and maintains a message buffer for handling communication data.",
-                                            "functions": [
-                                                {
-                                                    "name": "getInstance",
-                                                    "summary": "Returns the singleton instance of DataManager, creating it if it doesn't already exist."
-                                                },
-                                                {
-                                                    "name": "setRobotPositions",
-                                                    "summary": "Sets the robot positions data stored in the DataManager instance."
-                                                },
-                                                {
-                                                    "name": "getRobotPositions",
-                                                    "summary": "Returns the current robot positions data stored in the DataManager instance."
-                                                },
-                                                {
-                                                    "name": "appendToMessageBuffer",
-                                                    "summary": "Appends a message part to the internal message buffer string builder."
-                                                },
-                                                {
-                                                    "name": "getBufferedMessage",
-                                                    "summary": "Returns the complete buffered message as a string."
-                                                },
-                                                {
-                                                    "name": "clearMessageBuffer",
-                                                    "summary": "Clears all content from the message buffer by resetting its length to zero."
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "path": "java/com/example/mdp_group_14/DeviceListAdapter.java",
-                                            "summary": "A custom ArrayAdapter implementation that displays Bluetooth device information (name and address) in a list format for an Android application.",
-                                            "functions": [
-                                                {
-                                                    "name": "DeviceListAdapter",
-                                                    "summary": "Constructor that initializes the adapter with context, view resource ID, and list of Bluetooth devices, setting up the layout inflater and device list."
-                                                },
-                                                {
-                                                    "name": "getView",
-                                                    "summary": "Creates and populates a view for each Bluetooth device in the list, displaying the device name and address in the specified layout."
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "path": "java/com/example/mdp_group_14/DirectionsFragment.java",
-                                            "summary": "This file implements a DialogFragment that allows users to change direction settings through a spinner dropdown, with save and cancel functionality that updates shared preferences and refreshes the home screen direction.",
-                                            "functions": [
-                                                {
-                                                    "name": "onCreateView",
-                                                    "summary": "Inflates the directions layout, initializes UI components, sets up a spinner with direction options, and configures click listeners for save and cancel buttons to handle direction changes and preference updates."
-                                                },
-                                                {
-                                                    "name": "onSaveInstanceState",
-                                                    "summary": "Saves the current direction state to the bundle during configuration changes to preserve the direction value."
-                                                },
-                                                {
-                                                    "name": "onDismiss",
-                                                    "summary": "Handles the dismissal of the dialog fragment and logs the event for debugging purposes."
-                                                },
-                                                {
-                                                    "name": "showLog",
-                                                    "summary": "Logs debug messages with the fragment's tag for tracking the flow of execution during runtime."
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "path": "java/com/example/mdp_group_14/EmergencyFragment.java",
-                                            "summary": "This file implements an Android Fragment that provides a manual input interface for adding obstacles or setting robot start positions on a grid map, with options to specify obstacle direction and type.",
-                                            "functions": [
-                                                {
-                                                    "name": "onCreateView",
-                                                    "summary": "Inflates the manual input layout, initializes UI components including spinners and switches, sets up click listeners for adding or canceling manual inputs, and handles the logic for updating the grid map based on user selections."
-                                                },
-                                                {
-                                                    "name": "onSaveInstanceState",
-                                                    "summary": "Overrides the default onSaveInstanceState method to log when the instance state is being saved, but does not perform any custom saving logic."
-                                                },
-                                                {
-                                                    "name": "onDismiss",
-                                                    "summary": "Overrides the default onDismiss method to log when the dialog fragment is being dismissed, and calls the parent implementation to properly close the dialog."
-                                                },
-                                                {
-                                                    "name": "showLog",
-                                                    "summary": "Logs debug messages with the class tag for tracking the flow of execution within the fragment."
-                                                },
-                                                {
-                                                    "name": "showToast",
-                                                    "summary": "Displays a short-duration toast message to the user with the specified text."
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "path": "java/com/example/mdp_group_14/GridMap.java",
-                                            "summary": null
-                                        },
-                                        {
-                                            "path": "java/com/example/mdp_group_14/Home.java",
-                                            "summary": null
-                                        },
-                                        {
-                                            "path": "java/com/example/mdp_group_14/MainActivity.java",
-                                            "summary": "This Android activity serves as the main entry point for the MDP Group 28 application, managing a tabbed interface with home, Bluetooth setup, and emergency obstacle addition fragments, while initializing shared preferences and handling Bluetooth communication setup.",
-                                            "functions": [
-                                                {
-                                                    "name": "onCreate",
-                                                    "summary": "Initializes the main activity by setting up the fullscreen window, creating a tabbed interface with three fragments (Home, Bluetooth Setup, and Emergency), and configuring shared preferences for the application."
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "path": "java/com/example/mdp_group_14/MappingFragment.java",
-                                            "summary": "This Android fragment file handles the mapping functionality for a robot navigation system, allowing users to set start points, add obstacles, save/load maps, and control robot movement behaviors through various UI controls.",
-                                            "functions": [
-                                                {
-                                                    "name": "onCreate",
-                                                    "summary": "Initializes the fragment's creation lifecycle and sets up basic fragment state management."
-                                                },
-                                                {
-                                                    "name": "onCreateView",
-                                                    "summary": "Inflates the mapping interface layout and initializes all UI components, setting up click listeners for map manipulation controls including reset, save, load, obstacle placement, and direction changes."
-                                                },
-                                                {
-                                                    "name": "showLog",
-                                                    "summary": "Logs debug messages with the fragment's tag for tracking application behavior during development."
-                                                },
-                                                {
-                                                    "name": "showToast",
-                                                    "summary": "Displays short toast notifications to the user with specified messages for feedback on actions."
-                                                },
-                                                {
-                                                    "name": "updateStatus",
-                                                    "summary": "Shows a toast message at the top of the screen with a specified update message for user feedback."
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "path": "java/com/example/mdp_group_14/PathTranslator.java",
-                                            "summary": "The PathTranslator class translates STM commands into grid movements for robot navigation, handling both direct coordinate updates and step-by-step robot movements with various turn types and delays.",
-                                            "functions": [
-                                                {
-                                                    "name": "PathTranslator",
-                                                    "summary": "Constructor that initializes the PathTranslator with the default grid map from Home."
-                                                },
-                                                {
-                                                    "name": "PathTranslator",
-                                                    "summary": "Constructor that initializes the PathTranslator with a specified grid map and sets initial robot coordinates and direction."
-                                                },
-                                                {
-                                                    "name": "altTranslation",
-                                                    "summary": "Updates robot coordinates and direction based on STM commands without moving the robot, using different turning radii for various turn types."
-                                                },
-                                                {
-                                                    "name": "translatePath",
-                                                    "summary": "Converts STM commands into actual robot movements by calling gridMap.moveRobot() for each step, handling both forward/backward movements and various turn types with appropriate delays."
-                                                },
-                                                {
-                                                    "name": "showLog",
-                                                    "summary": "Logs debug messages with the class tag for tracking execution flow and debugging purposes."
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "path": "java/com/example/mdp_group_14/SectionsPagerAdapter.java",
-                                            "summary": "This file implements a custom FragmentPagerAdapter that manages a collection of fragments with associated titles for use in a ViewPager.",
-                                            "functions": [
-                                                {
-                                                    "name": "SectionsPagerAdapter",
-                                                    "summary": "Constructor that initializes the FragmentPagerAdapter with a FragmentManager and behavior flags."
-                                                },
-                                                {
-                                                    "name": "getItem",
-                                                    "summary": "Returns the fragment at the specified position for display in the ViewPager."
-                                                },
-                                                {
-                                                    "name": "getPageTitle",
-                                                    "summary": "Returns the title associated with the fragment at the specified position for use in tab navigation."
-                                                },
-                                                {
-                                                    "name": "getCount",
-                                                    "summary": "Returns the total number of fragments managed by this adapter."
-                                                },
-                                                {
-                                                    "name": "addFragment",
-                                                    "summary": "Adds a new fragment with its corresponding title to the adapter's internal collections."
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "path": "java/com/example/mdp_group_14/Straight.java",
-                                            "summary": "The file contains a utility class with a method to calculate new coordinates based on a starting position, direction, and movement type.",
-                                            "functions": [
-                                                {
-                                                    "name": "straight",
-                                                    "summary": "Calculates and returns new coordinates based on a starting position, direction (up, down, left, right), and movement type (forward, back)."
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "path": "java/com/example/mdp_group_14/TaskManager.java",
-                                            "summary": "This file implements a singleton TaskManager class that tracks the start status of Task1.",
-                                            "functions": [
-                                                {
-                                                    "name": "getInstance",
-                                                    "summary": "Returns the singleton instance of TaskManager, creating it if it doesn't already exist."
-                                                },
-                                                {
-                                                    "name": "isTask1Started",
-                                                    "summary": "Returns the current start status of Task1."
-                                                },
-                                                {
-                                                    "name": "setTask1Started",
-                                                    "summary": "Sets the start status of Task1 to the specified boolean value."
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "path": "java/com/example/mdp_group_14/Turn.java",
-                                            "summary": "The Turn.java file implements a robot turning system that calculates curved paths for a robot to execute left, right, backleft, or backright turns based on its current direction and position.",
-                                            "functions": [
-                                                {
-                                                    "name": "turn",
-                                                    "summary": "Calculates and returns the new direction and path points for a robot to execute a specified turn (left, right, backleft, or backright) from a given starting position and direction."
-                                                },
-                                                {
-                                                    "name": "radius",
-                                                    "summary": "Returns a fixed radius value of 3 for determining the curvature of robot turns."
-                                                },
-                                                {
-                                                    "name": "curve",
-                                                    "summary": "Generates a curved path using a Bresenham-like algorithm to approximate a quarter-circle arc between an initial point and destination, returning an ArrayList of coordinate points."
-                                                },
-                                                {
-                                                    "name": "manhattanDistance",
-                                                    "summary": "Calculates and returns the Manhattan distance (sum of absolute differences) between two coordinate points."
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    ]
-                }
+      {
+        "name": "BluetoothRobotNavigationModule",
+        "summary": "This module enables Bluetooth-based robot control and navigation for Android systems through device communication, map management, path planning, and emergency obstacle handling.",
+        "children": [
+          {
+            "name": "RobotNavigationAndControlModule",
+            "summary": "This module provides comprehensive Bluetooth-based robot control and navigation functionality, including device communication, map management, path planning, and emergency obstacle handling for an Android-based robot system.",
+            "files": [
+              {
+                "path": "java/com/example/mdp_group_14/BluetoothCommunications.java",
+                "summary": "This Android fragment handles Bluetooth communication by allowing users to send and receive messages through a GUI with text input, display, and Bluetooth connection integration.",
+                "functions": [
+                  { "name": "onCreate", "summary": "Initializes the fragment by registering a broadcast receiver to listen for incoming messages and setting up a StringBuilder to store messages." },
+                  { "name": "onCreateView", "summary": "Inflates the layout for the fragment, initializes UI components like text views and edit texts, sets up a click listener for the send button to handle message sending via Bluetooth." },
+                  { "name": "showLog", "summary": "Logs debug messages using Android's Log utility with a predefined tag for debugging purposes." },
+                  { "name": "getMessageReceivedTextView", "summary": "Returns the TextView component used to display received messages." },
+                  { "name": "getTypeBoxEditText", "summary": "Returns the EditText component used for typing messages to be sent." }
+                ]
+              },
+              {
+                "path": "java/com/example/mdp_group_14/BluetoothConnectionService.java",
+                "summary": "This file implements a Bluetooth connection service for Android that handles both server-side listening for incoming connections and client-side connecting to remote devices, with support for sending and receiving data over Bluetooth.",
+                "functions": [
+                  { "name": "BluetoothConnectionService", "summary": "Constructor that initializes the Bluetooth adapter and starts the accept thread to listen for incoming connections." },
+                  { "name": "AcceptThread", "summary": "Inner thread class that listens for incoming Bluetooth connections as a server." },
+                  { "name": "AcceptThread.run", "summary": "Runs the accept thread to wait for and accept incoming Bluetooth connections." },
+                  { "name": "AcceptThread.cancel", "summary": "Cancels the Bluetooth server socket and stops the accept thread." },
+                  { "name": "ConnectThread", "summary": "Inner thread class that handles connecting to a remote Bluetooth device as a client." },
+                  { "name": "ConnectThread.run", "summary": "Runs the connect thread to establish a Bluetooth connection to a remote device." },
+                  { "name": "ConnectThread.cancel", "summary": "Cancels the Bluetooth socket connection and stops the connect thread." },
+                  { "name": "startAcceptThread", "summary": "Starts a new accept thread to listen for incoming Bluetooth connections." },
+                  { "name": "startClientThread", "summary": "Starts a new connect thread to initiate a Bluetooth connection to a remote device." },
+                  { "name": "ConnectedThread", "summary": "Inner thread class that manages an active Bluetooth connection for sending and receiving data." },
+                  { "name": "ConnectedThread.run", "summary": "Runs the connected thread to continuously read incoming data from the Bluetooth connection." },
+                  { "name": "ConnectedThread.write", "summary": "Writes data to the output stream of the Bluetooth connection." },
+                  { "name": "ConnectedThread.cancel", "summary": "Cancels the Bluetooth socket connection and stops the connected thread." },
+                  { "name": "connected", "summary": "Handles the establishment of a Bluetooth connection and starts the connected thread." },
+                  { "name": "write", "summary": "Writes data to the currently connected Bluetooth device through the connected thread." }
+                ]
+              },
+              { "path": "java/com/example/mdp_group_14/BluetoothSetUp.java", "summary": null },
+              {
+                "path": "java/com/example/mdp_group_14/ControlFragment.java",
+                "summary": "This Android fragment implements the control interface for a robot, handling user interactions with movement buttons, task timers, and communication with the robot via Bluetooth.",
+                "functions": [
+                  { "name": "timerRunnableExplore", "summary": "A runnable that updates the exploration timer display every 500 milliseconds during the exploration task." },
+                  { "name": "timerRunnableFastest", "summary": "A runnable that updates the fastest path timer display every 500 milliseconds during the fastest path task." },
+                  { "name": "onCreate", "summary": "Initializes the fragment's lifecycle and sets up basic fragment creation logic." },
+                  { "name": "onCreateView", "summary": "Inflates the control layout and initializes all UI components, button listeners, and timer handlers for robot control and task management." },
+                  { "name": "updateRobotPosition", "summary": "Updates the robot's position and direction on the grid based on provided coordinates and direction value." },
+                  { "name": "generateFullPath", "summary": "Generates a complete path by interpolating intermediate points between robot movement coordinates based on direction." },
+                  { "name": "calculateDirection", "summary": "Calculates the direction value for a given point, though currently returns a placeholder value." },
+                  { "name": "showLog", "summary": "Logs debug messages with the fragment's tag for debugging purposes." },
+                  { "name": "showToast", "summary": "Displays a short toast message to the user with the provided message text." },
+                  { "name": "onDestroy", "summary": "Handles cleanup when the fragment is destroyed, calling the parent onDestroy method." },
+                  { "name": "updateStatus", "summary": "Displays a toast message at the top of the screen with the provided status message." }
+                ]
+              },
+              {
+                "path": "java/com/example/mdp_group_14/DataManager.java",
+                "summary": "This file implements a singleton DataManager class that manages robot positions and maintains a message buffer for handling communication data.",
+                "functions": [
+                  { "name": "getInstance", "summary": "Returns the singleton instance of DataManager, creating it if it doesn't already exist." },
+                  { "name": "setRobotPositions", "summary": "Sets the robot positions data stored in the DataManager instance." },
+                  { "name": "getRobotPositions", "summary": "Returns the current robot positions data stored in the DataManager instance." },
+                  { "name": "appendToMessageBuffer", "summary": "Appends a message part to the internal message buffer string builder." },
+                  { "name": "getBufferedMessage", "summary": "Returns the complete buffered message as a string." },
+                  { "name": "clearMessageBuffer", "summary": "Clears all content from the message buffer by resetting its length to zero." }
+                ]
+              },
+              {
+                "path": "java/com/example/mdp_group_14/DeviceListAdapter.java",
+                "summary": "A custom ArrayAdapter implementation that displays Bluetooth device information (name and address) in a list format for an Android application.",
+                "functions": [
+                  { "name": "DeviceListAdapter", "summary": "Constructor that initializes the adapter with context, view resource ID, and list of Bluetooth devices, setting up the layout inflater and device list." },
+                  { "name": "getView", "summary": "Creates and populates a view for each Bluetooth device in the list, displaying the device name and address in the specified layout." }
+                ]
+              },
+              {
+                "path": "java/com/example/mdp_group_14/DirectionsFragment.java",
+                "summary": "This file implements a DialogFragment that allows users to change direction settings through a spinner dropdown, with save and cancel functionality that updates shared preferences and refreshes the home screen direction.",
+                "functions": [
+                  { "name": "onCreateView", "summary": "Inflates the directions layout, initializes UI components, sets up a spinner with direction options, and configures click listeners for save and cancel buttons to handle direction changes and preference updates." },
+                  { "name": "onSaveInstanceState", "summary": "Saves the current direction state to the bundle during configuration changes to preserve the direction value." },
+                  { "name": "onDismiss", "summary": "Handles the dismissal of the dialog fragment and logs the event for debugging purposes." },
+                  { "name": "showLog", "summary": "Logs debug messages with the fragment's tag for tracking the flow of execution during runtime." }
+                ]
+              },
+              {
+                "path": "java/com/example/mdp_group_14/EmergencyFragment.java",
+                "summary": "This file implements an Android Fragment that provides a manual input interface for adding obstacles or setting robot start positions on a grid map, with options to specify obstacle direction and type.",
+                "functions": [
+                  { "name": "onCreateView", "summary": "Inflates the manual input layout, initializes UI components including spinners and switches, sets up click listeners for adding or canceling manual inputs, and handles the logic for updating the grid map based on user selections." },
+                  { "name": "onSaveInstanceState", "summary": "Overrides the default onSaveInstanceState method to log when the instance state is being saved, but does not perform any custom saving logic." },
+                  { "name": "onDismiss", "summary": "Overrides the default onDismiss method to log when the dialog fragment is being dismissed, and calls the parent implementation to properly close the dialog." },
+                  { "name": "showLog", "summary": "Logs debug messages with the class tag for tracking the flow of execution within the fragment." },
+                  { "name": "showToast", "summary": "Displays a short-duration toast message to the user with the specified text." }
+                ]
+              },
+              { "path": "java/com/example/mdp_group_14/GridMap.java", "summary": null },
+              { "path": "java/com/example/mdp_group_14/Home.java", "summary": null },
+              {
+                "path": "java/com/example/mdp_group_14/MainActivity.java",
+                "summary": "This Android activity serves as the main entry point for the MDP Group 28 application, managing a tabbed interface with home, Bluetooth setup, and emergency obstacle addition fragments, while initializing shared preferences and handling Bluetooth communication setup.",
+                "functions": [
+                  { "name": "onCreate", "summary": "Initializes the main activity by setting up the fullscreen window, creating a tabbed interface with three fragments (Home, Bluetooth Setup, and Emergency), and configuring shared preferences for the application." }
+                ]
+              },
+              {
+                "path": "java/com/example/mdp_group_14/MappingFragment.java",
+                "summary": "This Android fragment file handles the mapping functionality for a robot navigation system, allowing users to set start points, add obstacles, save/load maps, and control robot movement behaviors through various UI controls.",
+                "functions": [
+                  { "name": "onCreate", "summary": "Initializes the fragment's creation lifecycle and sets up basic fragment state management." },
+                  { "name": "onCreateView", "summary": "Inflates the mapping interface layout and initializes all UI components, setting up click listeners for map manipulation controls including reset, save, load, obstacle placement, and direction changes." },
+                  { "name": "showLog", "summary": "Logs debug messages with the fragment's tag for tracking application behavior during development." },
+                  { "name": "showToast", "summary": "Displays short toast notifications to the user with specified messages for feedback on actions." },
+                  { "name": "updateStatus", "summary": "Shows a toast message at the top of the screen with a specified update message for user feedback." }
+                ]
+              },
+              {
+                "path": "java/com/example/mdp_group_14/PathTranslator.java",
+                "summary": "The PathTranslator class translates STM commands into grid movements for robot navigation, handling both direct coordinate updates and step-by-step robot movements with various turn types and delays.",
+                "functions": [
+                  { "name": "PathTranslator", "summary": "Constructor that initializes the PathTranslator with the default grid map from Home." },
+                  { "name": "PathTranslator", "summary": "Constructor that initializes the PathTranslator with a specified grid map and sets initial robot coordinates and direction." },
+                  { "name": "altTranslation", "summary": "Updates robot coordinates and direction based on STM commands without moving the robot, using different turning radii for various turn types." },
+                  { "name": "translatePath", "summary": "Converts STM commands into actual robot movements by calling gridMap.moveRobot() for each step, handling both forward/backward movements and various turn types with appropriate delays." },
+                  { "name": "showLog", "summary": "Logs debug messages with the class tag for tracking execution flow and debugging purposes." }
+                ]
+              },
+              {
+                "path": "java/com/example/mdp_group_14/SectionsPagerAdapter.java",
+                "summary": "This file implements a custom FragmentPagerAdapter that manages a collection of fragments with associated titles for use in a ViewPager.",
+                "functions": [
+                  { "name": "SectionsPagerAdapter", "summary": "Constructor that initializes the FragmentPagerAdapter with a FragmentManager and behavior flags." },
+                  { "name": "getItem", "summary": "Returns the fragment at the specified position for display in the ViewPager." },
+                  { "name": "getPageTitle", "summary": "Returns the title associated with the fragment at the specified position for use in tab navigation." },
+                  { "name": "getCount", "summary": "Returns the total number of fragments managed by this adapter." },
+                  { "name": "addFragment", "summary": "Adds a new fragment with its corresponding title to the adapter's internal collections." }
+                ]
+              },
+              {
+                "path": "java/com/example/mdp_group_14/Straight.java",
+                "summary": "The file contains a utility class with a method to calculate new coordinates based on a starting position, direction, and movement type.",
+                "functions": [
+                  { "name": "straight", "summary": "Calculates and returns new coordinates based on a starting position, direction (up, down, left, right), and movement type (forward, back)." }
+                ]
+              },
+              {
+                "path": "java/com/example/mdp_group_14/TaskManager.java",
+                "summary": "This file implements a singleton TaskManager class that tracks the start status of Task1.",
+                "functions": [
+                  { "name": "getInstance", "summary": "Returns the singleton instance of TaskManager, creating it if it doesn't already exist." },
+                  { "name": "isTask1Started", "summary": "Returns the current start status of Task1." },
+                  { "name": "setTask1Started", "summary": "Sets the start status of Task1 to the specified boolean value." }
+                ]
+              },
+              {
+                "path": "java/com/example/mdp_group_14/Turn.java",
+                "summary": "The Turn.java file implements a robot turning system that calculates curved paths for a robot to execute left, right, backleft, or backright turns based on its current direction and position.",
+                "functions": [
+                  { "name": "turn", "summary": "Calculates and returns the new direction and path points for a robot to execute a specified turn (left, right, backleft, or backright) from a given starting position and direction." },
+                  { "name": "radius", "summary": "Returns a fixed radius value of 3 for determining the curvature of robot turns." },
+                  { "name": "curve", "summary": "Generates a curved path using a Bresenham-like algorithm to approximate a quarter-circle arc between an initial point and destination, returning an ArrayList of coordinate points." },
+                  { "name": "manhattanDistance", "summary": "Calculates and returns the Manhattan distance (sum of absolute differences) between two coordinate points." }
+                ]
+              }
             ]
-        }
+          }
+        ]
+      }
     ]
-}
+  }
+  

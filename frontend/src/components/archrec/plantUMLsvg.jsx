@@ -1,52 +1,48 @@
 import React, { useState, useEffect } from "react";
-import plantumlEncoder from "plantuml-encoder";
 
-const PlantUMLTestSVG=({file}) => {
-  const [uml, setUml] = useState("");
+const PlantUMLTestSVG = ({ file }) => {
   const [svgContent, setSvgContent] = useState("");
 
-  const fetchSvg = (umlText) => {
-    const encoded = plantumlEncoder.encode(umlText);
-    fetch(`http://localhost:8080/svg/${encoded}`)
-      .then((res) => res.text())
-      .then(setSvgContent)
-      .catch((err) => console.error("Failed to load SVG:", err));
+  const fetchSvg = async (umlText) => {
+    try {
+      const res = await fetch("http://localhost:8080/svg", {
+        method: "POST",
+        headers: { "Content-Type": "text/plain; charset=utf-8" },
+        body: umlText,
+      });
+
+      const text = await res.text();
+      setSvgContent(text);
+    } catch (err) {
+      console.error("Failed to load SVG:", err);
+    }
   };
 
   useEffect(() => {
-    // Fetch UML text from backend or public folder
-    if (file) {
-      const normalisedFile = file.replace(/\\/g, "/");
-      fetch(`http://localhost:8000/api/files/${encodeURIComponent(normalisedFile)}/`)
+    if (!file) return;
+
+    const normalisedFile = file.replace(/\\/g, "/");
+
+    fetch(`http://localhost:8000/api/files/${encodeURIComponent(normalisedFile)}/`)
       .then((res) => res.text())
       .then((text) => {
-        setUml(text);
         fetchSvg(text);
       })
       .catch((err) => console.error("Failed to load UML file:", err));
-  }
-}, [file]);
+  }, [file]);
 
   return (
-    <div>    
-      <view //textarea to view code
-        rows={0}
-        cols={0}
-        value={uml}
-        onChange={(e) => {
-          const newUml = e.target.value;
-          setUml(newUml);
-          fetchSvg(newUml);
-        }}
-      />
-
-      <div
-        style={{ marginTop: "20px", marginLeft:"0px" }}
-        // Inject SVG directly into DOM
-        dangerouslySetInnerHTML={{ __html: svgContent }}
-      />
-    </div>
+    <div
+      style={{
+        width: "100%",
+        height: "85vh",
+        overflow: "auto",
+        border: "1px solid #ddd",
+        background: "white",
+      }}
+      dangerouslySetInnerHTML={{ __html: svgContent }}
+    />
   );
-}
+};
 
-export default PlantUMLTestSVG
+export default PlantUMLTestSVG;

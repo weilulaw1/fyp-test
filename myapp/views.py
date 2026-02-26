@@ -214,7 +214,7 @@ def run_json_to_uml(request):
                 check=True,
                 capture_output=True,
                 text=True,
-                encoding="mbcs",
+                encoding="utf-8",
                 errors="replace",
             )
             print("STDOUT:", result.stdout)
@@ -234,6 +234,7 @@ def run_json_to_uml(request):
             "uploaded_file": uploaded_file.name,
             "output_dir": output_dir,
         })
+    print("OUTPUT DIR:", os.path.abspath(output_dir))
 
     return JsonResponse({"error": "Invalid request method"}, status=405)
 
@@ -343,7 +344,7 @@ def archrec_run_summarize(request):
             check=True,
             capture_output=True,
             text=True,
-            encoding="mbcs",
+            encoding="utf-8",
             errors="replace",
         )
     except subprocess.CalledProcessError as e:
@@ -486,7 +487,7 @@ def _run_json_to_uml_local(base_dir: str, json_path: str, out_dir: str) -> dict:
         check=True,
         capture_output=True,
         text=True,
-        encoding="mbcs",
+        encoding="utf-8",
         errors="replace",
     )
     return {"stdout": res.stdout, "stderr": res.stderr, "script_path": script_path}
