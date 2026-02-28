@@ -174,7 +174,13 @@ class GPTModel:
                 payload["format"] = "json"
 
             r = requests.post(url, json=payload, timeout=600)
-            r.raise_for_status()
+            if not r.ok:
+                # Ollama often returns useful JSON/text in the body on errors
+                raise RuntimeError(
+                    f"Ollama /api/chat failed: HTTP {r.status_code}\n"
+                    f"URL: {url}\n"
+                    f"Response: {r.text[:4000]}"
+                )
             data = r.json()
 
             # Ollama /api/chat response shape: {"message": {"role": "...", "content": "..."}, ...}

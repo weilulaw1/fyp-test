@@ -23,6 +23,10 @@ SUPPORTED_FILE_TYPES = (
     '.py', # python
     '.go', # go
     '.php', # php
+    '.js', '.jsx', '.ts', '.tsx', # javascript / typescript (frontend)
+    '.html', '.css', '.scss', '.sass', # web    
+    '.json', '.yml', '.yaml', # config / project files    
+    '.md', # documentation
 )
 
 ## LLM settings

@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
-// Helper: build nested folder tree (UNCHANGED)
+// Helper: build nested folder tree
 function buildFileTree(paths) {
   const tree = {};
   paths.forEach((path) => {
@@ -16,7 +16,7 @@ function buildFileTree(paths) {
   return tree;
 }
 
-// Recursive tree renderer (UNCHANGED structure)
+// Recursive tree renderer
 function FileTree({
   tree,
   level = 0,
@@ -24,21 +24,24 @@ function FileTree({
   onFileClick,
   onFileDelete,
   selectedFile,
+  rootKey,
 }) {
   const [expandedFolders, setExpandedFolders] = useState({});
 
-  const toggleFolder = (path) => {
+  const toggleFolder = (folderKey) => {
     setExpandedFolders((prev) => ({
       ...prev,
-      [path]: !prev[path],
+      [folderKey]: !prev[folderKey],
     }));
   };
 
   const handleDelete = async (fullpath) => {
     if (!window.confirm(`Delete "${fullpath}"? This cannot be undone.`)) return;
+
     try {
       const formData = new FormData();
       formData.append("path", fullpath);
+      formData.append("root", rootKey); // ✅ tell backend which root to delete from
 
       const res = await fetch("http://localhost:8000/api/delete-file/", {
         method: "POST",
@@ -82,9 +85,7 @@ function FileTree({
             >
               <div
                 onClick={
-                  isFolder
-                    ? () => toggleFolder(key)
-                    : () => onFileClick(fullpath)
+                  isFolder ? () => toggleFolder(key) : () => onFileClick(fullpath)
                 }
                 style={{
                   display: "flex",
@@ -95,30 +96,31 @@ function FileTree({
                   fontWeight: isFolder ? "bold" : "normal",
                 }}
               >
-                <span style={{ marginRight: "6px" }}>
-                  {isFolder
-                    ? expandedFolders[key]
-                      ? "📂"
-                      : "📁"
-                    : "📄"}
+                {/* Delete icon */}
+                <span
+                  style={{
+                    cursor: "pointer",
+                    color: "red",
+                    marginLeft: "-5px",
+                    flexShrink: 0,
+                    marginRight: 6,
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete(fullpath);
+                  }}
+                  title="Delete"
+                >
+                  ❌
                 </span>
+
+                {/* Folder/File icon */}
+                <span style={{ marginRight: "6px" }}>
+                  {isFolder ? (expandedFolders[key] ? "📂" : "📁") : "📄"}
+                </span>
+
                 <span>{name}</span>
               </div>
-
-              <span
-                style={{
-                  cursor: "pointer",
-                  color: "red",
-                  marginLeft: "10px",
-                  flexShrink: 0,
-                }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDelete(fullpath);
-                }}
-              >
-                ❌
-              </span>
             </div>
 
             {isFolder && expandedFolders[key] && (
@@ -129,6 +131,7 @@ function FileTree({
                 onFileClick={onFileClick}
                 onFileDelete={onFileDelete}
                 selectedFile={selectedFile}
+                rootKey={rootKey}
               />
             )}
           </li>
@@ -138,7 +141,7 @@ function FileTree({
   );
 }
 
-// MAIN COMPONENT (minimal fix only)
+// MAIN COMPONENT
 export default function FolderView({
   onFileClick,
   uploadedFiles = [],
@@ -147,19 +150,19 @@ export default function FolderView({
 }) {
   const [files, setFiles] = useState(uploadedFiles);
 
+  // ✅ root toggle: "media" or "projects"
+  const [rootKey, setRootKey] = useState("media");
 
-  // On refresh: fetch from backend
+  // Fetch file list from backend whenever root changes or uploads change
   useEffect(() => {
-    fetch("http://localhost:8000/api/files/")
+    fetch(`http://localhost:8000/api/files/?root=${encodeURIComponent(rootKey)}`)
       .then((res) => res.json())
       .then((data) => {
-        if (Array.isArray(data.files)) {
-          setFiles(data.files);
-        }
+        if (Array.isArray(data.files)) setFiles(data.files);
+        else setFiles([]);
       })
       .catch((err) => console.error("Failed to fetch files:", err));
-  }, [uploadedFiles]);
-  
+  }, [uploadedFiles, rootKey]);
 
   const handleFileDelete = (fullpath) => {
     if (setSelectedFile && selectedFile === fullpath) {
@@ -173,24 +176,62 @@ export default function FolderView({
   };
 
   const handleFileClick = (fullpath) => {
-    if (setSelectedFile) setSelectedFile(fullpath);
-    if (onFileClick) onFileClick(fullpath);
+    setSelectedFile?.(fullpath);
+    onFileClick?.(fullpath, rootKey); // ✅ pass rootKey so viewer fetches correct root
   };
 
-  const tree = buildFileTree(files);
+  const tree = useMemo(() => buildFileTree(files), [files]);
 
   return (
     <div style={{ padding: "20px" }}>
-      <h2>📁 Folder View</h2>
+      <h2>📁 Files</h2>
+
+      {/* Root toggle */}
+      <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+        <button
+          onClick={() => {
+            setRootKey("media");
+            setSelectedFile?.(null);
+          }}
+          style={{
+            padding: "6px 10px",
+            borderRadius: 8,
+            border: "1px solid rgba(255,255,255,0.2)",
+            background: rootKey === "media" ? "rgba(255,255,255,0.15)" : "transparent",
+            cursor: "pointer",
+          }}
+        >
+          Uploads
+        </button>
+
+        <button
+          onClick={() => {
+            setRootKey("projects");
+            setSelectedFile?.(null);
+          }}
+          style={{
+            padding: "6px 10px",
+            borderRadius: 8,
+            border: "1px solid rgba(255,255,255,0.2)",
+            background:
+              rootKey === "projects" ? "rgba(255,255,255,0.15)" : "transparent",
+            cursor: "pointer",
+          }}
+        >
+          Projects
+        </button>
+      </div>
+
       {files.length > 0 ? (
         <FileTree
           tree={tree}
           onFileClick={handleFileClick}
           onFileDelete={handleFileDelete}
           selectedFile={selectedFile}
+          rootKey={rootKey}
         />
       ) : (
-        <p>No files uploaded</p>
+        <p>No files found</p>
       )}
     </div>
   );

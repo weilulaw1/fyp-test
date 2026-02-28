@@ -114,18 +114,30 @@ def upload_file(request):
 
 @api_view(['GET'])
 def list_files(request):
-    media_dir = Path(settings.MEDIA_ROOT)  # 🔹 directly MEDIA_ROOT
 
-    if not media_dir.exists():
-        return JsonResponse({"files": []})
-        
+    root_key = request.GET.get("root","media")
+
+    media_root = Path(settings.MEDIA_ROOT).resolve()  # 🔹 directly MEDIA_ROOT
+
+    archrec_projects_root = Path(
+        os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "files", "arch rec demo", "data", "projects"))
+    ).resolve()
+
+    ROOTS = {
+        "media": media_root,
+        "projects" : archrec_projects_root,
+    }
+    base_dir = ROOTS.get(root_key, media_root)
+
+    if not base_dir.exists():
+        return JsonResponse({"files": [], "root": root_key})
+
     files = [
-        str(p.relative_to(media_dir)).replace("\\", "/")
-        for p in media_dir.rglob("*")
+        str(p.relative_to(base_dir)).replace("\\", "/")
+        for p in base_dir.rglob("*")
         if p.is_file()
     ]
-
-    return JsonResponse({"files": files})
+    return JsonResponse({"files": files, "root": root_key})
 
 
 @api_view(['GET'])
@@ -136,108 +148,140 @@ def get_uml_file(request, filename):
             return HttpResponse(f.read(), content_type="text/plain")
     return HttpResponse("File not found", status=404)
 
-import logging
-logger = logging.getLogger('myapp')
 
 @api_view(['GET'])
 def file_detail(request, filename):
 
     filename = unquote(filename).rstrip('/')
-    
-    # Convert URL path (forward slashes) into OS path
-    safe_path = os.path.normpath(os.path.join(settings.MEDIA_ROOT, filename))
-    
-    # Security check: ensure the file is inside MEDIA_ROOT
-    if not safe_path.startswith(os.path.abspath(settings.MEDIA_ROOT)):
+
+    root_key = request.GET.get("root", "media")
+
+    media_root = Path(settings.MEDIA_ROOT).resolve()
+    archrec_projects_root = Path(
+        os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "files", "arch rec demo", "data", "projects"))
+    ).resolve()
+
+    ROOTS = {
+        "media": media_root,
+        "projects": archrec_projects_root,
+    }
+
+    base_dir = ROOTS.get(root_key, media_root)
+
+    # Build + normalize + secure check
+    safe_path = (base_dir / filename).resolve()
+    if base_dir not in safe_path.parents and safe_path != base_dir:
         return HttpResponse("Forbidden", status=403)
 
-    logger.info(f"Fetching file: {safe_path}")
+    if safe_path.exists() and safe_path.is_file():
+        with open(safe_path, "r", encoding="utf-8", errors="ignore") as f:
+            return HttpResponse(f.read(), content_type="text/plain")
 
-    if os.path.exists(safe_path):
-        with open(safe_path, 'r', encoding='utf-8', errors='ignore') as f:
-            content = f.read()
-        logger.info(f"File length: {len(content)}")
-        return HttpResponse(content, content_type="text/plain")
-    
-    logger.warning(f"File not found: {safe_path}")
     return HttpResponse("File not found", status=404)
 
 
 @csrf_exempt  # remove if you handle CSRF token in frontend
 @require_POST
 def delete_file(request):
-    path = request.POST.get("path")
-    if not path:
+    rel = request.POST.get("path")
+    root_key = request.POST.get("root", "media")
+    if not rel:
         return JsonResponse({"error": "No path provided"}, status=400)
 
-    # Make sure the path is safe and inside media folder
-    full_path = os.path.join(settings.MEDIA_ROOT, path)
-    if not os.path.exists(full_path):
+    media_root = Path(settings.MEDIA_ROOT).resolve()
+    archrec_projects_root = Path(
+        os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "files", "arch rec demo", "data", "projects"))
+    ).resolve()
+
+    ROOTS = {
+        "media": media_root,
+        "projects": archrec_projects_root,
+    }
+
+    base_dir = ROOTS.get(root_key, media_root)
+
+    target = (base_dir / rel).resolve()
+    if base_dir not in target.parents and target != base_dir:
+        return JsonResponse({"error": "Forbidden"}, status=403)
+
+    if not target.exists():
         return JsonResponse({"error": "File does not exist"}, status=404)
 
     try:
-        if os.path.isfile(full_path):
-            os.remove(full_path)
-        elif os.path.isdir(full_path):
-            import shutil
-            shutil.rmtree(full_path)
+        if target.is_file():
+            target.unlink()
+        else:
+            shutil.rmtree(str(target))
         return JsonResponse({"success": True})
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
     
 
-
 @csrf_exempt
 def run_json_to_uml(request):
-    if request.method == "POST":
-        uploaded_file = request.FILES.get("json_file")
-        if not uploaded_file:
-            return JsonResponse({"error": "No file uploaded"}, status=400)
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid request method"}, status=405)
 
-        upload_dir = os.path.join(os.path.dirname(__file__), "uploads")
-        os.makedirs(upload_dir, exist_ok=True)
-        file_path = os.path.join(upload_dir, uploaded_file.name)
+    uploaded_file = request.FILES.get("json_file")
+    if not uploaded_file:
+        return JsonResponse({"error": "No file uploaded"}, status=400)
 
-        with open(file_path, "wb+") as destination:
-            for chunk in uploaded_file.chunks():
-                destination.write(chunk)
+    upload_dir = os.path.join(os.path.dirname(__file__), "uploads")
+    os.makedirs(upload_dir, exist_ok=True)
+    file_path = os.path.join(upload_dir, uploaded_file.name)
 
-        script_dir = os.path.join(os.path.dirname(__file__), "..", "files")
-        script_path = os.path.join(script_dir, "json_to_uml.py")
+    with open(file_path, "wb+") as destination:
+        for chunk in uploaded_file.chunks():
+            destination.write(chunk)
 
-        output_dir = os.path.join(script_dir, "uml_output")
-        os.makedirs(output_dir, exist_ok=True)
+    script_dir = os.path.join(os.path.dirname(__file__), "..", "files")
+    script_path = os.path.join(script_dir, "json_to_uml.py")
 
+    json_stem = os.path.splitext(uploaded_file.name)[0]
+    output_dir = os.path.join(settings.MEDIA_ROOT, "uml_output", json_stem)
+
+    temp_dir = output_dir + "_tmp"
+
+    # 1) fresh temp dir
+    if os.path.isdir(temp_dir):
+        shutil.rmtree(temp_dir)
+    os.makedirs(temp_dir, exist_ok=True)
+
+    # 2) run script INTO temp dir
+    try:
+        result = subprocess.run(
+            [sys.executable, script_path, file_path, temp_dir],
+            check=True,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+        )
+    except subprocess.CalledProcessError as e:
+        traceback.print_exc()
+        # cleanup temp, keep old output_dir
         try:
-            result = subprocess.run(
-                [sys.executable, script_path, file_path, output_dir],
-                check=True,
-                capture_output=True,
-                text=True,
-                encoding="utf-8",
-                errors="replace",
-            )
-            print("STDOUT:", result.stdout)
-            print("STDERR:", result.stderr)
-
-        except subprocess.CalledProcessError as e:
-            print("UML generation failed!")
-            print("STDERR:\n", e.stderr)
-            traceback.print_exc()
-            return JsonResponse({
-                "error": "UML generation failed",
-                "details": e.stderr,
-            }, status=500)
-
+            if os.path.isdir(temp_dir):
+                shutil.rmtree(temp_dir)
+        except Exception:
+            pass
         return JsonResponse({
-            "status": "UML generated successfully",
-            "uploaded_file": uploaded_file.name,
-            "output_dir": output_dir,
-        })
-    print("OUTPUT DIR:", os.path.abspath(output_dir))
+            "error": "UML generation failed",
+            "details": e.stderr,
+        }, status=500)
 
-    return JsonResponse({"error": "Invalid request method"}, status=405)
+    # 3) swap in new outputs ONLY after success
+    if os.path.isdir(output_dir):
+        shutil.rmtree(output_dir)
 
+    os.rename(temp_dir, output_dir)
+
+    return JsonResponse({
+        "status": "UML generated successfully",
+        "uploaded_file": uploaded_file.name,
+        "media_uml_dir": output_dir.replace("\\", "/"),
+        "stdout": result.stdout,
+    })
 
 @api_view(["POST"])
 def archrec_upload_to_projects(request):
@@ -323,89 +367,92 @@ def archrec_upload_to_projects(request):
 
 @csrf_exempt
 def archrec_run_summarize(request):
-    """
-    CHAINED:
-      1) Run summarize_projects.py
-      2) Find latest summary JSON
-      3) Run json_to_uml.py using that JSON
-      4) Copy summary + uml output into MEDIA_ROOT so frontend FolderView can see it
-    """
     if request.method != "POST":
-        return JsonResponse({"error": "Invalid request method"}, status=405)
+        return _json_error("Invalid request method", status=405)
 
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "files", "arch rec demo"))
     summarize_script = os.path.join(base_dir, "summarize_projects.py")
 
-    # 1) Run summarizer
+    if not os.path.exists(summarize_script):
+        return _json_error("summarize_projects.py not found", status=500, summarize_script=summarize_script)
+
+    # 1) Run summarizer ONCE
     try:
         res = subprocess.run(
             [sys.executable, summarize_script],
             cwd=base_dir,
-            check=True,
             capture_output=True,
             text=True,
             encoding="utf-8",
             errors="replace",
+            check=True,
         )
+        logger.info("summarize stdout:\n%s", res.stdout)
+        logger.info("summarize stderr:\n%s", res.stderr)
     except subprocess.CalledProcessError as e:
-        traceback.print_exc()
-        return JsonResponse({
-            "error": "Summarization failed",
-            "returncode": e.returncode,
-            "stdout": e.stdout,
-            "stderr": e.stderr,
-        }, status=500)
+        logger.error("Summarize failed. returncode=%s", e.returncode)
+        logger.error("STDOUT:\n%s", e.stdout)
+        logger.error("STDERR:\n%s", e.stderr)
+        return _json_error(
+            "Summarization failed",
+            status=500,
+            returncode=e.returncode,
+            stdout=e.stdout,
+            stderr=e.stderr,
+        )
+    except Exception as e:
+        logger.exception("Unexpected error while running summarizer")
+        return _json_error("Unexpected error while running summarizer", status=500, details=str(e))
 
+    # 2) Pick project + summary JSON
     project_name = _pick_project_name(base_dir)
     summaries_dir = os.path.join(base_dir, "data", "summaries")
 
-    # 2) Pick summary JSON
     summary_json = _find_latest_summary_json(summaries_dir, project_name)
     if not summary_json:
-        return JsonResponse({
-            "error": "No summary JSON found after summarization",
-            "summaries_dir": summaries_dir,
-            "stdout": res.stdout,
-        }, status=500)
+        return _json_error(
+            "No summary JSON found after summarization",
+            status=500,
+            summaries_dir=summaries_dir,
+            stdout=res.stdout,
+            stderr=res.stderr,
+        )
 
-    # 3) Run json_to_uml into a temp/output folder under arch rec demo
+    # 3) Run json_to_uml into local out folder under arch rec demo
     uml_local_out = os.path.join(base_dir, "uml_output", project_name)
     try:
-        # clean old uml for this project
         if os.path.isdir(uml_local_out):
             shutil.rmtree(uml_local_out)
         uml_run = _run_json_to_uml_local(base_dir, summary_json, uml_local_out)
     except Exception as e:
-        traceback.print_exc()
-        return JsonResponse({
-            "error": "UML generation failed",
-            "details": str(e),
-            "summary_json": summary_json,
-        }, status=500)
+        logger.exception("UML generation failed")
+        return _json_error(
+            "UML generation failed",
+            status=500,
+            details=str(e),
+            summary_json=summary_json,
+        )
 
-    # 4) "Auto upload folder" = copy artifacts into MEDIA_ROOT
-    # so FolderView (which lists MEDIA_ROOT) can show them.
+    # 4) Copy outputs into MEDIA_ROOT
     media_summaries_dir = os.path.join(settings.MEDIA_ROOT, "archrec", "summaries", project_name)
     media_uml_dir = os.path.join(settings.MEDIA_ROOT, "uml_output", project_name)
 
     try:
         os.makedirs(media_summaries_dir, exist_ok=True)
-
-        # copy summary json
         shutil.copy2(summary_json, os.path.join(media_summaries_dir, os.path.basename(summary_json)))
 
-        # replace UML folder
         if os.path.isdir(media_uml_dir):
             shutil.rmtree(media_uml_dir)
         shutil.copytree(uml_local_out, media_uml_dir)
     except Exception as e:
-        traceback.print_exc()
-        return JsonResponse({
-            "error": "Failed to copy outputs into MEDIA_ROOT",
-            "details": str(e),
-            "media_uml_dir": media_uml_dir,
-            "media_summaries_dir": media_summaries_dir,
-        }, status=500)
+        logger.exception("Failed to copy outputs into MEDIA_ROOT")
+        return _json_error(
+            "Failed to copy outputs into MEDIA_ROOT",
+            status=500,
+            details=str(e),
+            media_uml_dir=media_uml_dir,
+            media_summaries_dir=media_summaries_dir,
+        )
 
     return JsonResponse({
         "status": "pipeline completed",
@@ -414,8 +461,11 @@ def archrec_run_summarize(request):
         "media_summary_dir": media_summaries_dir.replace("\\", "/"),
         "media_uml_dir": media_uml_dir.replace("\\", "/"),
         "summarize_stdout": res.stdout,
+        "summarize_stderr": res.stderr,  # IMPORTANT: logs usually go here
         "uml_stdout": uml_run.get("stdout", ""),
+        "uml_stderr": uml_run.get("stderr", ""),
     })
+
 
 
 
@@ -473,9 +523,9 @@ def _run_json_to_uml_local(base_dir: str, json_path: str, out_dir: str) -> dict:
     """
     Finds and runs json_to_uml.py somewhere under base_dir.
     """
-    script_path = _find_file_recursive(base_dir, "json_to_uml.py")
-    if not script_path:
-        raise FileNotFoundError(f"json_to_uml.py not found under: {base_dir}")
+    script_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "files", "json_to_uml.py"))
+    if not os.path.exists(script_path):
+        raise FileNotFoundError(f"json_to_uml.py not found at: {script_path}")
     if not os.path.exists(json_path):
         raise FileNotFoundError(f"summary json not found at: {json_path}")
 
@@ -499,3 +549,18 @@ def _find_file_recursive(root_dir: str, filename: str) -> str | None:
             return os.path.join(root, filename)
     return None
 
+def _json_error(message: str, *, status=500, **extra):
+    # Prevent huge responses; keep frontend responsive
+    def _clip(s, n=8000):
+        if s is None:
+            return ""
+        s = str(s)
+        return s if len(s) <= n else (s[:n] + "\n...[truncated]...")
+
+    payload = {"error": message}
+    for k, v in extra.items():
+        if k in ("stdout", "stderr", "details", "traceback"):
+            payload[k] = _clip(v)
+        else:
+            payload[k] = v
+    return JsonResponse(payload, status=status)

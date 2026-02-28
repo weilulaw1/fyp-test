@@ -1,26 +1,8 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, {  useRef, useState } from "react";
 
 const PIPELINE_ENDPOINT = "http://127.0.0.1:8000/api/archrec/run-summarize/";
 const UPLOAD_MEDIA_ENDPOINT = "http://127.0.0.1:8000/api/file/upload/";
 const ARCHREC_UPLOAD_ENDPOINT = "http://127.0.0.1:8000/api/archrec/upload-project/";
-
-const menuItems = [
-  {
-    label: "File",
-    actions: [
-      { name: "Upload File", isSingleFile: true },
-      { name: "Upload Folder", isFileUpload: true },
-      { name: "Load Codebase (Arch Rec)", isArchRecFolderUpload: true },
-      {
-        name: "Run Pipeline (Summarize → UML)",
-        endpoint: PIPELINE_ENDPOINT,
-        method: "POST",
-        isPipeline: true,
-      },
-    ],
-  },
-  
-];
 
 function safeJsonParse(text) {
   try {
@@ -30,9 +12,7 @@ function safeJsonParse(text) {
   }
 }
 
-export default function MenuBar({ onToggleSidebar, sidebarOpen, setUploadedFiles }) {
-  const [openMenu, setOpenMenu] = useState(null);
-
+export default function MenuBar({  sidebarOpen, setUploadedFiles }) {
   const SingleFileUpload = useRef(null);
   const FileUploadAction = useRef(null);
   const ArchRecFolderUpload = useRef(null);
@@ -45,80 +25,7 @@ export default function MenuBar({ onToggleSidebar, sidebarOpen, setUploadedFiles
 
   const isBusy = isPipelineRunning;
 
-  const menus = useMemo(() => menuItems, []);
-
-  const runFetchAction = async (action) => {
-    const isPipeline = !!action.isPipeline;
-
-    if (isPipeline) {
-      setIsPipelineRunning(true);
-      setPipelineMsg("Running pipeline… (Summarize → UML → publish)");
-      setPipelineResult(null);
-      setShowPipelineDetails(false);
-    }
-
-    try {
-      const res = await fetch(action.endpoint, {
-        method: action.method || "GET",
-      });
-
-      // Some endpoints may return non-JSON on error; handle safely
-      const text = await res.text();
-      const data = safeJsonParse(text) ?? { raw: text };
-
-      if (!res.ok) {
-        const errMsg = data?.error || data?.detail || "Request failed";
-        throw new Error(errMsg);
-      }
-
-      // success
-      if (isPipeline) {
-        setPipelineMsg("Done! Outputs published to folder view.");
-        setPipelineResult(data);
-        setUploadedFiles(Date.now());
-        // keep details available
-        setShowPipelineDetails(true);
-      }
-
-      // sidebar toggle
-      if (action.endpoint?.includes("toggle_sidebar")) {
-        onToggleSidebar();
-      }
-
-      console.log("Action response:", data);
-    } catch (err) {
-      console.error(err);
-      if (isPipeline) {
-        setPipelineMsg(`Error: ${err.message}`);
-        setPipelineResult({ error: err.message });
-        setShowPipelineDetails(true);
-      }
-    } finally {
-      if (isPipeline) {
-        // Let user read the final message briefly
-        setTimeout(() => setIsPipelineRunning(false), 600);
-      }
-    }
-  };
-
-  const handleClick = (action) => {
-    // Block pipeline double-clicks
-    if (action.isPipeline && isBusy) return;
-
-    if (action.isFileUpload) {
-      FileUploadAction.current?.click();
-    } else if (action.isArchRecFolderUpload) {
-      ArchRecFolderUpload.current?.click();
-    } else if (action.isSingleFile) {
-      SingleFileUpload.current?.click();
-    } else if (action.endpoint) {
-      runFetchAction(action);
-    }
-
-    setOpenMenu(null);
-  };
-
-  // Upload to MEDIA root (file tree)
+  // --- 1) Upload to MEDIA root
   const handleNormalUploadChange = async (e) => {
     const files = e.target.files;
     if (!files || !files.length) return;
@@ -129,7 +36,11 @@ export default function MenuBar({ onToggleSidebar, sidebarOpen, setUploadedFiles
     for (let i = 0; i < files.length; i++) {
       const path = files[i].webkitRelativePath || files[i].name;
 
-      if (path.includes("node_modules") || path.includes("__pycache__") || path.includes(".venv")) {
+      if (
+        path.includes("node_modules") ||
+        path.includes("__pycache__") ||
+        path.includes(".venv")
+      ) {
         continue;
       }
 
@@ -146,7 +57,7 @@ export default function MenuBar({ onToggleSidebar, sidebarOpen, setUploadedFiles
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || "Upload failed");
-      setUploadedFiles(Date.now());
+      setUploadedFiles(Date.now()); // ✅ refresh FolderView
     } catch (err) {
       console.error("Upload failed:", err);
       alert(`Upload failed: ${err.message}`);
@@ -155,71 +66,186 @@ export default function MenuBar({ onToggleSidebar, sidebarOpen, setUploadedFiles
     }
   };
 
-  // Upload folder to ArchRec workspace
-  const handleArchRecUploadChange = async (e) => {
-    const files = e.target.files;
-    if (!files || !files.length) return;
+  // --- 2) Upload folder to ArchRec workspace
+const handleArchRecUploadChange = async (e) => {
+  const input = e.target;
+  const fileList = input.files;
+  if (!fileList || !fileList.length) return;
 
+  // --- CONFIG ---
+  const BATCH_SIZE = 150; // ✅ tune: 100–250 is usually safe on Windows
+  const ENDPOINT = ARCHREC_UPLOAD_ENDPOINT;
+
+  // ✅ folder names to exclude anywhere in the path
+  const denyFolders = new Set([
+    "node_modules",
+    "__pycache__",
+    ".venv",
+    ".git",
+    "dist",
+    "build",
+    "target",
+    "out",
+    ".idea",
+    ".vscode",
+    "coverage",
+    "__MACOSX",
+  ]);
+
+  // ✅ file extensions to exclude (optional; keep if you want)
+  const denyExts = new Set([
+    ".log",
+    ".tmp",
+    ".DS_Store",
+  ]);
+
+  // Helper: returns true if file should be skipped
+  const shouldSkip = (path) => {
+    const norm = path.replace(/\\/g, "/");
+    const parts = norm.split("/").filter(Boolean);
+
+    // folder-based deny
+    for (const p of parts) {
+      if (denyFolders.has(p)) return true;
+    }
+
+    // extension-based deny
+    const lower = norm.toLowerCase();
+    for (const ext of denyExts) {
+      if (lower.endsWith(ext.toLowerCase())) return true;
+    }
+
+    return false;
+  };
+
+  // Turn FileList into filtered array of { file, path }
+  const all = [];
+  for (let i = 0; i < fileList.length; i++) {
+    const f = fileList[i];
+    const path = f.webkitRelativePath || f.name;
+
+    if (shouldSkip(path)) continue;
+
+    all.push({ file: f, path });
+  }
+
+  if (all.length === 0) {
+    alert("No files to upload after filtering (everything was excluded).");
+    input.value = null;
+    return;
+  }
+
+  // Optional: quick visibility
+  console.log(`ArchRec upload: ${all.length} files (filtered from ${fileList.length})`);
+
+  // Upload one batch
+  const uploadBatch = async (batch, batchIndex, totalBatches) => {
     const formData = new FormData();
     const filePaths = [];
 
-    for (let i = 0; i < files.length; i++) {
-      const path = files[i].webkitRelativePath || files[i].name;
-
-      if (
-        path.includes("node_modules") ||
-        path.includes("__pycache__") ||
-        path.includes(".venv") ||
-        path.includes(".git") ||
-        path.includes("dist") ||
-        path.includes("build")
-      ) {
-        continue;
-      }
-
-      filePaths.push(path);
-      formData.append("files", files[i]);
+    for (const item of batch) {
+      filePaths.push(item.path);
+      formData.append("files", item.file);
     }
 
     formData.append("file_paths", JSON.stringify(filePaths));
 
+    const res = await fetch(ENDPOINT, {
+      method: "POST",
+      body: formData,
+    });
+
+    // Backend returns JSON
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      const msg = data?.error || `Batch ${batchIndex + 1}/${totalBatches} upload failed`;
+      throw new Error(msg);
+    }
+
+    return data;
+  };
+
+  // Run batches sequentially (safer than parallel)
+  try {
+    const totalBatches = Math.ceil(all.length / BATCH_SIZE);
+
+    // Optional: simple progress feedback
+    // (replace with your overlay/toast if you have one)
+    // alert(`Uploading ${all.length} files in ${totalBatches} batches...`);
+
+    let lastResponse = null;
+
+    for (let start = 0, b = 0; start < all.length; start += BATCH_SIZE, b++) {
+      const batch = all.slice(start, start + BATCH_SIZE);
+      console.log(`Uploading batch ${b + 1}/${totalBatches} (${batch.length} files)...`);
+
+      lastResponse = await uploadBatch(batch, b, totalBatches);
+    }
+
+    console.log("ArchRec upload done. Last batch response:", lastResponse);
+    alert(`Loaded codebase into ArchRec workspace.\nBatches: ${Math.ceil(all.length / BATCH_SIZE)}\nFiles: ${all.length}`);
+
+    // ✅ refresh your UI once at the end
+    setUploadedFiles(Date.now());
+  } catch (err) {
+    console.error("ArchRec upload failed:", err);
+    alert(`ArchRec upload failed: ${err.message}`);
+  } finally {
+    // ✅ allow re-upload of same folder (important)
+    input.value = null;
+  }
+};
+  // --- 3) Run Pipeline button action
+  const runPipeline = async () => {
+    if (isBusy) return;
+
+    setIsPipelineRunning(true);
+    setPipelineMsg("Running pipeline… (Summarize → UML → publish)");
+    setPipelineResult(null);
+    setShowPipelineDetails(false);
+
     try {
-      const res = await fetch(ARCHREC_UPLOAD_ENDPOINT, {
-        method: "POST",
-        body: formData,
-      });
-      const data = await res.json().catch(() => ({}));
+      const res = await fetch(PIPELINE_ENDPOINT, { method: "POST" });
+      const text = await res.text();
+      const data = safeJsonParse(text) ?? { raw: text };
 
       if (!res.ok) {
-        console.error("ArchRec codebase load failed:", data);
-        alert(data.error || "ArchRec codebase load failed");
-        return;
+        const errMsg = data?.error || data?.detail || "Pipeline failed";
+        throw new Error(errMsg);
       }
 
-      console.log("ArchRec codebase loaded:", data);
-      alert(`Loaded codebase into ArchRec workspace. Files saved: ${data.files_saved ?? "?"}`);
-      setUploadedFiles(Date.now());
+      setPipelineMsg("Done! Outputs published to folder view.");
+      setPipelineResult(data);
+      setUploadedFiles(Date.now()); // ✅ refresh FolderView
+      setShowPipelineDetails(true);
     } catch (err) {
-      console.error("ArchRec upload failed:", err);
-      alert(`ArchRec upload failed: ${err.message}`);
+      console.error(err);
+      setPipelineMsg(`Error: ${err.message}`);
+      setPipelineResult({ error: err.message });
+      setShowPipelineDetails(true);
     } finally {
-      e.target.value = null;
+      setTimeout(() => setIsPipelineRunning(false), 600);
     }
   };
 
-  // close menu when click outside
-  useEffect(() => {
-    const handleOutsideClick = () => setOpenMenu(null);
-    window.addEventListener("click", handleOutsideClick);
-    return () => window.removeEventListener("click", handleOutsideClick);
-  }, []);
+  const btnStyle = (disabled) => ({
+    padding: "6px 10px",
+    borderRadius: "8px",
+    border: "1px solid #333",
+    background: disabled ? "#eee" : "white",
+    cursor: disabled ? "not-allowed" : "pointer",
+    fontWeight: "bold",
+    color: "black",
+  });
 
   return (
     <>
+      {/* ===================== TOP BAR ===================== */}
       <div
         style={{
           display: "flex",
-          background: "#ffffffff",
+          gap: "10px",
+          background: "#fff",
           padding: "10px",
           alignItems: "center",
           position: "fixed",
@@ -233,68 +259,39 @@ export default function MenuBar({ onToggleSidebar, sidebarOpen, setUploadedFiles
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {menus.map((menu, index) => (
-          <div
-            key={menu.label}
-            style={{
-              position: "relative",
-              padding: "5px 15px",
-              fontWeight: "bold",
-              cursor: "pointer",
-              color: "black",
-              borderRight: index !== menus.length - 1 ? "2px solid #333" : "none",
-              opacity: isBusy && menu.label === "File" ? 0.95 : 1,
-            }}
-            onMouseEnter={() => setOpenMenu(menu.label)}
-            onMouseLeave={() => setOpenMenu(null)}
-          >
-            {menu.label}
-            {openMenu === menu.label && (
-              <div
-                style={{
-                  position: "absolute",
-                  top: "35px",
-                  left: 0,
-                  background: "#f9f9f9",
-                  border: "1px solid #333",
-                  borderRadius: "4px",
-                  padding: "5px 0",
-                  boxShadow: "1px 1px 3px rgba(0,0,0,0.2)",
-                  minWidth: "220px",
-                  color: "black",
-                  zIndex: 1000,
-                }}
-                className="dropdown"
-              >
-                {menu.actions.map((action) => {
-                  const disabled = isBusy && action.isPipeline;
-                  return (
-                    <div
-                      key={action.name}
-                      onClick={() => !disabled && handleClick(action)}
-                      style={{
-                        padding: "6px 10px",
-                        cursor: disabled ? "not-allowed" : "pointer",
-                        opacity: disabled ? 0.55 : 1,
-                        userSelect: "none",
-                      }}
-                      onMouseEnter={(e) => {
-                        if (!disabled) e.currentTarget.style.background = "#ddd";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = "transparent";
-                      }}
-                    >
-                      {disabled ? "Running Pipeline…" : action.name}
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        ))}
+       
+        {/* ✅ 4 separate actions */}
+        <button
+          onClick={() => SingleFileUpload.current?.click()}
+          style={btnStyle(false)}
+        >
+          Upload File
+        </button>
 
-        {/* Single file upload */}
+        <button
+          onClick={() => FileUploadAction.current?.click()}
+          style={btnStyle(false)}
+        >
+          Upload Folder
+        </button>
+
+        <button
+          onClick={() => ArchRecFolderUpload.current?.click()}
+          style={btnStyle(false)}
+        >
+          Load Codebase (Arch Rec)
+        </button>
+
+        <button
+          onClick={runPipeline}
+          style={btnStyle(isBusy)}
+          disabled={isBusy}
+          title={isBusy ? "Pipeline is running" : "Run summarize → UML pipeline"}
+        >
+          {isBusy ? "Running Pipeline…" : "Run Pipeline"}
+        </button>
+
+        {/* Hidden file inputs */}
         <input
           type="file"
           ref={SingleFileUpload}
@@ -302,7 +299,6 @@ export default function MenuBar({ onToggleSidebar, sidebarOpen, setUploadedFiles
           onChange={handleNormalUploadChange}
         />
 
-        {/* Existing folder upload -> MEDIA */}
         <input
           type="file"
           webkitdirectory="true"
@@ -312,7 +308,6 @@ export default function MenuBar({ onToggleSidebar, sidebarOpen, setUploadedFiles
           onChange={handleNormalUploadChange}
         />
 
-        {/* ArchRec workspace folder upload */}
         <input
           type="file"
           webkitdirectory="true"
@@ -323,7 +318,7 @@ export default function MenuBar({ onToggleSidebar, sidebarOpen, setUploadedFiles
         />
       </div>
 
-      {/* Pipeline overlay */}
+      {/* ===================== PIPELINE OVERLAY ===================== */}
       {(isPipelineRunning || pipelineMsg) && (
         <div
           style={{
@@ -383,7 +378,7 @@ export default function MenuBar({ onToggleSidebar, sidebarOpen, setUploadedFiles
             </div>
           )}
 
-          {showPipelineDetails && pipelineResult && (
+          {pipelineResult && (
             <div style={{ marginTop: "10px" }}>
               <button
                 onClick={() => setShowPipelineDetails((v) => !v)}

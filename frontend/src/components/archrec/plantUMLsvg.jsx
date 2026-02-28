@@ -34,8 +34,9 @@ const PlantUMLTestSVG = ({ file }) => {
   return (
     <div
       style={{
-        width: "100%",
-        height: "85vh",
+        width: "max-content",
+        display:"inline-block",
+        
         overflow: "auto",
         border: "1px solid #ddd",
         background: "white",

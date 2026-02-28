@@ -6,6 +6,9 @@ from anytree import RenderTree
 from tqdm import tqdm
 import logging
 import concurrent.futures
+import sys
+sys.stdout.reconfigure(encoding="utf-8")
+sys.stderr.reconfigure(encoding="utf-8")
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -169,6 +172,7 @@ def summarize_project(project_path, gpt_type=LLAMA_33_MODEL, use_cache=True, see
                 all_files.append(relative_path.replace('\\', '/'))
 
     logging.info(f"Found {len(all_files)} files to process.")
+    
 
     # 2. Create module tree directly from file paths
     module_root, filename2file = create_module_tree_from_paths(all_files)
@@ -321,6 +325,7 @@ def main():
         with open(summary_file_path, 'w', encoding='utf-8') as f:
             json.dump(summary_dict, f, indent=4, ensure_ascii=False)
         logging.info(f"Summary for {project_name} saved to {summary_file_path}")
+        
 
 if __name__ == "__main__":
     main() 
