@@ -279,6 +279,7 @@ export default function MenuBar({ sidebarOpen, setUploadedFiles, viewMode, setVi
           <button
             onClick={() => ArchRecFolderUpload.current?.click()}
             style={btnStyle(false)}
+            title="Upload a project folder and run architecture recovery pipeline"
           >
             Load Codebase (Arch Rec)
           </button>
