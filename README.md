@@ -46,3 +46,25 @@ undo redo function?
 open renamed to upload folder, open to be used to actually open uml.txt
 
 possibility of getting folder from github
+
+
+
+
+
+
+
+
+
+
+
+-------------------------------------------------------------------------------------------------------------------
+
+deployment:
+
+need to change these calls:
+http://127.0.0.1:8000/... in Topbar.jsx
+http://localhost:8000/... in FolderView.jsx, Sidebar.jsx, CodeViewer.jsx
+
+when deploying, use a mobile device, run VIA LAN, or switch ports
+
+need to change to .env.VITE_API_BASE=http://127.0.0.1:8000
