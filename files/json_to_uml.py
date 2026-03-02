@@ -5,6 +5,7 @@ import io
 from pathlib import Path
 import textwrap
 import hashlib
+from urllib.parse import quote
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 
@@ -14,9 +15,15 @@ MAX_DEPTH = 3
 SUMMARY_WRAP_WIDTH = 40
 MAX_METHODS_SHOWN = 12
 
+# Clickable-link target (opens your frontend, which can then select the file)
+FRONTEND_OPEN_URL = "http://localhost:5173/archrec"
+DEFAULT_ROOT_KEY = "projects"
+
 # Global stores
-classes = {}        # { class_id: {"name": str, "attrs": set[str], "summary": str} }
+# { class_id: {"name": str, "attrs": set[str], "summary": str, "url": str} }
+classes = {}
 relationships = []  # list[(parent_id, child_id)]
+PROJECT_NAME = ""
 
 OUTPUT_DIR = None
 base_name = None
@@ -52,18 +59,64 @@ def sanitize_id(raw: object) -> str:
 SKIP_KEYS = {"summary", "children", "files", "functions", "path", "name"}
 
 
-def register_class(node_id: str, display_name: str, summary: str = "", attributes=None):
-    """Ensure a class exists; don't overwrite summary if already set."""
+def to_projects_relpath(p: str) -> str:
+    """
+    Convert node['path'] into the exact format returned by:
+      GET /api/files?root=projects
+
+    Which is relative to .../data/projects, like:
+      test/builtins/bashgetopt.c
+    """
+    global PROJECT_NAME
+
+    norm = (p or "").replace("\\", "/").lstrip("/")
+
+    # Trim absolute-ish marker if present
+    marker = "data/projects/"
+    idx = norm.find(marker)
+    if idx != -1:
+        norm = norm[idx + len(marker):].lstrip("/")
+
+    # If already prefixed with project name, keep it
+    if PROJECT_NAME and (norm == PROJECT_NAME or norm.startswith(PROJECT_NAME + "/")):
+        return norm
+
+    # Otherwise prefix with PROJECT_NAME if we have it
+    if PROJECT_NAME:
+        return f"{PROJECT_NAME}/{norm}" if norm else PROJECT_NAME
+
+    # No project name available -> return as-is
+    return norm
+
+def make_frontend_select_url(fullpath_projects_rel: str, root_key: str = DEFAULT_ROOT_KEY) -> str:
+    """
+    Build a URL that matches JS encodeURIComponent behavior:
+      encodeURIComponent("a/b c") -> "a%2Fb%20c"
+    So we encode "/" as well (safe="").
+    """
+    return (
+        f"{FRONTEND_OPEN_URL}"
+        f"?root={quote(root_key, safe='')}"
+        f"&file={quote(fullpath_projects_rel, safe='')}"
+    )
+
+
+def register_class(node_id: str, display_name: str, summary: str = "", attributes=None, url: str = ""):
+    """Ensure a class exists; don't overwrite summary/url if already set."""
     if node_id not in classes:
         classes[node_id] = {
             "name": safe_text(display_name),
             "attrs": set(),
             "summary": safe_text(summary),
+            "url": safe_text(url),
         }
     else:
         # keep the first non-empty summary we saw (avoids oscillation)
         if summary and not classes[node_id]["summary"]:
             classes[node_id]["summary"] = safe_text(summary)
+        # keep the first non-empty url we saw
+        if url and not classes[node_id].get("url"):
+            classes[node_id]["url"] = safe_text(url)
 
     if attributes:
         for k, v in attributes.items():
@@ -98,7 +151,11 @@ def flush_diagram(filename_suffix: str, title: str = "Diagram"):
 
     # 1) Classes + their attributes (limited)
     for cid, data in classes.items():
-        uml_lines.append(f'class "{data["name"]}" as {cid} {{')
+        url = data.get("url", "")
+        if url:
+            uml_lines.append(f'class "{data["name"]}" as {cid} [[{url}]] {{')
+        else:
+            uml_lines.append(f'class "{data["name"]}" as {cid} {{')
 
         sorted_attrs = sorted(list(data["attrs"]))
         visible = sorted_attrs[:MAX_METHODS_SHOWN]
@@ -145,8 +202,15 @@ def process_node(node: dict, parent_id: str | None = None, depth: int = 0):
     name = node.get("name") or (Path(node["path"]).stem if "path" in node else "Unnamed")
     node_id = sanitize_id(node.get("path") or name)  # path is a better unique basis
 
+    # Clickable URL (only if this node has a path)
+    url = ""
+    if node.get("path"):
+        rel = to_projects_relpath(node["path"])
+        if rel:  # non-empty
+            url = make_frontend_select_url(rel, root_key=DEFAULT_ROOT_KEY)
+
     # Register class (skip path/name so boxes don't get huge)
-    register_class(node_id, name, summary=node.get("summary", ""), attributes=node)
+    register_class(node_id, name, summary=node.get("summary", ""), attributes=node, url=url)
 
     # Add functions as methods
     for func in node.get("functions", []) or []:
@@ -168,6 +232,7 @@ def process_node(node: dict, parent_id: str | None = None, depth: int = 0):
 
 def main(fp: str, out_path: str):
     global base_name, OUTPUT_DIR, part_index
+    global PROJECT_NAME
 
     file_path = Path(fp)
     base_name = file_path.stem
@@ -177,6 +242,10 @@ def main(fp: str, out_path: str):
 
     with open(file_path, encoding="utf-8") as f:
         data = json.load(f)
+    if isinstance(data, dict):
+        PROJECT_NAME = str(data.get("name") or "").strip()
+    else:
+        PROJECT_NAME = ""    
 
     # Split by top-level children if present
     if isinstance(data, dict) and data.get("children"):
@@ -184,6 +253,8 @@ def main(fp: str, out_path: str):
         reset_globals()
         root_name = data.get("name", "Root")
         root_id = sanitize_id(root_name)
+
+        # Root itself usually isn't a file -> no url
         register_class(root_id, root_name, summary=data.get("summary", ""))
 
         for child in data["children"]:
@@ -191,7 +262,15 @@ def main(fp: str, out_path: str):
                 continue
             c_name = child.get("name") or (Path(child["path"]).stem if "path" in child else "Module")
             c_id = sanitize_id(child.get("path") or c_name)
-            register_class(c_id, c_name)
+
+            # If child has a path, make it clickable too
+            c_url = ""
+            if child.get("path"):
+                rel = to_projects_relpath(child["path"])
+                if rel:
+                    c_url = make_frontend_select_url(rel, root_key=DEFAULT_ROOT_KEY)
+
+            register_class(c_id, c_name, url=c_url)
             relationships.append((root_id, c_id))
 
         flush_diagram("_overview.txt", title="Project Overview")

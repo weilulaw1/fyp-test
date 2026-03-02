@@ -1,0 +1,44 @@
+@startuml
+skinparam monochrome true
+top to bottom direction
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+skinparam noteFontSize 11
+skinparam noteBackgroundColor #f9f9f9
+title Project Overview - Part 1
+class "test" as test_098f6bcd {
+}
+note bottom of test_098f6bcd
+  The 'test' project is a comprehensive
+  software architecture analysis platform
+  that combines database management, web
+  application deployment, and code
+  visualization capabilities. The project
+  includes modules for software
+  architecture recovery with file
+  conversion and dependency analysis
+  utilities, a dashboard framework for
+  code architecture visualization with UML
+  support and real-time editing, database
+  migration handling for task models, and
+  Django web application configuration
+  with both ASGI and WSGI support for
+  deployment. Together, these modules
+  create a robust framework for analyzing,
+  visualizing, and managing software
+  architecture with responsive web
+  interfaces and database integration.
+end note
+class "SoftwareArchitectureRecoveryUtils" as SoftwareArchitectureRecoveryUtils_4a016d01 {
+}
+class "CodeArchitectureDashboard" as CodeArchitectureDashboard_52f9de0a {
+}
+class "TaskModelMigration" as TaskModelMigration_4965a3d6 {
+}
+class "DjangoWebAppConfig" as DjangoWebAppConfig_46e619aa {
+}
+test_098f6bcd --> SoftwareArchitectureRecoveryUtils_4a016d01
+test_098f6bcd --> DjangoWebAppConfig_46e619aa
+test_098f6bcd --> TaskModelMigration_4965a3d6
+test_098f6bcd --> CodeArchitectureDashboard_52f9de0a
+@enduml

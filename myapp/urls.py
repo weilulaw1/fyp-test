@@ -18,7 +18,7 @@ urlpatterns = [
 
     path('api/files/', views.list_files, name="file-list"),
 
-    path("api/uml/<str:filename>/", views.get_uml_file),
+    path("api/uml/<path:filename>/", views.get_uml_file),
 
     path('api/files/<path:filename>/', views.file_detail, name='file-detail'),
 

@@ -1,0 +1,136 @@
+@startuml
+skinparam monochrome true
+top to bottom direction
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+skinparam noteFontSize 11
+skinparam noteBackgroundColor #f9f9f9
+title Module: CodeArchitectureDashboard - Part 3
+class "test" as test_098f6bcd {
+}
+class "CodeArchitectureDashboard" as CodeArchitectureDashboard_52f9de0a {
+}
+note bottom of CodeArchitectureDashboard_52f9de0a
+  This module provides a comprehensive
+  dashboard framework for code
+  architecture analysis applications with
+  responsive styling, UML visualization,
+  and real-time editing capabilities.
+end note
+class "CodeArchitectureAnalyzer" as CodeArchitectureAnalyzer_7523b438 {
+}
+note bottom of CodeArchitectureAnalyzer_7523b438
+  This module provides a comprehensive
+  code analysis and architecture
+  visualization system with web-based
+  interfaces for file management, UML
+  generation, and real-time editing
+  capabilities.
+end note
+class "ArchitectureRecorder" as ArchitectureRecorder_c1046bad {
+}
+note bottom of ArchitectureRecorder_c1046bad
+  This module provides a comprehensive
+  architecture recording and visualization
+  system that allows users to upload,
+  view, and manipulate code files and
+  PlantUML diagrams through a folder-based
+  interface with real-time editing
+  capabilities.
+end note
+class "CodeAnalysisUI" as CodeAnalysisUI_0329d3ee {
+}
+note bottom of CodeAnalysisUI_0329d3ee
+  This module provides a web-based code
+  analysis interface with a collapsible
+  sidebar for JSON file management and UML
+  generation, along with a top navigation
+  bar for pipeline execution and file
+  uploads.
+end note
+class "DashboardLayout" as DashboardLayout_96407b0f {
+}
+note bottom of DashboardLayout_96407b0f
+  This module provides a responsive
+  dashboard layout component with sidebar,
+  topbar, and main content area
+  functionality for file management
+  applications.
+end note
+class "DashboardLayout" as frontend_src_layouts_DashboardLayout_jsx_15a1acb0 {
+  DashboardLayout()
+}
+note bottom of frontend_src_layouts_DashboardLayout_jsx_15a1acb0
+  This file defines a dashboard layout
+  component that renders a sidebar,
+  topbar, and main content area with
+  responsive positioning and file
+  management functionality.
+end note
+class "Dashboard Styling Framework" as Dashboard_Styling_Framework_ede86112 {
+}
+note bottom of Dashboard_Styling_Framework_ede86112
+  This module provides comprehensive
+  styling functionality for a dashboard
+  application with responsive design,
+  theme management, and component-specific
+  styling including dark theme support
+  with purple and cyan accents.
+end note
+class "App" as frontend_src_styles_App_css_7da8c81b {
+}
+note bottom of frontend_src_styles_App_css_7da8c81b
+  This CSS file provides styling overrides
+  for a dashboard application,
+  specifically targeting the root element
+  and diagram panel components to ensure
+  full-width layout and proper sizing
+  behavior.
+end note
+class "index" as frontend_src_styles_index_css_55e5a05e {
+}
+note bottom of frontend_src_styles_index_css_55e5a05e
+  This CSS file defines the styling and
+  layout for a web page, including font
+  settings, color schemes, button styles,
+  and responsive design features.
+end note
+class "themes" as frontend_src_styles_themes_css_d359df90 {
+}
+note bottom of frontend_src_styles_themes_css_d359df90
+  This CSS file defines a dark theme with
+  purple and cyan accent colors, including
+  custom properties for colors, shadows,
+  and spacing, along with basic styling
+  for HTML elements and a gradient
+  background.
+end note
+class "ArchitecturalDiagramRenderer" as ArchitecturalDiagramRenderer_a2f1e4ab {
+}
+note bottom of ArchitecturalDiagramRenderer_a2f1e4ab
+  This module provides functionality for
+  rendering and displaying architectural
+  diagrams within a styled container
+  interface.
+end note
+class "ArchitecturalDiagramViewer" as ArchitecturalDiagramViewer_9641cbab {
+}
+note bottom of ArchitecturalDiagramViewer_9641cbab
+  This module renders a styled container
+  with a diagram view component for
+  architectural record display.
+end note
+ArchitecturalDiagramRenderer_a2f1e4ab --> ArchitecturalDiagramViewer_9641cbab
+DashboardLayout_96407b0f --> frontend_src_layouts_DashboardLayout_jsx_15a1acb0
+CodeArchitectureDashboard_52f9de0a --> Dashboard_Styling_Framework_ede86112
+CodeArchitectureAnalyzer_7523b438 --> ArchitectureRecorder_c1046bad
+Dashboard_Styling_Framework_ede86112 --> frontend_src_styles_App_css_7da8c81b
+CodeArchitectureDashboard_52f9de0a --> CodeArchitectureAnalyzer_7523b438
+CodeArchitectureDashboard_52f9de0a --> DashboardLayout_96407b0f
+Dashboard_Styling_Framework_ede86112 --> frontend_src_styles_themes_css_d359df90
+CodeArchitectureDashboard_52f9de0a --> CodeArchitectureDashboard_52f9de0a
+test_098f6bcd --> CodeArchitectureDashboard_52f9de0a
+CodeArchitectureDashboard_52f9de0a --> ArchitecturalDiagramRenderer_a2f1e4ab
+Dashboard_Styling_Framework_ede86112 --> frontend_src_styles_index_css_55e5a05e
+CodeArchitectureAnalyzer_7523b438 --> CodeAnalysisUI_0329d3ee
+@enduml

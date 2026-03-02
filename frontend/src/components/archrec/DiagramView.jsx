@@ -112,7 +112,7 @@ export default function DiagramView({ children }) {
           overflowX: "auto",
           overflowY: "auto",
           cursor: spaceDown ? (dragging ? "grabbing" : "grab") : "auto",
-          userSelect: "text", // ✅ always allow text selection
+          userSelect: "text", 
           padding: "0 12px",
         }}
         title={spaceDown ? "Drag to pan" : "Hold Space + drag to pan"}

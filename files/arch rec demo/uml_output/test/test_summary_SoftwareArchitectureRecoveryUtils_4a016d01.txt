@@ -1,0 +1,100 @@
+@startuml
+skinparam monochrome true
+top to bottom direction
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+skinparam noteFontSize 11
+skinparam noteBackgroundColor #f9f9f9
+title Module: SoftwareArchitectureRecoveryUtils - Part 2
+class "test" as test_098f6bcd {
+}
+class "SoftwareArchitectureRecoveryUtils" as SoftwareArchitectureRecoveryUtils_4a016d01 {
+}
+note bottom of SoftwareArchitectureRecoveryUtils_4a016d01
+  This module provides utilities for
+  loading, converting, and analyzing
+  project files and clustering results in
+  software architecture recovery,
+  including file path conversion, tree
+  structure management, and graph-based
+  dependency analysis.
+end note
+class "comparing_clusters" as files_arch_rec_demo_utils_comparing_clusters_py_6bd6c10c {
+}
+class "filename_convertor" as files_arch_rec_demo_utils_filename_convertor_py_9c7dc984 {
+  match_filelist_with_ground_truth()
+  raw_paths_to_ground_truth_format_paths()
+  raw_paths_to_unified_paths()
+}
+note bottom of files_arch_rec_demo_utils_filename_convertor_py_9c7dc984
+  This file provides functions to convert
+  file paths between different formats
+  (raw, unified, and ground truth) for
+  different programming languages, and to
+  match file lists with ground truth data.
+end note
+class "mytree" as files_arch_rec_demo_utils_mytree_py_52af632c {
+  FileNode.__init__()
+  FileTree.__init__()
+  FileTree.dfs()
+  FileTree.dfs_preorder()
+  FileTree.get_folder()
+  FileTreeFileNode.__init__()
+  FileTreeFileNode.get_full_path()
+  FileTreeFolderNode.__init__()
+  FileTreeFolderNode.add_child()
+  FileTreeFolderNode.get_all_sub_files()
+  FileTreeFolderNode.get_file()
+  FileTreeFolderNode.get_full_path()
+  ... (17 more)
+}
+note bottom of files_arch_rec_demo_utils_mytree_py_52af632c
+  This file implements a hierarchical file
+  tree structure with support for
+  organizing files and folders, including
+  module-specific functionality and graph-
+  based dependency analysis.
+end note
+class "project_file_loader" as files_arch_rec_demo_utils_project_file_loader_py_e159c37c {
+  get_raw_and_unified_and_gt_filenames_from_prj_folder()
+  get_raw_paths_from_prj_folder()
+  get_unified_paths()
+}
+note bottom of files_arch_rec_demo_utils_project_file_loader_py_e159c37c
+  This file provides functionality for
+  loading and processing project files
+  from a source folder, including
+  retrieving raw paths, converting them to
+  unified format, and optionally matching
+  them with ground truth files.
+end note
+class "utils" as files_arch_rec_demo_utils_utils_py_ccae2bbe {
+  bunch2resdict()
+  cluster2json()
+  cluster2json_rec_words()
+  get_c_h_group_dict()
+  get_ch2group_dict()
+  get_intersect_lists_from_two_dict()
+  get_pack_dict_from_filelist()
+  get_pack_dict_java()
+  get_pack_dict_level()
+  get_prj_lang()
+  get_turbo_mq_weighted()
+  is_csv_file()
+  ... (7 more)
+}
+note bottom of files_arch_rec_demo_utils_utils_py_ccae2bbe
+  This file contains utility functions for
+  processing clustering results, file
+  lists, graph analysis, and various data
+  transformations commonly used in
+  software analysis and clustering tasks.
+end note
+SoftwareArchitectureRecoveryUtils_4a016d01 --> files_arch_rec_demo_utils_utils_py_ccae2bbe
+SoftwareArchitectureRecoveryUtils_4a016d01 --> files_arch_rec_demo_utils_comparing_clusters_py_6bd6c10c
+SoftwareArchitectureRecoveryUtils_4a016d01 --> files_arch_rec_demo_utils_filename_convertor_py_9c7dc984
+SoftwareArchitectureRecoveryUtils_4a016d01 --> files_arch_rec_demo_utils_mytree_py_52af632c
+SoftwareArchitectureRecoveryUtils_4a016d01 --> files_arch_rec_demo_utils_project_file_loader_py_e159c37c
+test_098f6bcd --> SoftwareArchitectureRecoveryUtils_4a016d01
+SoftwareArchitectureRecoveryUtils_4a016d01 --> SoftwareArchitectureRecoveryUtils_4a016d01
+@enduml

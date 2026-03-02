@@ -41,7 +41,7 @@ function FileTree({
     try {
       const formData = new FormData();
       formData.append("path", fullpath);
-      formData.append("root", rootKey); // ✅ tell backend which root to delete from
+      formData.append("root", rootKey); 
 
       const res = await fetch("http://localhost:8000/api/delete-file/", {
         method: "POST",
@@ -147,11 +147,10 @@ export default function FolderView({
   uploadedFiles = [],
   selectedFile,
   setSelectedFile,
+  rootKey,
+  setRootKey,
 }) {
   const [files, setFiles] = useState(uploadedFiles);
-
-  // ✅ root toggle: "media" or "projects"
-  const [rootKey, setRootKey] = useState("media");
 
   // Fetch file list from backend whenever root changes or uploads change
   useEffect(() => {
@@ -177,7 +176,7 @@ export default function FolderView({
 
   const handleFileClick = (fullpath) => {
     setSelectedFile?.(fullpath);
-    onFileClick?.(fullpath, rootKey); // ✅ pass rootKey so viewer fetches correct root
+    onFileClick?.(fullpath, rootKey);  
   };
 
   const tree = useMemo(() => buildFileTree(files), [files]);

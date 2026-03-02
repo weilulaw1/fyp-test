@@ -142,10 +142,22 @@ def list_files(request):
 
 @api_view(['GET'])
 def get_uml_file(request, filename):
-    file_path = os.path.join("media", filename)  # adjust path
-    if os.path.exists(file_path):
-        with open(file_path, "r") as f:
+    from pathlib import Path
+    from urllib.parse import unquote
+
+    filename = unquote(filename).rstrip("/")
+
+    media_root = Path(settings.MEDIA_ROOT).resolve()
+    safe_path = (media_root / filename).resolve()
+
+    # Prevent directory traversal
+    if media_root not in safe_path.parents and safe_path != media_root:
+        return HttpResponse("Forbidden", status=403)
+
+    if safe_path.exists() and safe_path.is_file():
+        with open(safe_path, "r", encoding="utf-8", errors="ignore") as f:
             return HttpResponse(f.read(), content_type="text/plain")
+
     return HttpResponse("File not found", status=404)
 
 
@@ -418,12 +430,12 @@ def archrec_run_summarize(request):
             stderr=res.stderr,
         )
 
-    # 3) Run json_to_uml into local out folder under arch rec demo
-    uml_local_out = os.path.join(base_dir, "uml_output", project_name)
+    # 3) Run json_to_uml into media
+    media_uml_dir = os.path.join(settings.MEDIA_ROOT, "uml_output", project_name)
     try:
-        if os.path.isdir(uml_local_out):
-            shutil.rmtree(uml_local_out)
-        uml_run = _run_json_to_uml_local(base_dir, summary_json, uml_local_out)
+        if os.path.isdir(media_uml_dir):
+            shutil.rmtree(media_uml_dir)
+        uml_run = _run_json_to_uml_local(base_dir, summary_json, media_uml_dir)
     except Exception as e:
         logger.exception("UML generation failed")
         return _json_error(
@@ -432,27 +444,20 @@ def archrec_run_summarize(request):
             details=str(e),
             summary_json=summary_json,
         )
-
-    # 4) Copy outputs into MEDIA_ROOT
+    # 4) Also copy the summary JSON into MEDIA_ROOT (optional but you were returning it before)
     media_summaries_dir = os.path.join(settings.MEDIA_ROOT, "archrec", "summaries", project_name)
-    media_uml_dir = os.path.join(settings.MEDIA_ROOT, "uml_output", project_name)
-
     try:
         os.makedirs(media_summaries_dir, exist_ok=True)
         shutil.copy2(summary_json, os.path.join(media_summaries_dir, os.path.basename(summary_json)))
-
-        if os.path.isdir(media_uml_dir):
-            shutil.rmtree(media_uml_dir)
-        shutil.copytree(uml_local_out, media_uml_dir)
     except Exception as e:
-        logger.exception("Failed to copy outputs into MEDIA_ROOT")
+        logger.exception("Failed to copy summary into MEDIA_ROOT")
         return _json_error(
-            "Failed to copy outputs into MEDIA_ROOT",
+            "Failed to copy summary into MEDIA_ROOT",
             status=500,
             details=str(e),
-            media_uml_dir=media_uml_dir,
             media_summaries_dir=media_summaries_dir,
         )
+    
 
     return JsonResponse({
         "status": "pipeline completed",
@@ -461,7 +466,7 @@ def archrec_run_summarize(request):
         "media_summary_dir": media_summaries_dir.replace("\\", "/"),
         "media_uml_dir": media_uml_dir.replace("\\", "/"),
         "summarize_stdout": res.stdout,
-        "summarize_stderr": res.stderr,  # IMPORTANT: logs usually go here
+        "summarize_stderr": res.stderr,
         "uml_stdout": uml_run.get("stdout", ""),
         "uml_stderr": uml_run.get("stderr", ""),
     })

@@ -10,6 +10,8 @@ export default function Sidebar({
   onFileClick,
   selectedFile,
   setSelectedFile,
+  rootKey,
+  setRootKey,
 })
 {
 
@@ -136,6 +138,8 @@ export default function Sidebar({
               uploadedFiles={uploadedFiles}
               selectedFile={selectedFile}
               setSelectedFile={setSelectedFile}
+              rootKey={rootKey}
+              setRootKey={setRootKey}
             />
           </div>
         </>

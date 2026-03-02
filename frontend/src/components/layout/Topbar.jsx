@@ -1,4 +1,4 @@
-import React, {  useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 
 const PIPELINE_ENDPOINT = "http://127.0.0.1:8000/api/archrec/run-summarize/";
 const UPLOAD_MEDIA_ENDPOINT = "http://127.0.0.1:8000/api/file/upload/";
@@ -12,7 +12,7 @@ function safeJsonParse(text) {
   }
 }
 
-export default function MenuBar({  sidebarOpen, setUploadedFiles }) {
+export default function MenuBar({ sidebarOpen, setUploadedFiles, viewMode, setViewMode }) {
   const SingleFileUpload = useRef(null);
   const FileUploadAction = useRef(null);
   const ArchRecFolderUpload = useRef(null);
@@ -22,6 +22,7 @@ export default function MenuBar({  sidebarOpen, setUploadedFiles }) {
   const [pipelineMsg, setPipelineMsg] = useState("");
   const [pipelineResult, setPipelineResult] = useState(null);
   const [showPipelineDetails, setShowPipelineDetails] = useState(false);
+  const [showPipelineBubble, setShowPipelineBubble] = useState(true);
 
   const isBusy = isPipelineRunning;
 
@@ -57,7 +58,7 @@ export default function MenuBar({  sidebarOpen, setUploadedFiles }) {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || "Upload failed");
-      setUploadedFiles(Date.now()); // ✅ refresh FolderView
+      setUploadedFiles(Date.now()); //  refresh FolderView
     } catch (err) {
       console.error("Upload failed:", err);
       alert(`Upload failed: ${err.message}`);
@@ -67,134 +68,129 @@ export default function MenuBar({  sidebarOpen, setUploadedFiles }) {
   };
 
   // --- 2) Upload folder to ArchRec workspace
-const handleArchRecUploadChange = async (e) => {
-  const input = e.target;
-  const fileList = input.files;
-  if (!fileList || !fileList.length) return;
+  const handleArchRecUploadChange = async (e) => {
+    const input = e.target;
+    const fileList = input.files;
+    if (!fileList || !fileList.length) return;
 
-  // --- CONFIG ---
-  const BATCH_SIZE = 150; // ✅ tune: 100–250 is usually safe on Windows
-  const ENDPOINT = ARCHREC_UPLOAD_ENDPOINT;
+    // --- CONFIG ---
+    const BATCH_SIZE = 150; // 
+    const ENDPOINT = ARCHREC_UPLOAD_ENDPOINT;
 
-  // ✅ folder names to exclude anywhere in the path
-  const denyFolders = new Set([
-    "node_modules",
-    "__pycache__",
-    ".venv",
-    ".git",
-    "dist",
-    "build",
-    "target",
-    "out",
-    ".idea",
-    ".vscode",
-    "coverage",
-    "__MACOSX",
-  ]);
+    const denyFolders = new Set([
+      "node_modules",
+      "__pycache__",
+      ".venv",
+      ".git",
+      "dist",
+      "build",
+      "target",
+      "out",
+      ".idea",
+      ".vscode",
+      "coverage",
+      "__MACOSX",
+    ]);
 
-  // ✅ file extensions to exclude (optional; keep if you want)
-  const denyExts = new Set([
-    ".log",
-    ".tmp",
-    ".DS_Store",
-  ]);
+    const denyExts = new Set([
+      ".log",
+      ".tmp",
+      ".DS_Store",
+    ]);
 
-  // Helper: returns true if file should be skipped
-  const shouldSkip = (path) => {
-    const norm = path.replace(/\\/g, "/");
-    const parts = norm.split("/").filter(Boolean);
+    // Helper: returns true if file should be skipped
+    const shouldSkip = (path) => {
+      const norm = path.replace(/\\/g, "/");
+      const parts = norm.split("/").filter(Boolean);
 
-    // folder-based deny
-    for (const p of parts) {
-      if (denyFolders.has(p)) return true;
+      // folder-based deny
+      for (const p of parts) {
+        if (denyFolders.has(p)) return true;
+      }
+
+      // extension-based deny
+      const lower = norm.toLowerCase();
+      for (const ext of denyExts) {
+        if (lower.endsWith(ext.toLowerCase())) return true;
+      }
+
+      return false;
+    };
+
+    // Turn FileList into filtered array of { file, path }
+    const all = [];
+    for (let i = 0; i < fileList.length; i++) {
+      const f = fileList[i];
+      const path = f.webkitRelativePath || f.name;
+
+      if (shouldSkip(path)) continue;
+
+      all.push({ file: f, path });
     }
 
-    // extension-based deny
-    const lower = norm.toLowerCase();
-    for (const ext of denyExts) {
-      if (lower.endsWith(ext.toLowerCase())) return true;
+    if (all.length === 0) {
+      alert("No files to upload after filtering (everything was excluded).");
+      input.value = null;
+      return;
     }
 
-    return false;
+    // Optional: quick visibility
+    console.log(`ArchRec upload: ${all.length} files (filtered from ${fileList.length})`);
+
+    // Upload one batch
+    const uploadBatch = async (batch, batchIndex, totalBatches) => {
+      const formData = new FormData();
+      const filePaths = [];
+
+      for (const item of batch) {
+        filePaths.push(item.path);
+        formData.append("files", item.file);
+      }
+
+      formData.append("file_paths", JSON.stringify(filePaths));
+
+      const res = await fetch(ENDPOINT, {
+        method: "POST",
+        body: formData,
+      });
+
+      // Backend returns JSON
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        const msg = data?.error || `Batch ${batchIndex + 1}/${totalBatches} upload failed`;
+        throw new Error(msg);
+      }
+
+      return data;
+    };
+
+    // Run batches sequentially (safer than parallel)
+    try {
+      const totalBatches = Math.ceil(all.length / BATCH_SIZE);
+
+      let lastResponse = null;
+
+      for (let start = 0, b = 0; start < all.length; start += BATCH_SIZE, b++) {
+        const batch = all.slice(start, start + BATCH_SIZE);
+        console.log(`Uploading batch ${b + 1}/${totalBatches} (${batch.length} files)...`);
+
+        lastResponse = await uploadBatch(batch, b, totalBatches);
+      }
+
+      console.log("ArchRec upload done. Last batch response:", lastResponse);
+      alert(`Loaded codebase into ArchRec workspace.\nBatches: ${Math.ceil(all.length / BATCH_SIZE)}\nFiles: ${all.length}`);
+
+      //  refresh your UI once at the end
+      setUploadedFiles(Date.now());
+    } catch (err) {
+      console.error("ArchRec upload failed:", err);
+      alert(`ArchRec upload failed: ${err.message}`);
+    } finally {
+      //  allow re-upload of same folder (important)
+      input.value = null;
+    }
   };
 
-  // Turn FileList into filtered array of { file, path }
-  const all = [];
-  for (let i = 0; i < fileList.length; i++) {
-    const f = fileList[i];
-    const path = f.webkitRelativePath || f.name;
-
-    if (shouldSkip(path)) continue;
-
-    all.push({ file: f, path });
-  }
-
-  if (all.length === 0) {
-    alert("No files to upload after filtering (everything was excluded).");
-    input.value = null;
-    return;
-  }
-
-  // Optional: quick visibility
-  console.log(`ArchRec upload: ${all.length} files (filtered from ${fileList.length})`);
-
-  // Upload one batch
-  const uploadBatch = async (batch, batchIndex, totalBatches) => {
-    const formData = new FormData();
-    const filePaths = [];
-
-    for (const item of batch) {
-      filePaths.push(item.path);
-      formData.append("files", item.file);
-    }
-
-    formData.append("file_paths", JSON.stringify(filePaths));
-
-    const res = await fetch(ENDPOINT, {
-      method: "POST",
-      body: formData,
-    });
-
-    // Backend returns JSON
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      const msg = data?.error || `Batch ${batchIndex + 1}/${totalBatches} upload failed`;
-      throw new Error(msg);
-    }
-
-    return data;
-  };
-
-  // Run batches sequentially (safer than parallel)
-  try {
-    const totalBatches = Math.ceil(all.length / BATCH_SIZE);
-
-    // Optional: simple progress feedback
-    // (replace with your overlay/toast if you have one)
-    // alert(`Uploading ${all.length} files in ${totalBatches} batches...`);
-
-    let lastResponse = null;
-
-    for (let start = 0, b = 0; start < all.length; start += BATCH_SIZE, b++) {
-      const batch = all.slice(start, start + BATCH_SIZE);
-      console.log(`Uploading batch ${b + 1}/${totalBatches} (${batch.length} files)...`);
-
-      lastResponse = await uploadBatch(batch, b, totalBatches);
-    }
-
-    console.log("ArchRec upload done. Last batch response:", lastResponse);
-    alert(`Loaded codebase into ArchRec workspace.\nBatches: ${Math.ceil(all.length / BATCH_SIZE)}\nFiles: ${all.length}`);
-
-    // ✅ refresh your UI once at the end
-    setUploadedFiles(Date.now());
-  } catch (err) {
-    console.error("ArchRec upload failed:", err);
-    alert(`ArchRec upload failed: ${err.message}`);
-  } finally {
-    // ✅ allow re-upload of same folder (important)
-    input.value = null;
-  }
-};
   // --- 3) Run Pipeline button action
   const runPipeline = async () => {
     if (isBusy) return;
@@ -216,7 +212,7 @@ const handleArchRecUploadChange = async (e) => {
 
       setPipelineMsg("Done! Outputs published to folder view.");
       setPipelineResult(data);
-      setUploadedFiles(Date.now()); // ✅ refresh FolderView
+      setUploadedFiles(Date.now()); //  refresh FolderView
       setShowPipelineDetails(true);
     } catch (err) {
       console.error(err);
@@ -238,6 +234,12 @@ const handleArchRecUploadChange = async (e) => {
     color: "black",
   });
 
+  const modeBtn = (mode) => ({
+    ...btnStyle(false),
+    background: viewMode === mode ? "#111" : "white",
+    color: viewMode === mode ? "white" : "black",
+  });
+
   return (
     <>
       {/* ===================== TOP BAR ===================== */}
@@ -249,7 +251,7 @@ const handleArchRecUploadChange = async (e) => {
           padding: "10px",
           alignItems: "center",
           position: "fixed",
-          justifyContent: "flex-start",
+          justifyContent: "space-between",
           top: 0,
           left: sidebarOpen ? "250px" : "52px",
           width: sidebarOpen ? "calc(100% - 250px)" : "calc(100% - 20px)",
@@ -259,36 +261,56 @@ const handleArchRecUploadChange = async (e) => {
         }}
         onClick={(e) => e.stopPropagation()}
       >
-       
-        {/* ✅ 4 separate actions */}
-        <button
-          onClick={() => SingleFileUpload.current?.click()}
-          style={btnStyle(false)}
-        >
-          Upload File
-        </button>
+        <div style={{ display: "flex", gap: "10px" }}>
+          <button
+            onClick={() => SingleFileUpload.current?.click()}
+            style={btnStyle(false)}
+          >
+            Upload File
+          </button>
+
+          <button
+            onClick={() => FileUploadAction.current?.click()}
+            style={btnStyle(false)}
+          >
+            Upload Folder
+          </button>
+
+          <button
+            onClick={() => ArchRecFolderUpload.current?.click()}
+            style={btnStyle(false)}
+          >
+            Load Codebase (Arch Rec)
+          </button>
+
+          <button
+            onClick={runPipeline}
+            style={btnStyle(isBusy)}
+            disabled={isBusy}
+            title={isBusy ? "Pipeline is running" : "Run summarize → UML pipeline"}
+          >
+            {isBusy ? "Running Pipeline…" : "Run Pipeline"}
+          </button>
+
+          {/*  Diagram / Code toggle  */}
+          <div style={{ width: 1, height: 26, background: "#ddd", margin: "0 4px" }} />
+          <button onClick={() => setViewMode?.("diagram")} style={modeBtn("diagram")}>
+            Diagram
+          </button>
+          <button onClick={() => setViewMode?.("code")} style={modeBtn("code")}>
+            Code
+          </button>
+        </div>
 
         <button
-          onClick={() => FileUploadAction.current?.click()}
-          style={btnStyle(false)}
+          onClick={() => setShowPipelineBubble((v) => !v)}
+          style={{
+            ...btnStyle(false),
+            background: showPipelineBubble ? "#111" : "white",
+            color: showPipelineBubble ? "white" : "black",
+          }}
         >
-          Upload Folder
-        </button>
-
-        <button
-          onClick={() => ArchRecFolderUpload.current?.click()}
-          style={btnStyle(false)}
-        >
-          Load Codebase (Arch Rec)
-        </button>
-
-        <button
-          onClick={runPipeline}
-          style={btnStyle(isBusy)}
-          disabled={isBusy}
-          title={isBusy ? "Pipeline is running" : "Run summarize → UML pipeline"}
-        >
-          {isBusy ? "Running Pipeline…" : "Run Pipeline"}
+          {showPipelineBubble ? "Hide Status" : "Show Status"}
         </button>
 
         {/* Hidden file inputs */}
@@ -319,7 +341,7 @@ const handleArchRecUploadChange = async (e) => {
       </div>
 
       {/* ===================== PIPELINE OVERLAY ===================== */}
-      {(isPipelineRunning || pipelineMsg) && (
+      {showPipelineBubble && (isPipelineRunning || pipelineMsg) && (
         <div
           style={{
             position: "fixed",
@@ -392,6 +414,9 @@ const handleArchRecUploadChange = async (e) => {
                 }}
               >
                 {showPipelineDetails ? "Hide details" : "Show details"}
+                <div style={{ marginTop: "-20px", fontSize: "16px", opacity: 1, color: "#333" }}>
+                  {showPipelineDetails ? "Hide details" : "Show details"}
+                </div>
               </button>
 
               {showPipelineDetails && (
@@ -408,7 +433,7 @@ const handleArchRecUploadChange = async (e) => {
                     whiteSpace: "pre-wrap",
                   }}
                 >
-{JSON.stringify(pipelineResult, null, 2)}
+                  {JSON.stringify(pipelineResult, null, 2)}
                 </pre>
               )}
             </div>
